@@ -14,14 +14,14 @@ export const generateTokens = async (accountId, email, res) => {
     });
 
     res.cookie("accessToken", accessToken, {
-        maxAge: 15* 60 * 1000, // 10 days in milliseconds
+        maxAge: 15 * 60 * 1000, // 10 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "strict", // Prevent CSRF attacks
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
 
     res.cookie("refreshToken", refreshToken, {
-        maxAge: 10 * 10 * 60 * 1000, // 10 days in milliseconds
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "strict", // Prevent CSRF attacks
         secure: process.env.NODE_ENV === "production", // Secure only in production
