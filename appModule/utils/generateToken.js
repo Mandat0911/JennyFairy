@@ -1,0 +1,31 @@
+import jwt from "jsonwebtoken";
+
+export const generateTokens = async (accountId, email, res) => {
+    // Ensure ACCESS_TOKEN_SECRET is defined
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+        throw new Error("ACCESS_TOKEN_SECRET is not defined in the environment variables");
+    }
+    const accessToken = jwt.sign({accountId, email}, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+    })
+
+    const refreshToken = jwt.sign({accountId, email}, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: "10d",
+    });
+
+    res.cookie("accessToken", accessToken, {
+        maxAge: 15* 60 * 1000, // 10 days in milliseconds
+        httpOnly: true, // Prevent access to cookies via JavaScript
+        sameSite: "strict", // Prevent CSRF attacks
+        secure: process.env.NODE_ENV === "production", // Secure only in production
+    })
+
+    res.cookie("refreshToken", refreshToken, {
+        maxAge: 10 * 10 * 60 * 1000, // 10 days in milliseconds
+        httpOnly: true, // Prevent access to cookies via JavaScript
+        sameSite: "strict", // Prevent CSRF attacks
+        secure: process.env.NODE_ENV === "production", // Secure only in production
+    })
+
+    return {accessToken, refreshToken};
+}
