@@ -4,6 +4,7 @@ import connectMongoDB from "./lib/db/connectToMongoDB.js";
 import cookieParser from "cookie-parser";
 
 import authRoute from "../appModule/Auth/routes/auth.routes.js"
+import productRoute from "../appModule/Product/routes/product.routes.js"
 
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 // API auth
 app.use("/api/auth/", authRoute);
+app.use("/api/product/", productRoute);
 
 
 
