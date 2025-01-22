@@ -1,4 +1,4 @@
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
+import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplate.js";
 import {transporter} from "./email.Config.js";
 
 export const sendVerificationEmail = async (userEmail, verificationToken) => {
@@ -26,5 +26,23 @@ export const sendVerificationEmail = async (userEmail, verificationToken) => {
       // Throw an error to be handled by the calling function
       throw new Error(`Failed to send verification email: ${error.message}`);
     }
-  };
+};
+
+export const sendWelcomeEmail = async (userEmail, userName) => {
+  const emailContent = WELCOME_EMAIL_TEMPLATE.replace("{{userName}}", userName);
+
+  try {
+    const info = await transporter.sendMail({
+      from: '"RMIT Charity" <nguyenmandat0744@gmail.com>',
+      to: userEmail,
+      subject: "Welcome to Our Platform!",
+      html: emailContent,
+    });
+
+    console.log("Welcome email sent successfully!", info);
+  } catch (error) {
+    console.error("Error sending welcome email:", error.message);
+    throw new Error("Failed to send welcome email.");
+  }
+};
   

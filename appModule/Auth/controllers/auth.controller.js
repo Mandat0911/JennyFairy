@@ -6,7 +6,7 @@ import { redis, storeRefreshToken } from "../../../backend/lib/redis/redis.js";
 import  jwt  from "jsonwebtoken";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import bcrypt from 'bcryptjs';
-import { sendVerificationEmail } from "../../utils/mail/emailSetup.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../../utils/mail/emailSetup.js";
 
 
 export const signup = async (req, res) => {
@@ -33,18 +33,17 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await hashPassword(password);
         const verificationToken = generateVerificationToken(6);
-        console.log("verificationCode: ", verificationToken);
+
 
         const newAccount = new Account({
             email,
             password: hashedPassword,
             verificationToken,
-            verificationTokenExpireAt: new Date(Date.now() + 60 * 60 * 1000), // 6hrs
+            verificationTokenExpireAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 6hrs
             userType: "USER",
         });
         await newAccount.save();
         await sendVerificationEmail(email, verificationToken);
-        console.log("email sent")
 
         const newUser = new User({
             name: name,
@@ -78,30 +77,95 @@ export const login = async (req, res) => {
     try {
       const { email, password } = req.body;
   
+      // Find account by email
       const account = await Account.findOne({ email });
-      
+  
+      // Check if account exists
       if (!account) return res.status(400).json({ error: "Invalid email or password!" });
   
+      // Check if the account is verified
+      if (!account.isVerified) {
+        return res.status(400).json({
+          error: "Your account is not verified. Please check your email to verify your account."
+        });
+      }
+  
+      // Check if the password is correct
       const isPasswordCorrect = await bcrypt.compare(password, account.password);
       if (!isPasswordCorrect) return res.status(400).json({ error: "Invalid email or password!" });
   
-      const{accessToken, refreshToken} = await generateTokens(account._id, account.email, res)
-        await storeRefreshToken(account._id, refreshToken);
+      // Generate tokens
+      const { accessToken, refreshToken } = await generateTokens(account._id, account.email, res);
+      
+      // Store refresh token
+      await storeRefreshToken(account._id, refreshToken);
   
-      const user = await User.findOne({ accountId: account._id })
+      // Find the associated user
+      const user = await User.findOne({ accountId: account._id });
       if (!user) return res.status(404).json({ error: "User not found!" });
   
+      // Send response
       res.status(200).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         userType: account.userType,
+        accessToken,
+        refreshToken, // You can send tokens if needed
       });
     } catch (error) {
       console.error("Error in login controller", error.message);
       return res.status(500).json({ error: "Internal Server Error!" });
     }
+};
+  
+
+export const verifyEmail = async (req, res) => {
+    const { code } = req.body; // Ensure 'code' is coming from req.body
+  
+    try {
+      // Find the account with the matching verificationToken
+      const account = await Account.findOne({
+        verificationToken: code,
+        verificationTokenExpireAt: { $gt: Date.now() }, // Use Date.now() correctly
+      });
+  
+      // If no matching account is found
+      if (!account) {
+        return res.status(400).json({ success: false, message: "Invalid or expired verification code!" });
+      }
+  
+      // Check if the account is already verified
+      if (account.isVerified) {
+        return res.status(400).json({ success: false, message: "Your account is already verified." });
+      }
+  
+      // Find the associated user by accountId
+      const user = await User.findOne({ accountId: account._id }); // Match User based on accountId
+  
+      // If user is not found
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found!" });
+      }
+  
+      // Mark account as verified and remove tokens
+      account.isVerified = true;
+      account.verificationToken = undefined;
+      account.verificationTokenExpireAt = undefined;
+  
+      await account.save(); // Save the updated account
+  
+      // Send the welcome email
+      await sendWelcomeEmail(account.email, user.name);
+  
+      // Send response
+      res.status(200).json({ success: true, message: "Email verified successfully!" });
+    } catch (error) {
+      console.error("Error in verifyEmail controller: ", error.message);
+      res.status(500).json({ error: "Internal Server Error!" });
+    }
   };
+  
 
 export const logout = async (req, res) => {
     try {
