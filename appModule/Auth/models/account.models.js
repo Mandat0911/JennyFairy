@@ -16,6 +16,21 @@ const accountSchema = new mongoose.Schema(
       min: [6, "Password must be at least 6 character long!"],
     },
 
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
+
+    isVerified: {
+      type: true,
+      default: false,
+    },
+
+    resetPasswordToken: String,
+    resetPasswordExpireAt: String,
+    verificationToken: String,
+    verificationTokenExpireAt: String,
+    
     userType: {
       type: String,
       enum: ["USER", "MANAGER", "ADMIN"], // Restricts values to these options

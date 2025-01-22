@@ -4,6 +4,7 @@ import Account from "../models/account.models.js";
 import {generateTokens} from "../../utils/generateToken.js"
 import { redis, storeRefreshToken } from "../../../backend/lib/redis/redis.js";
 import  jwt  from "jsonwebtoken";
+import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import bcrypt from 'bcryptjs';
 
 
@@ -30,10 +31,14 @@ export const signup = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
+        const verificationToken = generateVerificationToken(6);
+        console.log("verificationCode: ", verificationToken);
 
         const newAccount = new Account({
             email,
             password: hashedPassword,
+            verificationToken,
+            verificationTokenExpireAt: new Date(Date.now() + 60 * 60 * 1000),
             userType: "USER",
         });
         await newAccount.save();
@@ -53,6 +58,7 @@ export const signup = async (req, res) => {
             _id: newUser._id,
             name: newUser.name,
             email: newUser.email,
+            verificationToken: newAccount.verificationToken,
             userType: newAccount.userType
         })
 
