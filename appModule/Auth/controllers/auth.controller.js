@@ -6,6 +6,7 @@ import { redis, storeRefreshToken } from "../../../backend/lib/redis/redis.js";
 import  jwt  from "jsonwebtoken";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import bcrypt from 'bcryptjs';
+import { sendVerificationEmail } from "../../utils/mail/emailSetup.js";
 
 
 export const signup = async (req, res) => {
@@ -38,10 +39,12 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
             verificationToken,
-            verificationTokenExpireAt: new Date(Date.now() + 60 * 60 * 1000),
+            verificationTokenExpireAt: new Date(Date.now() + 60 * 60 * 1000), // 6hrs
             userType: "USER",
         });
         await newAccount.save();
+        await sendVerificationEmail(email, verificationToken);
+        console.log("email sent")
 
         const newUser = new User({
             name: name,
@@ -55,11 +58,13 @@ export const signup = async (req, res) => {
         await storeRefreshToken(newAccount._id, refreshToken);
 
         res.status(201).json({
-            _id: newUser._id,
-            name: newUser.name,
-            email: newUser.email,
+            ...newUser._doc,
             verificationToken: newAccount.verificationToken,
-            userType: newAccount.userType
+            isVerified: newAccount.isVerified,
+            verificationTokenExpireAt: newAccount.verificationTokenExpireAt,
+            lastLogin: newAccount.lastLogin,
+            userType: newAccount.userType,
+            password: undefined,
         })
 
     } catch (error) {

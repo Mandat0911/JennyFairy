@@ -22,7 +22,7 @@ const accountSchema = new mongoose.Schema(
     },
 
     isVerified: {
-      type: true,
+      type: Boolean,
       default: false,
     },
 
