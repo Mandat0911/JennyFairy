@@ -6,8 +6,11 @@ import { redis, storeRefreshToken } from "../../../backend/lib/redis/redis.js";
 import  jwt  from "jsonwebtoken";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import bcrypt from 'bcryptjs';
-import { sendVerificationEmail, sendWelcomeEmail } from "../../utils/mail/emailSetup.js";
+import crypto from "crypto";
+import { sendResetPasswordEmail, sendResetPasswordSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../../utils/mail/emailSetup.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 
 export const signup = async (req, res) => {
     try {
@@ -103,6 +106,16 @@ export const login = async (req, res) => {
       // Find the associated user
       const user = await User.findOne({ accountId: account._id });
       if (!user) return res.status(404).json({ error: "User not found!" });
+
+      await Account.updateOne(
+        {_id: account._id},
+        {
+            $set: {
+                lastLogin: new Date(),
+            }
+        }
+    )
+      
   
       // Send response
       res.status(200).json({
@@ -110,8 +123,7 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         userType: account.userType,
-        accessToken,
-        refreshToken, // You can send tokens if needed
+        lastLogin: account.lastLogin,
       });
     } catch (error) {
       console.error("Error in login controller", error.message);
@@ -148,12 +160,18 @@ export const verifyEmail = async (req, res) => {
         return res.status(404).json({ success: false, message: "User not found!" });
       }
   
-      // Mark account as verified and remove tokens
-      account.isVerified = true;
-      account.verificationToken = undefined;
-      account.verificationTokenExpireAt = undefined;
-  
-      await account.save(); // Save the updated account
+      await Account.updateOne(
+        {_id: account._id},
+        {
+            $set: {
+                isVerified: true,
+            },
+            $unset:{
+                verificationToken:"",
+                verificationTokenExpireAt:"",
+            }
+        }
+    )
   
       // Send the welcome email
       await sendWelcomeEmail(account.email, user.name);
@@ -164,7 +182,86 @@ export const verifyEmail = async (req, res) => {
       console.error("Error in verifyEmail controller: ", error.message);
       res.status(500).json({ error: "Internal Server Error!" });
     }
-  };
+};
+
+export const forgotPassword = async (req, res) => {
+
+    const {email} = req.body;
+
+    try {
+        const account = await Account.findOne({email});
+
+        if(!account){
+            return res.status(400).json({success: false, message: "Account not found!"});
+        }
+        const user = await User.findOne({ accountId: account._id }); // Match User based on accountId
+
+        // Using Crypto to generate short-lived token
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour lived
+
+        await Account.updateOne(
+            {_id: account._id},
+            {
+                $set: {
+                    resetPasswordToken: resetToken,
+                    resetPasswordExpireAt: resetTokenExpiresAt,
+                },
+            }
+        )
+        await sendResetPasswordEmail(account.email, user.name, resetToken);
+
+        res.status(200).json({success: true, message:"Password reset link sent to your email!"});
+
+    } catch (error) {
+        console.error("Error in forgotPassword controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    try {
+        const {token} = req.params;
+        const {password} = req.body;
+
+        const account = await Account.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpireAt: {$gt: Date.now()},
+        });
+
+        if(!account){
+            return res.status(400).json({ success: false, message: "Invalid or expired verification code!" });
+        }
+
+        const user = await User.findOne({accountId: account._id});
+          // If user is not found
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found!" });
+        }
+        
+        //update new hash password
+        const hashedPassword = await hashPassword(password);
+        await Account.updateOne(
+            {_id: account._id},
+            {
+                $set: {
+                    password: hashedPassword,
+                },
+                $unset:{
+                    resetPasswordToken:"",
+                    resetPasswordExpireAt:"",
+                }
+            }
+        )
+          
+        await sendResetPasswordSuccessEmail(account.email, user.name);
+
+        res.status(200).json({success: true, message:"Password reset successful"});
+    } catch (error) {
+        console.error("Error in resetPassword controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
   
 
 export const logout = async (req, res) => {
@@ -229,6 +326,27 @@ export const refreshToken = async (req, res) => {
         res.status(200).json({ message: "Access token refreshed!" });
     } catch (error) {
         console.error("Error in refreshToken controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
+
+
+export const getMe = async (req, res) => {
+    try {
+        let user, model
+        
+        if(req.user && req.user._id){
+            model = User;
+            user = await model.findById(req.user._id).select("-password")
+        }
+
+        if(!user){
+            res.status(404).json({ error: "User not found!" });
+        }
+
+        return res.json(user)
+    } catch (error) {
+        console.error("Error in getMe controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
