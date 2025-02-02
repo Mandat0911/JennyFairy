@@ -17,10 +17,11 @@
     "cookie-parser": "^1.4.7",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
+    "e-commerce": "file:",
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.3",
+    "mongoose": "^8.9.5",
     "nodemailer": "^6.9.16",
     "stripe": "^17.5.0"
   },
