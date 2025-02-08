@@ -15,6 +15,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "e-commerce": "file:",
@@ -23,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "nodemailer": "^6.9.16",
+    "react-hot-toast": "^2.5.1",
     "stripe": "^17.5.0"
   },
   "devDependencies": {

@@ -1,19 +1,28 @@
 import React, { useState } from 'react'
 import {motion} from'framer-motion'
-import { Lock, Mail, User } from 'lucide-react'
+import { Loader, Lock, Mail, User } from 'lucide-react'
 import Input from '../Components/Input'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PasswordStrengthMeter from '../Components/PasswordStrengthMeter'
+import { useAuthStore } from '../store/authStore'
 const SignUpPage = () => {
-
-  const handleSignUp = (e) => {
-    e.preventDefault();
-  }
-
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  //const [confirmPassword, setConfirmPassword] = useState('')
+  const navigate = useNavigate()
+
+  const{signUp, error, isLoading} = useAuthStore()
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    try {
+      await signUp(email, password, fullName)
+      navigate('/verify-email')
+    } catch (error) {
+      console.log(error)
+  }
+}
 
   return (
     <motion.div 
@@ -38,6 +47,7 @@ const SignUpPage = () => {
         value={password} onChange={(e) => setPassword(e.target.value)} required/>
                 {/* <Input icon={Lock} type='text' placeholder='Confirm Password'
         value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/> */}
+        {error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
 
         <PasswordStrengthMeter password={password}/>
 
@@ -47,8 +57,9 @@ const SignUpPage = () => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         type='submit'
+        disabled={isLoading}
       >
-          Sign Up
+          {isLoading ? <Loader className='animate-spin mx-auto' size={24}/> : 'Sign Up'}
         </motion.button>
         </form>
       </div>
@@ -58,8 +69,6 @@ const SignUpPage = () => {
           <Link to='/login' className='text-green-500 hover:underline'>Login</Link>
         </p>
       </div>
-      
-
     </motion.div>
   )
 }

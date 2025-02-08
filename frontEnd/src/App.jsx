@@ -4,6 +4,8 @@ import FloatingShape from './Components/FloatingShape.jsx'
 import { Routes, Route } from 'react-router-dom'
 import SignUpPage from './Pages/SignUpPage'
 import LoginPage from './Pages/LoginPage'
+import EmailVerificationPage from './Pages/EmailVerificationPage.jsx'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -17,7 +19,9 @@ function App() {
         <Route path="/" element={"Home"} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
       </Routes>
+      <Toaster />
     </div>
   )
 }

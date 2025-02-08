@@ -25,12 +25,12 @@ const PasswordCriteria = ({password}) => {
 
 
 const PasswordStrengthMeter = ({ password }) => {
-	const getStrength = (pass) => {
+	const getStrength = (password) => {
 		let strength = 0;
-		if (pass.length >= 6) strength++;
-		if (pass.match(/[a-z]/) && pass.match(/[A-Z]/)) strength++;
-		if (pass.match(/\d/)) strength++;
-		if (pass.match(/[^a-zA-Z\d]/)) strength++;
+		if (password.length >= 6) strength++;
+		if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+		if (password.match(/\d/)) strength++;
+		if (password.match(/[^a-zA-Z\d]/)) strength++;
 		return strength;
 	};
 	const strength = getStrength(password);
@@ -38,11 +38,11 @@ const PasswordStrengthMeter = ({ password }) => {
     const getColor = (strength) => {
         switch (strength) {
             case 1:
-                return "bg-yellow-500";
+                return "bg-red-500";
             case 2:
-                return "bg-blue-500";
+                return "bg-yellow-500";
             case 3:
-                return "bg-green-500";
+                return "bg-yellow-500";
             case 4:
                 return "bg-green-500";
             default:
@@ -52,8 +52,6 @@ const PasswordStrengthMeter = ({ password }) => {
 
     const getStrengthText = (strength) => {
         switch (strength) {
-            case 0:
-                return "Very Weak";
             case 1:
                 return "Weak";
             case 2:
@@ -74,8 +72,8 @@ const PasswordStrengthMeter = ({ password }) => {
 			</div>
 
         <div className='flex space-x-1'>
-            {[...Array(5)].map((_, idx) => (
-                <div key={idx} className={`h-1 w-1/4 rounded-full transition duration-300 ${idx <= strength ? getColor(strength) : 'bg-gray-300'}`}></div>
+            {[...Array(4)].map((_, idx) => (
+                <div key={idx} className={`h-1 w-1/4 rounded-full transition duration-300 ${idx < strength ? getColor(strength) : 'bg-gray-300'}`}></div>
             ))}
         </div>
         <PasswordCriteria password={password}/>
