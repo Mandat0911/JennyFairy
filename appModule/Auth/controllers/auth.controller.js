@@ -115,15 +115,23 @@ export const login = async (req, res) => {
             }
         }
     )
-      
-  
       // Send response
       res.status(200).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        userType: account.userType,
-        lastLogin: account.lastLogin,
+        user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+        },
+        account: {
+            _id: account._id,
+            email: account.email,
+            isVerified: account.isVerified,
+            verificationToken: account.verificationToken,
+            verificationTokenExpireAt: account.verificationTokenExpireAt,
+            lastLogin: account.lastLogin,
+            userType: account.userType,
+        }
+        
       });
     } catch (error) {
       console.error("Error in login controller", error.message);
@@ -330,24 +338,30 @@ export const refreshToken = async (req, res) => {
     }
 };
 
-
 export const getMe = async (req, res) => {
     try {
-        let user, model
-        
-        if(req.user && req.user._id){
-            model = User;
-            user = await model.findById(req.user._id).select("-password")
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: "Unauthorized access!" });
         }
 
-        if(!user){
-            res.status(404).json({ error: "User not found!" });
+        // Fetch user excluding password
+        const user = await User.findById(req.user._id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found!" });
         }
 
-        return res.json(user)
+        // Populate the accountId field
+        await user.populate("accountId", "-password");
+
+        return res.json({ user, account: user.accountId }); // Access directly from populated data
     } catch (error) {
-        console.error("Error in getMe controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        console.error("Error in getMe controller:", error.message);
+        return res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
+
+
+
 
