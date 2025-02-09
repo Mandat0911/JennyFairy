@@ -13,9 +13,9 @@ const PasswordCriteria = ({password}) => {
         <div className='mt-2 space-y-1'>
             {criteria.map((criterion, idx) => (
                 <div key={idx} className='flex items-center'>
-                    {criterion.passed ? (<Check className='size-4 text-green-500 mr-2' />) : (<X className='size-4 text-gray-500 mr-2' />)}
+                    {criterion.passed ? (<Check className='size-4 text-green-500 mr-2' />) : (<X className='size-4 text-white mr-2' />)}
                     
-                    <span className={criterion.passed ? 'text-green-500' : "text-gray-400"}>{criterion.label}</span>
+                    <span className={criterion.passed ? 'text-green-500' : "text-white"}>{criterion.label}</span>
                 </div>
             ))}
 
@@ -67,13 +67,13 @@ const PasswordStrengthMeter = ({ password }) => {
   return (
     <div className='mt-2'>
         <div className='flex justify-between items-center mb-1'>
-				<span className='text-xs text-gray-400'>Password strength</span>
-				<span className='text-xs text-gray-400'>{getStrengthText(strength)}</span>
+				<span className='text-xs text-white'>Password strength</span>
+				<span className='text-xs text-white'>{getStrengthText(strength)}</span>
 			</div>
 
         <div className='flex space-x-1'>
             {[...Array(4)].map((_, idx) => (
-                <div key={idx} className={`h-1 w-1/4 rounded-full transition duration-300 ${idx < strength ? getColor(strength) : 'bg-gray-300'}`}></div>
+                <div key={idx} className={`h-1 w-1/4 rounded-full transition duration-300 ${idx < strength ? getColor(strength) : 'bg-white'}`}></div>
             ))}
         </div>
         <PasswordCriteria password={password}/>
