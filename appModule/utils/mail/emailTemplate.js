@@ -119,7 +119,7 @@ export const RESET_PASSWORD_EMAIL_TEMPLATE = `
 
     <!-- Reset Link -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="{{resetLink}}" 
+      <a href="{resetLink}" 
          style="text-decoration: none; background-color: #FF5722; color: white; padding: 10px 20px; font-size: 16px; border-radius: 5px;">
         Reset Your Password
       </a>

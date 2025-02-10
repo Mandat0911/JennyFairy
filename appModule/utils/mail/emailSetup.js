@@ -1,5 +1,8 @@
 import { PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplate.js";
 import {transporter} from "./email.Config.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const sendVerificationEmail = async (userEmail, verificationToken) => {
     try {
@@ -49,7 +52,7 @@ export const sendWelcomeEmail = async (userEmail, userName) => {
 
 export const sendResetPasswordEmail = async (userEmail, userName, resetToken) => {
   const emailContent = RESET_PASSWORD_EMAIL_TEMPLATE.replace("{{userName}}", userName)
-                                                            .replace("{{resetLink}}", `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+                                                            .replace("{resetLink}", `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
 
   try {
     const info = await transporter.sendMail({
@@ -60,6 +63,7 @@ export const sendResetPasswordEmail = async (userEmail, userName, resetToken) =>
     });
 
     console.log("Password reset email sent successfully!", info);
+
   } catch (error) {
     console.error("Error sending password reset success email:", error.message);
     throw new Error("Failed to send password reset success email.");
