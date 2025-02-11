@@ -7,9 +7,14 @@ import { useAuthStore } from "../Store/authStore";
 const EmailVerificationPage = () => {
 	const [code, setCode] = useState(["", "", "", "", "", ""]);
 	const inputRefs = useRef([]);
+	const [resendDisabled, setResendDisabled] = useState(false);
+	const [isResending, setIsResending] = useState(false);
+	const [isVerifying, setIsVerifying] = useState(false);
+
 	const navigate = useNavigate();
 
-    const{verifyEmail, error, isLoading} = useAuthStore()
+    const{verifyEmail, checkAuth, resendVerificationEmail, error} = useAuthStore()
+	const { user } = useAuthStore.getState(); // Get user email if stored
 
 	const handleChange = (index, value) => {
 		const newCode = [...code];
@@ -46,14 +51,48 @@ const EmailVerificationPage = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const verificationCode = code.join("");
+		setIsVerifying(true);
+	
 		try {
 			await verifyEmail(verificationCode);
-			navigate("/");
-			toast.success("Email verified successfully");
+			await checkAuth(); // Refresh authentication state
+	
+			// Get updated authentication state
+			const { isAuthenticated, account } = useAuthStore.getState();
+	
+			if (isAuthenticated && account?.isVerified) {
+				toast.success("Email verified successfully");
+				setTimeout(() => navigate("/"), 100);
+			} else {
+				toast.error("Verification successful, but account status not updated. Try reloading.");
+			}
 		} catch (error) {
-			console.log(error);
+			toast.error(error.response?.data?.message || "Error verifying email");
+		}finally {
+			setIsVerifying(false);
 		}
 	};
+
+	const handleResendCode = async () => {
+		if (!user?.email) {
+			toast.error("No email found. Please sign up again.");
+			return;
+		}
+	
+		try {
+			setIsResending(true); // Set separate loading state
+			await resendVerificationEmail(user.email);
+			toast.success("Verification code resent!");
+			setResendDisabled(true);
+			setTimeout(() => setResendDisabled(false), 30000);
+		} catch (error) {
+			toast.error(error.response?.data?.message || "Error resending code");
+		} finally {
+			setIsResending(false); // Reset loading state
+		}
+	};
+	
+	
 
 	// Auto submit when all fields are filled
 	useEffect(() => {
@@ -90,17 +129,35 @@ const EmailVerificationPage = () => {
 							/>
 						))}
 					</div>
+				
 					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
+					
 					<motion.button
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 						type='submit'
-						disabled={isLoading || code.some((digit) => !digit)}
+						disabled={isVerifying || code.some((digit) => !digit)}
 						className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-pink-300 to-rose-400 text-white font-bold rounded-lg
 								shadow-lg hover:from-pink-500 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
 								focus:ring-offset-gray-500 transition duration-200'
 					>
-						{isLoading ? "Verifying..." : "Verify Email"}
+						{isVerifying ? "Verifying..." : "Verify Email"}
+					</motion.button>
+
+					{/* Resend verification email button */}
+					<motion.button
+						whileHover={{ scale: resendDisabled || isResending ? 1.0 : 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						type="button"
+						onClick={handleResendCode}
+						disabled={resendDisabled || isResending}
+						className={`mt-3 w-full py-3 px-4 text-white font-bold rounded-lg shadow-lg transition duration-200 ${
+							resendDisabled || isResending
+								? "bg-gray-400 cursor-not-allowed"
+								: "bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 focus:ring-2 focus:ring-pink-500"
+						}`}
+					>
+						{isResending ? "Resending..." : resendDisabled ? "Resend in 30s..." : "Resend Code"}
 					</motion.button>
 				</form>
 			</motion.div>

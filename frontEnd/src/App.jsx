@@ -14,7 +14,7 @@ import ResetPasswordPage from './Pages/ResetPasswordPage.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
-
+    console.log(isAuthenticated, account, isCheckingAuth);
     if (isCheckingAuth) return <LoadingSpinner />;
     if (isAuthenticated && account?.isVerified) return <Navigate to="/" replace />;
     
@@ -23,6 +23,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
+    console.log(isAuthenticated, account, isCheckingAuth);
 
     if (isCheckingAuth) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -47,7 +48,11 @@ function App() {
             <FloatingShape color="bg-white" size="w-32 h-32" top="40%" left="-10%" delay={2} />
             
             <Routes>
-                <Route path="/" element={<ProtectedRoute><DashBoardPage /></ProtectedRoute>} />
+                <Route path="/" element={
+                     <ProtectedRoute>
+                        <DashBoardPage />
+                         </ProtectedRoute>
+                        } />
                 <Route path="/signup" element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
                 <Route path="/login" element={<RedirectAuthenticatedUser><LoginPage /></RedirectAuthenticatedUser>} />
                 <Route path="/forgot-password" element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />

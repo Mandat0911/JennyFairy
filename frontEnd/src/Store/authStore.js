@@ -55,14 +55,18 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`${API_URL}/verify-email`, { code });
-            const user = response.data;
-            set({ user: user, isAuthenticated: true, isLoading: false });
-            return response.data;
+            const { user, account } = response.data;
+    
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("account", JSON.stringify(account));
+    
+            set({ user, account, isAuthenticated: true, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.message || "Error verifying email", isLoading: false });
             throw error;
         }
     },
+    
 
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
@@ -76,7 +80,7 @@ export const useAuthStore = create((set) => ({
 
             set({
                 user,
-                account: account || null,
+                account: account,
                 isAuthenticated: true,
                 isCheckingAuth: false
             });
@@ -117,6 +121,17 @@ export const useAuthStore = create((set) => ({
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.error || "Error resetting password", isLoading: false });
+            throw error;
+        }
+    },
+    
+    resendVerificationEmail: async (email) => {
+        set({ isLoading: true, error: null, message: null });
+        try {
+            const response = await axios.post(`${API_URL}/resend-verification`, { email });
+            set({ message: response.data.message, isLoading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.error || "Error resending email", isLoading: false });
             throw error;
         }
     }

@@ -4,13 +4,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const sendVerificationEmail = async (userEmail, verificationToken) => {
+export const sendVerificationEmail = async (userEmail, userName , verificationToken) => {
     try {
       // Generate verification link
     //   const verificationLink = `https://yourdomain.com/verify-email?token=${verificationToken}`;
   
       // Replace placeholders in the email template
       const htmlContent = VERIFICATION_EMAIL_TEMPLATE.replace("{{verificationToken}}", verificationToken)
+                                                     .replace("{{userName}}", userName)
+                                                     .replace("{{verificationLink}}", `${process.env.CLIENT_URL}/verify-email`)
         // .replace("{{verificationLink}}", verificationLink);
   
       // Send email using the configured transporter
@@ -32,7 +34,8 @@ export const sendVerificationEmail = async (userEmail, verificationToken) => {
 };
 
 export const sendWelcomeEmail = async (userEmail, userName) => {
-  const emailContent = WELCOME_EMAIL_TEMPLATE.replace("{{userName}}", userName);
+  const emailContent = WELCOME_EMAIL_TEMPLATE.replace("{{userName}}", userName)
+                                             .replace("{{ShoppingLink}}", `${process.env.CLIENT_URL}`)
 
   try {
     const info = await transporter.sendMail({
@@ -71,7 +74,8 @@ export const sendResetPasswordEmail = async (userEmail, userName, resetToken) =>
 };
 
 export const sendResetPasswordSuccessEmail = async (userEmail, userName) => {
-  const emailContent = PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE.replace("{{userName}}", userName);
+  const emailContent = PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE.replace("{{userName}}", userName)
+                                                            .replace("{{resetLink}}", `${process.env.CLIENT_URL}/login`);
 
   try {
     const info = await transporter.sendMail({

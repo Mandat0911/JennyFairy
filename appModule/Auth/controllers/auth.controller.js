@@ -37,7 +37,7 @@ export const signup = async (req, res) => {
         const hashedPassword = await hashPassword(password);
         const verificationToken = generateVerificationToken(6);
 
-
+  
         const newAccount = new Account({
             email,
             password: hashedPassword,
@@ -46,7 +46,7 @@ export const signup = async (req, res) => {
             userType: "USER",
         });
         await newAccount.save();
-        await sendVerificationEmail(email, verificationToken);
+        
 
         const newUser = new User({
             name: name,
@@ -54,7 +54,7 @@ export const signup = async (req, res) => {
             accountId: newAccount._id,
         });
         await newUser.save();
-
+        await sendVerificationEmail(email, newUser.name ,verificationToken);
         // authenticate user
         const{accessToken, refreshToken} = await generateTokens(newAccount._id, email, res)
         await storeRefreshToken(newAccount._id, refreshToken);
@@ -191,6 +191,56 @@ export const verifyEmail = async (req, res) => {
       res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
+
+export const resendVerificationEmail = async (req, res) => {
+    const { email } = req.body; // Ensure the email is provided in the request body
+
+    try {
+        // Find the account by email
+        const account = await Account.findOne({ email });
+
+        if (!account) {
+            return res.status(404).json({ success: false, message: "Account not found!" });
+        }
+
+        // Check if the account is already verified
+        if (account.isVerified) {
+            return res.status(400).json({ success: false, message: "Your account is already verified." });
+        }
+
+        // Generate a new verification token and expiration time
+        const verificationToken = generateVerificationToken(6);
+        const verificationTokenExpireAt = Date.now() + 10 * 60 * 1000; // Expires in 10 minutes
+
+        // Update account with the new verification token
+        await Account.updateOne(
+            { _id: account._id },
+            {
+                $set: {
+                    verificationToken: verificationToken,
+                    verificationTokenExpireAt: verificationTokenExpireAt,
+                }
+            }
+        );
+
+        // Find the associated user
+        const user = await User.findOne({ accountId: account._id });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found!" });
+        }
+
+        // Send the verification email
+        await sendVerificationEmail(account.email, user.name, verificationToken);
+
+        res.status(200).json({ success: true, message: "Verification email sent successfully!" });
+    } catch (error) {
+        console.error("Error in resendVerificationEmail controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
+
 
 export const forgotPassword = async (req, res) => {
 
