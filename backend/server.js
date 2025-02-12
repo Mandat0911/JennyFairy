@@ -22,12 +22,6 @@ app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
 
 
-
-
-
-
-
-
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
   console.log("Database connected successfully!");

@@ -32,19 +32,18 @@ export const protectRoute =
                 req.user = user;
             }
 
-            // if(account.userType === "MANAGER") {
-            //     const user = await User.findOne({accountId: account.id}).select("-password");
-            //     req.user = user;
-            // }
+            if(account.userType === "MANAGER") {
+                const user = await User.findOne({accountId: account.id}).select("-password");
+                req.user = user;
+            }
 
-            // if(account.userType === "ADMIN") {
-            //     const user = await User.findOne({accountId: account.id}).select("-password");
-            //     req.user = user;
-            // }
+            if(account.userType === "ADMIN") {
+                const user = await User.findOne({accountId: account.id}).select("-password");
+                req.user = user;
+            }
             next();
         } catch (error) {
             console.error("Error in protectRout middleware: ", error.message);
             return res.status(500).json({error: "Internal Server Error!"});
         }
-    
-}
+};
