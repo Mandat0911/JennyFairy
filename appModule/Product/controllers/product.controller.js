@@ -73,9 +73,9 @@ export const createProduct = async(req, res) => {
 
 export const deleteProduct = async(req, res) => {
     try {
-        const productId = req.params;
+        const {id} = req.params;
 
-        const product = await Product.findById(productId);
+        const product = await Product.findById(id);
 
         if(!product){
             return res.status(404).json({message: "Product not found!"});
@@ -97,5 +97,75 @@ export const deleteProduct = async(req, res) => {
     } catch (error) {
         console.error("Error in deleteProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
+export const getRecommendedProduct = async(req, res) => {
+    try {
+        const recommendedProducts = await Product.aggregate([
+            {
+                $sample: {size: 4}
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    img: 1
+                }
+            }
+        ]);
+
+        res.json({recommendedProducts});
+    } catch (error) {
+        console.error("Error in getRecommendedProduct controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
+export const getProductsByCategory = async(req, res) => {
+    try {
+        const {category} = req.params;
+
+        const products = await Product.find({category});
+        res.json({products});
+    } catch (error) {
+        console.error("Error in getProductsByCategory controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
+export const toggleFeaturedProduct = async(req, res) => {
+    try {
+        const {id} = req.params;
+        const product = await Product.findById(id);
+
+        if  (product) {
+            product.isFeatured = !product.isFeatured;
+            await product.save();
+
+            // Clear the redis cache
+            await updateFeaturedProductCache();
+
+            return res.json({message: "Product updated successfully!"});
+        }
+    } catch (error) {
+        console.error("Error in toggleFeaturedProduct controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
+async function updateFeaturedProductCache () {
+    try {
+        const featuredProducts = await Product.find({isFeatured: true}).lean();
+
+        if(!featuredProducts.length){
+            return;
+        }
+
+        await redis.set("feature_products", JSON.stringify(featuredProducts), "EX", 3600);
+    } catch (error) {
+        console.error("Error in updateFeaturedProductCache controller: ", error.message);
     }
 }
