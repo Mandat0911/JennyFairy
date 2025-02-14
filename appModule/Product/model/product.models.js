@@ -19,9 +19,14 @@ const productSchema = new mongoose.Schema({
 
   img: {
     type: [String],
-    default: ['default-image.jpg'], // Default image if none provided
-    required: [true, "Image is required!"],
-  },
+    default: ["default-image.jpg"], // Use an array as default
+    validate: {
+        validator: function (value) {
+            return value.length > 0; // Ensures at least one image is present
+        },
+        message: "At least one image is required!",
+    },
+},
 
   category: {
     type: String,

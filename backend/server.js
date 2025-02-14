@@ -6,13 +6,14 @@ import cors from "cors";
 
 import authRoute from "../appModule/Auth/routes/auth.routes.js"
 import productRoute from "../appModule/Product/routes/product.routes.js"
+import cartRoute from "../appModule/cart/routes/cart.routes.js"
 
 
 const app = express();
 
 dotenv.config();
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(express.json({ limit: "5mb" })); // This middleware parses req.body for JSON data
+app.use(express.json({ limit: "10mb" })); // This middleware parses req.body for JSON data
 app.use(express.urlencoded({ extended: true })); // This parses application/x-www-form-urlencoded data
 app.use(cookieParser());
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 // API auth
 app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
+app.use("/api/cart/", cartRoute);
 
 
 const PORT = process.env.PORT || 5002;
