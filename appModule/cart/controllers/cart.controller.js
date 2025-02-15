@@ -1,3 +1,29 @@
+import Product from "../../Product/model/product.models.js";
+
+export const getCartProducts = async(req, res) => {
+
+    try {
+        const user = req.user;
+        // Find all product id match user's cartItems array
+        const products = await Product.find({ _id: { $in: req.user.cartItems.map((item)  => item.product) } });
+        console.log({"products: ": products});
+
+        // Add quantity for each product
+        const cartItems = products.map((product) => {
+            // Find the product in cartItems that matches the current product
+            const item = req.user.cartItems.find((cartItem) => cartItem.product.toString() === product.id.toString());
+
+            //Return the product details along with its quantity
+            return {...product.toJSON(), quantity: item.quantity};
+        });
+
+        res.json({cartItems})
+    } catch (error) {
+        console.error("Error in getCartProducts controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
 export const addToCart = async(req, res) => {
     try {
         const {productId} = req.body;
@@ -71,3 +97,26 @@ export const removeAllItem = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error!" });
     }
 }
+
+export const updateQuantity = async (req, res) => {
+    try {
+        const {id: productId} = req.params;
+        const {quantity} = req.body;
+        const user = req.user;
+
+        const itemIndex = user.cartItems.findIndex((item) => item.product.toString === productId);
+        if (itemIndex !== -1) {
+            if (quantity === 0) {
+                user.cartItems.splice(itemIndex, 1);
+            }else{
+                user.cartItems[itemIndex].quantity = quantity;
+            }
+            await user.save();
+            return res.json(user.cartItems);
+        }
+    } catch (error) {
+        console.error("Error in updateQuantity controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
