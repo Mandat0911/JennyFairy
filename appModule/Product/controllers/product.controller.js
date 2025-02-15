@@ -1,6 +1,10 @@
 import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
 import { getCachedRecommendedProducts, updateCachedRecommendedProducts, updateFeaturedProductCache } from "../../../backend/lib/redis/redis.config.js";
 import { redis } from "../../../backend/lib/redis/redis.js";
+import sharp from "sharp";
+import fs from "fs"
+import path from "path";
+import {v4 as uuidv4} from "uuid"
 import Product from "../model/product.models.js";
 
 export const getAllProduct = async(req, res) => {
@@ -58,7 +62,14 @@ export const createProduct = async (req, res) => {
         const uploadResults = await Promise.allSettled(
             img.map(async (image) => {
                 try {
-                    const response = await cloudinary.uploader.upload(image, { folder: "products" });
+                    const response = await cloudinary.uploader.upload(image, {
+                        folder: "products",
+                        quality: "auto", // Automatically adjusts compression
+                        fetch_format: "webp", // Converts to optimal format (WebP, etc.)
+                        width: 800, // Resize to limit large uploads
+                        height: 800,
+                        crop: "limit",
+                    });
                     return { status: "fulfilled", url: response.secure_url };
                 } catch (error) {
                     console.error("Upload error:", error.message);
@@ -93,9 +104,9 @@ export const createProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id: productId } = req.params;
         
-        const product = await Product.findById(id);
+        const product = await Product.findById(productId);
         
         if (!product) {
             return res.status(404).json({ message: "Product not found!" });

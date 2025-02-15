@@ -8,7 +8,7 @@ router.get("/", protectRoute(["USER","MANAGER", "ADMIN"]), getCartProducts)
 router.post("/addItem", protectRoute(["USER","MANAGER", "ADMIN"]), addToCart);
 router.post("/removeItem", protectRoute(["USER","MANAGER", "ADMIN"]), removeCartItem);
 router.post("/removeAllItem", protectRoute(["USER","MANAGER", "ADMIN"]), removeAllItem);
-router.patch("/:id", protectRoute(["USER","MANAGER", "ADMIN"]), updateQuantity);
+router.patch("/update-quantity/:id", protectRoute(["USER","MANAGER", "ADMIN"]), updateQuantity);
 
 
 export default router;
