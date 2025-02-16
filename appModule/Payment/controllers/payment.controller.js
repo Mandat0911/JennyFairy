@@ -1,200 +1,69 @@
-import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
-import { getCachedRecommendedProducts, updateCachedRecommendedProducts, updateFeaturedProductCache } from "../../../backend/lib/redis/redis.config.js";
-import { redis } from "../../../backend/lib/redis/redis.js";
-import sharp from "sharp";
-import fs from "fs"
-import path from "path";
-import {v4 as uuidv4} from "uuid"
-import Product from "../model/product.models.js";
+import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
+import { stripe } from "../../../backend/lib/stripe/stripe.js";
+import Coupon from "../../Coupons/model/coupon.models.js";
+import dotenv from "dotenv";
 
-export const getAllProduct = async(req, res) => {
+dotenv.config();
+
+export const createCheckoutSession = async (req, res) => {
     try {
-        const userRole = req.account?.userType;
-    
-        if(userRole !== "ADMIN"){
-            console.log(userRole);
-            return res.status(403).json({message: "Access denied - Admin only"})
+        const { products, couponCode } = req.body;
+        const userId = req.user.id;
+        let totalAmount = 0;
+        let coupon = null;
+        const currentDate = new Date();
+
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ error: "Invalid or empty products array" });
         }
 
-        const products = await Product.find({});
-        res.json({products})
-    } catch (error) {
-        console.error("Error in getAllProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-}
+        const lineItems = products.map((product) => {
+            const amount = Math.round(product.price * 100);
+            totalAmount += amount * product.quantity;
 
-export const getFeaturedProduct = async(req, res) => {
-    try {
-        // Check redis cache first
-        let featuredProducts = await redis.get("featured_products");
-        if(featuredProducts){
-            return res.json(JSON.parse(featuredProducts));
-        }
-
-        // If featured products not in redis, fetch from MongoDB
-        featuredProducts = await Product.find({isFeatured: true}).lean();
-
-        if(!featuredProducts.length){
-            return res.status(404).json({message: "No featured product"})
-        }
-
-        // if have featured product then store in redis for quick access
-        await redis.set("feature_products", JSON.stringify(featuredProducts), "EX", 3600);
-
-        return res.json(featuredProducts);
-
-    } catch (error) {
-        console.error("Error in getFeaturedProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-}
-
-export const createProduct = async (req, res) => {
-    try {
-        const { name, description, price, img, category } = req.body;
-        let imageUrls = [];
-
-        if (!img || !Array.isArray(img) || img.length === 0) {
-            return res.status(400).json({ error: "No valid images provided!" });
-        }
-
-        const uploadResults = await Promise.allSettled(
-            img.map(async (image) => {
-                try {
-                    const response = await cloudinary.uploader.upload(image, {
-                        folder: "products",
-                        quality: "auto", // Automatically adjusts compression
-                        fetch_format: "webp", // Converts to optimal format (WebP, etc.)
-                        width: 800, // Resize to limit large uploads
-                        height: 800,
-                        crop: "limit",
-                    });
-                    return { status: "fulfilled", url: response.secure_url };
-                } catch (error) {
-                    console.error("Upload error:", error.message);
-                    return { status: "rejected", reason: error.message };
-                }
-            })
-        );
-
-        imageUrls = uploadResults
-            .filter(result => result.status === "fulfilled")
-            .map(result => result.value.url);
-
-        if (imageUrls.length === 0) {
-            return res.status(400).json({ error: "No images uploaded successfully!" });
-        }
-
-        const product = await Product.create({
-            name,
-            description,
-            price,
-            img: imageUrls,
-            category,
+            return {
+                price_data: {
+                    currency: "usd",
+                    product_data: {
+                        name: product.name,
+                        images: product.img ? [product.img] : [],
+                    },
+                    unit_amount: amount,
+                },
+                quantity: product.quantity || 1,
+            };
         });
 
-        res.status(201).json(product);
-        
-    } catch (error) {
-        console.error("Error in createProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-};
+        if (couponCode) {
+            coupon = await Coupon.findOne({
+                code: couponCode,
+                isActive: true,
+                expirationDate: { $gte: currentDate },
+            });
 
-export const deleteProduct = async (req, res) => {
-    try {
-        const { id: productId } = req.params;
-        
-        const product = await Product.findById(productId);
-        
-        if (!product) {
-            return res.status(404).json({ message: "Product not found!" });
-        }
-
-        // Store the isFeatured flag before deleting the product
-        const wasFeatured = product.isFeatured;
-
-        // If product has images, delete them from Cloudinary
-        if (product.img && product.img.length > 0) {
-            try {
-                for (const imgUrl of product.img) {
-                    const publicId = imgUrl.split("/").pop().split(".")[0];
-                    await cloudinary.uploader.destroy(publicId);
-                }
-            } catch (error) {
-                console.error("Error deleting image from Cloudinary:", error);
+            if (coupon) {
+                totalAmount -= Math.round(totalAmount * (1 - coupon.discountPercentage / 100));
             }
         }
 
-        // Delete product from database
-        await product.deleteOne();
+        const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
 
-        // Refresh featured products cache if this product was featured
-        if (wasFeatured) {  // Use the stored flag
-            console.log("Refreshing featured products cache...");
-            const newFeaturedProducts = await Product.find({ isFeatured: true }).limit(10); // Fetch new featured products
-            await redis.set("featured_products", JSON.stringify(newFeaturedProducts)); // Update cache
-        }
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: lineItems,
+            mode: "payment",
+            success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECK_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
+            discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : [],
+            metadata: {
+                userId: userId,
+                couponCode: couponCode || "",
+            },
+        });
 
-        res.json({ message: "Product deleted successfully!" });
+        res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount / 100 });
     } catch (error) {
-        console.error("Error in deleteProduct controller:", error.message);
+        console.error("Error in createCheckoutSession controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
-
-export const getRecommendedProduct = async(req, res) => {
-    try {
-        //Check redis cache first
-        const cachedProduct = await getCachedRecommendedProducts();
-        if(cachedProduct){
-            return res.json(cachedProduct);
-        }
-
-        const recommendedProducts = await Product.find()
-            .limit(5)
-            .sort({ createdAt: -1 })
-            .select("_id name description price img")
-
-           //Store in redis cache
-        await updateCachedRecommendedProducts(recommendedProducts);
-        res.json({recommendedProducts});
-
-    } catch (error) {
-        console.error("Error in getRecommendedProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-}
-
-export const getProductsByCategory = async(req, res) => {
-    try {
-        const {category} = req.params;
-
-        const products = await Product.find({category});
-        res.json({products});
-    } catch (error) {
-        console.error("Error in getProductsByCategory controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-}
-
-export const toggleFeaturedProduct = async(req, res) => {
-    try {
-        const {id} = req.params;
-        const product = await Product.findById(id);
-
-        if  (product) {
-            product.isFeatured = !product.isFeatured;
-            await product.save();
-
-            // Clear the redis cache
-            await updateFeaturedProductCache();
-
-            return res.json({message: "Product updated successfully!"});
-        }
-    } catch (error) {
-        console.error("Error in toggleFeaturedProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-}

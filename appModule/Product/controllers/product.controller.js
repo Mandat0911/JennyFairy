@@ -52,11 +52,16 @@ export const getFeaturedProduct = async(req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const { name, description, price, img, category } = req.body;
+        const { name, description, price, img, category, sizes } = req.body;
+        
         let imageUrls = [];
 
         if (!img || !Array.isArray(img) || img.length === 0) {
             return res.status(400).json({ error: "No valid images provided!" });
+        }
+
+        if(!sizes || sizes.length === 0 || !Array.isArray(sizes)){
+            return res.status(400).json({ error: "Sizes field must be an array with at least one value!" }); 
         }
 
         const uploadResults = await Promise.allSettled(
@@ -85,13 +90,13 @@ export const createProduct = async (req, res) => {
         if (imageUrls.length === 0) {
             return res.status(400).json({ error: "No images uploaded successfully!" });
         }
-
         const product = await Product.create({
             name,
             description,
             price,
             img: imageUrls,
             category,
+            sizes,
         });
 
         res.status(201).json(product);

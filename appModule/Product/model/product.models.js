@@ -34,6 +34,12 @@ const productSchema = new mongoose.Schema({
     enum: ['Electronics', 'Clothing', 'Books', 'Furniture', 'Other'], // Example categories
   },
 
+  sizes: {
+    type: [String], // Array of sizes (e.g., ["S", "M", "L", "XL"])
+    enum: ["S", "M", "L", "XL"], // Allowed sizes
+    default: [], // Default empty array if no sizes provided
+  },
+
   isFeatured: {
     type: Boolean,
     default: false,
