@@ -3,8 +3,12 @@ import Coupon from "../model/coupon.models.js";
 export const getCoupon = async (req, res) => {
 	try {
         const currentDate = new Date();
-		const coupons = await Coupon.find({ isActive: true, expirationDate: { $gte: currentDate } });
-        if (coupons.length === 0) {
+        const userRole = req.account?.userType || "USER";
+
+        const coupons = userRole === "ADMIN" || userRole === "MANAGER" ? await Coupon.find() 
+                                                                       : await Coupon.find({ isActive: true, expirationDate: { $gte: currentDate }});
+
+        if (!coupons || coupons.length === 0) {
             return res.status(404).json({ message: "No coupons found" });
         }
         res.status(200).json({ success: true, coupons });
@@ -72,6 +76,22 @@ export const validateCoupon = async (req, res) => {
 		});
 	} catch (error) {
 		console.log("Error in validateCoupon controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
+
+export const deleteCoupon = async (req, res) => {
+	try {
+		const {id: couponId} = req.params;
+		const deleteCoupon = await Coupon.findByIdAndDelete(couponId);
+
+		if (!deleteCoupon) {
+			return res.status(404).json({ message: "Coupon not found" });
+		}
+        res.status(200).json({ success: true, message: "Coupon deleted successfully" });
+
+	} catch (error) {
+		console.log("Error in deleteCoupon controller", error.message);
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
