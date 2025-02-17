@@ -38,12 +38,12 @@ export const createCheckoutSession = async (req, res) => {
         
 
         const lineItems = productDetails.map((product) => {
-            const amount = Math.round(product.price * 100);
+            const amount = Math.round(product.price);
             totalAmount += amount * product.quantity;
 
             return {
                 price_data: {
-                    currency: "usd",
+                    currency: "vnd",
                     product_data: {
                         name: product.name,
                         images: product.img.length > 0 ? [product.img[0]] : [],
@@ -56,12 +56,12 @@ export const createCheckoutSession = async (req, res) => {
 
 
         // check if coupon already used by this user
-        const exisingPayment = await Payment.findOne({
+        const existingPayment = await Payment.findOne({
             user: userId,
             couponCode: {$ne: null}, // Check for any usage of this coupon
         });
 
-        if(exisingPayment && couponCode) {
+        if(existingPayment && couponCode) {
             return res.status(400).json({error: "You already used this coupon"});
         }
 
@@ -81,7 +81,7 @@ export const createCheckoutSession = async (req, res) => {
         }
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
-        console.log("1")
+       
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: lineItems,
@@ -95,25 +95,32 @@ export const createCheckoutSession = async (req, res) => {
             },
         });
 
+        const formattedProducts = productDetails.map((product, index) => ({
+            product: products[index].productId, 
+            quantity: products[index].quantity,
+            price: product.price, 
+        }));
+
         // Save payment details along with coupon applied
         const payment = new Payment({
             user: userId,
-            products,
-            totalAmount,
+            products: formattedProducts,
+            totalAmount: totalAmount + " VND",
             paymentMethod: "Stripe",
             paymentStatus: "pending",
             isPaid: false,
-            // paymentDetails: {
-            //     stripeSessionId, transactionId: session.id,
-            // },
-            couponCode: couponCode || null
-
+            paymentDetails: {
+                stripeSessionId: session.id,
+                transactionId: session.payment_intent || session.id,  // Using payment_intent for the transaction ID
+            },
+            couponCode: couponCode || null,
+            couponDiscountPercentage: coupon ? coupon.discountPercentage : 0
         });
 
         await payment.save();
 
-        // Further function: If the totalAmoun > xxx auto generate coupons
-        res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount / 100 });
+        // Further function: If the totalAmount > xxx auto generate coupons
+        res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount + " VND"});
     } catch (error) {
         console.error("Error in createCheckoutSession controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

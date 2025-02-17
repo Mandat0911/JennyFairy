@@ -14,7 +14,13 @@ const productSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: [true, "Price is required!"],
-    min: [0, "Price must be a positive number"],
+    min: [1000, "Price must be at least 1,000 VND"], // Set minimum price
+    validate: {
+      validator: function (v) {
+        return Number.isInteger(v); // Ensure price is an integer
+      },
+      message: "Price must be a whole number in VND",
+    },
   },
 
   img: {
