@@ -48,6 +48,15 @@ const paymentSchema = new mongoose.Schema(
 		paidAt: {
 			type: Date, // Only set when payment is successful
 		},
+		couponCode :{
+			type: String,
+			default: ""
+		},
+
+		couponDiscountPercentage: {
+			type: Number,
+			default: 0
+		},
 		paymentDetails: {
 			transactionId: { type: String, unique: true }, // Stores Stripe Payment Intent ID or PayPal Transaction ID
 			stripeSessionId: { type: String, unique: true }, // Only for Stripe

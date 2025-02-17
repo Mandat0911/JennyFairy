@@ -2,6 +2,8 @@ import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js
 import { stripe } from "../../../backend/lib/stripe/stripe.js";
 import Coupon from "../../Coupons/model/coupon.models.js";
 import dotenv from "dotenv";
+import Product from "../../Product/model/product.models.js";
+import Payment from "../model/payment.models.js";
 
 dotenv.config();
 
@@ -17,7 +19,25 @@ export const createCheckoutSession = async (req, res) => {
             return res.status(400).json({ error: "Invalid or empty products array" });
         }
 
-        const lineItems = products.map((product) => {
+        // Fetch full product details
+        const productDetails = await Promise.all(
+            products.map(async (p) => {
+                const product = await Product.findById(p.productId);
+                if (!product) throw new Error(`Product with ID ${p.productId} not found`);
+
+                if (!product.price) throw new Error(`Product ${product.name} does not have a valid price`);
+
+                return {
+                    name: product.name,
+                    price: product.price,
+                    quantity: p.quantity,
+                    img: product.img || [],
+                };
+            })
+        );
+        
+
+        const lineItems = productDetails.map((product) => {
             const amount = Math.round(product.price * 100);
             totalAmount += amount * product.quantity;
 
@@ -26,13 +46,24 @@ export const createCheckoutSession = async (req, res) => {
                     currency: "usd",
                     product_data: {
                         name: product.name,
-                        images: product.img ? [product.img] : [],
+                        images: product.img.length > 0 ? [product.img[0]] : [],
                     },
                     unit_amount: amount,
                 },
                 quantity: product.quantity || 1,
             };
         });
+
+
+        // check if coupon already used by this user
+        const exisingPayment = await Payment.findOne({
+            user: userId,
+            couponCode: {$ne: null}, // Check for any usage of this coupon
+        });
+
+        if(exisingPayment && couponCode) {
+            return res.status(400).json({error: "You already used this coupon"});
+        }
 
         if (couponCode) {
             coupon = await Coupon.findOne({
@@ -42,12 +73,15 @@ export const createCheckoutSession = async (req, res) => {
             });
 
             if (coupon) {
-                totalAmount -= Math.round(totalAmount * (1 - coupon.discountPercentage / 100));
+                const discount = Math.round(totalAmount * (coupon.discountPercentage / 100));
+                totalAmount -= discount;
+            }else {
+                return res.status(400).json({ error: "Invalid or expired coupon code" });
             }
         }
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
-
+        console.log("1")
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: lineItems,
@@ -61,9 +95,40 @@ export const createCheckoutSession = async (req, res) => {
             },
         });
 
+        // Save payment details along with coupon applied
+        const payment = new Payment({
+            user: userId,
+            products,
+            totalAmount,
+            paymentMethod: "Stripe",
+            paymentStatus: "pending",
+            isPaid: false,
+            // paymentDetails: {
+            //     stripeSessionId, transactionId: session.id,
+            // },
+            couponCode: couponCode || null
+
+        });
+
+        await payment.save();
+
+        // Further function: If the totalAmoun > xxx auto generate coupons
         res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount / 100 });
     } catch (error) {
-        console.error("Error in createCheckoutSession controller: ", error.message);
+        console.error("Error in createCheckoutSession controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
+
+export const checkoutSuccess = async (req, res) => {
+    try {
+
+    } catch (error) {
+        console.error("Error in checkoutSuccess controller:", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
+
+
+
