@@ -9,6 +9,7 @@ import productRoute from "../appModule/Product/routes/product.routes.js"
 import cartRoute from "../appModule/cart/routes/cart.routes.js"
 import cartCoupons from "../appModule/Coupons/routes/coupon.routes.js"
 import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
+import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
 
 
 
@@ -27,6 +28,7 @@ app.use("/api/product/", productRoute);
 app.use("/api/cart/", cartRoute);
 app.use("/api/coupons/", cartCoupons);
 app.use("/api/payment/", paymentRoute)
+app.use("/api/analytic/", analyticRoute)
 
 
 const PORT = process.env.PORT || 5002;
