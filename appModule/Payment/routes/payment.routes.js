@@ -5,7 +5,7 @@ import { createCheckoutSession, checkoutSuccess } from "../controllers/payment.c
 const router = express.Router();
 
 router.post("/create-checkout-session", protectRoute(["USER", "MANAGER", "ADMIN"]), createCheckoutSession);
-//router.post("checkout-success", protectRoute(["USER", "MANAGER", "ADMIN"]), checkoutSuccess)
+router.post("/checkout-success", protectRoute(["USER", "MANAGER", "ADMIN"]), checkoutSuccess)
 
 
 

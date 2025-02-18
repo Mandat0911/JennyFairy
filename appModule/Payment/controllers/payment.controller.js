@@ -4,6 +4,7 @@ import Coupon from "../../Coupons/model/coupon.models.js";
 import dotenv from "dotenv";
 import Product from "../../Product/model/product.models.js";
 import Payment from "../model/payment.models.js";
+import Order from "../../Order/model/order.model.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ export const createCheckoutSession = async (req, res) => {
                 if (!product.price) throw new Error(`Product ${product.name} does not have a valid price`);
 
                 return {
+                    id: p.productId,
                     name: product.name,
                     price: product.price,
                     quantity: p.quantity,
@@ -53,17 +55,6 @@ export const createCheckoutSession = async (req, res) => {
                 quantity: product.quantity || 1,
             };
         });
-
-
-        // check if coupon already used by this user
-        const existingPayment = await Payment.findOne({
-            user: userId,
-            couponCode: {$ne: null}, // Check for any usage of this coupon
-        });
-
-        if(existingPayment && couponCode) {
-            return res.status(400).json({error: "You already used this coupon"});
-        }
 
         if (couponCode) {
             coupon = await Coupon.findOne({
@@ -92,8 +83,17 @@ export const createCheckoutSession = async (req, res) => {
             metadata: {
                 userId: userId,
                 couponCode: couponCode || "",
+                products: JSON.stringify(
+                    productDetails.map((product) => ({
+                        id: product.id,
+                        price: product.price,
+                        quantity: product.quantity,
+                    }))
+                )
             },
         });
+
+        console.log(session)
 
         const formattedProducts = productDetails.map((product, index) => ({
             product: products[index].productId, 
@@ -114,7 +114,7 @@ export const createCheckoutSession = async (req, res) => {
                 transactionId: session.payment_intent || session.id,  // Using payment_intent for the transaction ID
             paymentError: null,
             },
-            couponCode: couponCode || null,
+            couponCode: null,
             couponDiscountPercentage: coupon ? coupon.discountPercentage : 0
         });
 
@@ -131,12 +131,69 @@ export const createCheckoutSession = async (req, res) => {
 
 export const checkoutSuccess = async (req, res) => {
     try {
+        const { sessionId } = req.body;
+        const userId = req.user.id;
 
+        // Retrieve Stripe session
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
+        const sessionCouponCode = session.metadata.couponCode;
+        // Check if coupon is already used by the user
+        if (sessionCouponCode) {
+            const existingPayment = await Payment.findOne({
+                user: userId,
+                couponCode: sessionCouponCode,
+            });
+
+            if (existingPayment) {
+                return res.status(400).json({ error: "You already used this coupon" });
+            }
+        }
+        // Proceed only if payment is successful
+        if (session.payment_status === "paid") {
+            // Update the Payment record with the coupon code
+            const updatedPayment = await Payment.findOneAndUpdate(
+                { "paymentDetails.transactionId": sessionId },
+                { couponCode: sessionCouponCode },
+                { new: true }
+            );
+
+            console.log(updatedPayment)
+
+            if (!updatedPayment) {
+                return res.status(404).json({ error: "Payment record not found!" });
+            }
+
+            // Create order after successful payment
+            const products = JSON.parse(session.metadata.products);
+            console.log(products)
+            const newOrder = new Order({
+                user: session.metadata.userId,
+                products: products.map((product) => ({
+                    product: product.id,
+                    quantity: product.quantity,
+                    price: product.price,
+                })),
+                totalAmount: session.amount_total + " VND",
+                stripeSessionId: sessionId,
+            });
+
+            await newOrder.save(); // Save order after creation
+
+            return res.status(200).json({
+                success: true,
+                message: "Payment successful, order created, and coupon deactivated if used.",
+                orderId: newOrder._id,
+            });
+        } else {
+            return res.status(400).json({ error: "Payment not completed!" });
+        }
     } catch (error) {
         console.error("Error in checkoutSuccess controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
 
 
 
