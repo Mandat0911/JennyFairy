@@ -4,7 +4,7 @@ import { viewAnalyticsData } from "../controller/analytics.controller.js";
 
 const router = express.Router();
 
-router.get("/analytics", protectRoute(["MANAGER", "ADMIN"]), viewAnalyticsData)
+router.get("/", protectRoute(["MANAGER", "ADMIN"]), viewAnalyticsData)
 
 
 
