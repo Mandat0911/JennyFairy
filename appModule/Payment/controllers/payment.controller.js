@@ -112,6 +112,7 @@ export const createCheckoutSession = async (req, res) => {
             paymentDetails: {
                 stripeSessionId: session.id,
                 transactionId: session.payment_intent || session.id,  // Using payment_intent for the transaction ID
+            paymentError: null,
             },
             couponCode: couponCode || null,
             couponDiscountPercentage: coupon ? coupon.discountPercentage : 0
