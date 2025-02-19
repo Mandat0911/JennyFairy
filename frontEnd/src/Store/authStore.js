@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import axios from "axios";
-import API_URL from "../config.js";
-
-axios.defaults.withCredentials = true;
+import axios from "../lib/axios.lib.js";
 
 export const useAuthStore = create((set) => ({
     user: null,
@@ -16,7 +13,7 @@ export const useAuthStore = create((set) => ({
     signUp: async (email, password, name) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/signup`, { email, password, name });
+            const response = await axios.post("/auth/signup", { email, password, name });
             const user = response.data;
             
             localStorage.setItem("user", JSON.stringify(user)); // Persist user
@@ -30,7 +27,7 @@ export const useAuthStore = create((set) => ({
     login: async (email, password) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/login`, { email, password });
+            const response = await axios.post("/auth/login", { email, password });
             if (!response.data.user || !response.data.account) {
                 throw new Error("Invalid response structure");
             }
@@ -54,7 +51,7 @@ export const useAuthStore = create((set) => ({
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/verify-email`, { code });
+            const response = await axios.post("/auth/verify-email", { code });
             const { user, account } = response.data;
     
             localStorage.setItem("user", JSON.stringify(user));
@@ -71,7 +68,7 @@ export const useAuthStore = create((set) => ({
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
         try {
-            const response = await axios.get(`${API_URL}/me`);
+            const response = await axios.get("/auth/me");
             const { user, account } = response.data;
 
             if (!user) {
@@ -93,7 +90,7 @@ export const useAuthStore = create((set) => ({
     logout: async () => {
         set({ isLoading: true, error: null });
         try {
-            await axios.post(`${API_URL}/logout`);
+            await axios.post("/auth/logout");
             localStorage.removeItem("user");
             localStorage.removeItem("account");
             set({ user: null, account: null, isAuthenticated: false, isLoading: false });
@@ -106,7 +103,7 @@ export const useAuthStore = create((set) => ({
     forgotPassword: async (email) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/forgot-password`, { email });
+            const response = await axios.post("/auth/forgot-password", { email });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.error || "Error sending email", isLoading: false });
@@ -117,7 +114,7 @@ export const useAuthStore = create((set) => ({
     resetPassword: async (token, password) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
+            const response = await axios.post(`/auth/reset-password/${token}`, { password });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.error || "Error resetting password", isLoading: false });
@@ -128,7 +125,7 @@ export const useAuthStore = create((set) => ({
     resendVerificationEmail: async (email) => {
         set({ isLoading: true, error: null, message: null });
         try {
-            const response = await axios.post(`${API_URL}/resend-verification`, { email });
+            const response = await axios.post("/auth/resend-verification", { email });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({ error: error.response?.data?.error || "Error resending email", isLoading: false });
