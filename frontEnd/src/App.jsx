@@ -12,6 +12,7 @@ import DashBoardPage from './Pages/DashBoardPage.jsx';
 import ForgotPasswordPage from './Pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './Pages/ResetPasswordPage.jsx';
 import Navbar from './Components/Navbar.jsx';
+import AdminDashboard from './Pages/AdminDashboard.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -22,13 +23,17 @@ const RedirectAuthenticatedUser = ({ children }) => {
     return children;
 };
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
     console.log(isAuthenticated, account, isCheckingAuth);
 
     if (isCheckingAuth) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
     if (!account?.isVerified) return <Navigate to="/verify-email" replace />;
+
+    if(requiredRoles.length > 0 && !requiredRoles.includes(account?.userType)){
+        return <Navigate to="/unauthorized" replace/>
+    }
 
     return children;
 };
@@ -59,6 +64,8 @@ function App() {
                 <Route path="/forgot-password" element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
                 <Route path="/verify-email" element={<EmailVerificationPage />} />
                 <Route path="/reset-password/:token" element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
+
+                <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole={["MANAGER", "ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             
