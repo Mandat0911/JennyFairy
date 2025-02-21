@@ -35,13 +35,15 @@ const productSchema = new mongoose.Schema({
 },
 
   category: {
-    type: String,
+    type: [String],
+    default: [],
     required: true,
   },
 
   sizes: {
     type: [String], // Array of sizes (e.g., ["S", "M", "L", "XL"])
     default: [], // Default empty array if no sizes provided
+    required: true,
   },
 
   isFeatured: {

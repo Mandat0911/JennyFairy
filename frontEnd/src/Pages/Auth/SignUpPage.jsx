@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader, Lock, Mail, User } from "lucide-react";
-import Input from "../Components/Input";
+import Input from "../../Components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import PasswordStrengthMeter from "../Components/PasswordStrengthMeter";
-import { useAuthStore } from "../Store/authStore";
+import PasswordStrengthMeter from "../../Components/PasswordStrengthMeter";
+import { useAuthStore } from "../../Store/authStore";
 
 const SignUpPage = () => {
   const [fullName, setFullName] = useState("");

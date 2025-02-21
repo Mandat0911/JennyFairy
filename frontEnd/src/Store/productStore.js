@@ -4,8 +4,24 @@ const useProductStore = create((set) => ({
     product: {
         name: "",
         price: "",
-        category: "",
+        category: [],   // Changed to array
         description: "",
-        size: ""
-    }
-}))
+        sizes: [],      // Changed to array
+        images: [],     // Store images as files
+    },
+    setProduct: (field, value) => set((state) => ({
+        product: { ...state.product, [field]: value },
+    })),
+    resetProduct: () => set({
+        product: { 
+            name: "", 
+            price: "", 
+            category: [], 
+            description: "", 
+            sizes: [],
+            images: [],
+        }
+    })
+}));
+
+export default useProductStore;

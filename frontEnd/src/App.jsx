@@ -5,18 +5,18 @@ import { useAuthStore } from './Store/authStore.js';
 
 import FloatingShape from './Components/FloatingShape.jsx';
 import LoadingSpinner from './Components/LoadingSpinner.jsx';
-import SignUpPage from './Pages/SignUpPage';
-import LoginPage from './Pages/LoginPage';
-import EmailVerificationPage from './Pages/EmailVerificationPage.jsx';
+import SignUpPage from './Pages/Auth/SignUpPage';
+import LoginPage from './Pages/Auth/LoginPage';
+import EmailVerificationPage from './Pages/Auth/EmailVerificationPage.jsx';
 import DashBoardPage from './Pages/DashBoardPage.jsx';
-import ForgotPasswordPage from './Pages/ForgotPasswordPage.jsx';
-import ResetPasswordPage from './Pages/ResetPasswordPage.jsx';
+import ForgotPasswordPage from './Pages/Auth/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './Pages/Auth/ResetPasswordPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
+import CL1 from './Pages/Collection/CL1.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
-    console.log(isAuthenticated, account, isCheckingAuth);
     if (isCheckingAuth) return <LoadingSpinner />;
     if (isAuthenticated && account?.isVerified) return <Navigate to="/" replace />;
     
@@ -55,9 +55,9 @@ function App() {
             <Navbar/>
             <Routes>
                 <Route path="/" element={
-                     <ProtectedRoute>
+                    //  <ProtectedRoute>
                         <DashBoardPage />
-                         </ProtectedRoute>
+                        //  </ProtectedRoute>
                         } />
                 <Route path="/signup" element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
                 <Route path="/login" element={<RedirectAuthenticatedUser><LoginPage /></RedirectAuthenticatedUser>} />
@@ -66,6 +66,14 @@ function App() {
                 <Route path="/reset-password/:token" element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
 
                 <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole={["MANAGER", "ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+
+
+                <Route path="/category/CL1" element={<CL1/>} />
+                {/* <Route path="/category/CL2" element={<CL2/>} />
+                <Route path="/category/CL3" element={<CL3/>} />
+                <Route path="/category/CL4" element={<CL4/>} />
+                <Route path="/category/CL5" element={<CL5/>} />
+                <Route path="/category/CL6" element={<CL6/>} /> */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             

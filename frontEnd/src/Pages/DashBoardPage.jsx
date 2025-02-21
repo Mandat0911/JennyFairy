@@ -1,16 +1,6 @@
-
-import React, {useEffect} from "react";
-import CategoryItem from "../Components/CategoryItem";
-
-const categories = [
-	{ href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
-	{ href: "/t-shirts", name: "T-shirts", imageUrl: "/tshirts.jpg" },
-	{ href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpg" },
-	{ href: "/glasses", name: "Glasses", imageUrl: "/glasses.png" },
-	{ href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpg" },
-	{ href: "/suits", name: "Suits", imageUrl: "/suits.jpg" },
-];
-
+// import React, {useEffect} from "react";
+import { CategoryItem } from "../Components/CategoryItem.jsx";
+import {categories} from "../Utils/Category.js";
 const DashboardPage = () => {
 
 	return (
@@ -19,7 +9,7 @@ const DashboardPage = () => {
 				<h1 className='text-center text-5xl sm:text-6xl font-bold text-emerald-400 mb-4'>
 					Explore Our New Collections
 				</h1>
-				<p className='text-center text-xl text-white mb-12'>
+				<p className='text-center text-xl text-white mb-5'>
 					Discover the latest trends
 				</p>
 

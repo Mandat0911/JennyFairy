@@ -1,105 +1,130 @@
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import { useState } from "react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, Menu, X } from "lucide-react";
 import { useAuthStore } from "../Store/authStore";
-import {Link} from "react-router-dom";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
-	const {user, account, logout } = useAuthStore();
-	const isAdmin = account?.userType === "ADMIN";
-	// const { cart } = useCartStore();
+    const { user, account, logout } = useAuthStore();
+    const isAdmin = account?.userType === "ADMIN";
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleLogout = () => {
-		logout();
-	};
+        logout();
+        setIsOpen(false); // Close menu on logout
+    };
 
-	return (
-		<header className='fixed top-0 left-0 w-full bg-white bg-opacity-80 backdrop-blur-lg shadow-lg z-50 transition-all duration-300 border-b border-pink-200'>
-        <div className='container mx-auto px-6 py-4'>
-				<div className='flex flex-wrap justify-between items-center'>
-                <Link to='/' className='text-3xl font-extrabold text-pink-500 tracking-wide flex items-center space-x-2'>
-        JennyFairy
-      </Link>
+    return (
+        <header className="fixed top-0 left-0 w-full bg-white bg-opacity-80 backdrop-blur-lg shadow-md z-50 border-b border-gray-300">
+            <div className="container mx-auto px-6 py-4">
+                <div className="flex justify-between items-center">
+                    
+                    {/* Logo */}
+                    <Link to="/" className="text-2xl sm:text-3xl font-bold text-pink-500 tracking-wide">
+                        JennyFairy
+                    </Link>
 
-					<nav className='flex flex-wrap items-center gap-4'>
-						<Link
-							to={"/"}
-							className='text-gray-300 hover:text-emerald-400 transition duration-300
-					 ease-in-out'
-						>
-							Home
-						</Link>
-						{user && (
-							<Link
-								to={"/cart"}
-								className='relative group text-gray-300 hover:text-emerald-400 transition duration-300 
-							ease-in-out'
-							>
-								<ShoppingCart className='inline-block mr-1 group-hover:text-emerald-400' size={20} />
-								<span className='hidden sm:inline'>Cart</span>
-								{/* {cart.length > 0 && ( */}
-									<span
-										className='absolute -top-2 -left-2 bg-emerald-500 text-white rounded-full px-2 py-0.5 
-									text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out'
-									>
-										{/* {cart.length} */}
-									</span>
-								{/* )} */}
-							</Link>
-						)} 
-						{isAdmin && (
-							<Link
-								className='bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium
-								 transition duration-300 ease-in-out flex items-center'
-								to={"/admin-dashboard"}
-							>
-								<Lock className='inline-block mr-1' size={18} />
-								<span className='hidden sm:inline'>Dashboard</span>
-							</Link>
-						)}
+                    {/* Hamburger Menu (Mobile & Tablet) */}
+                    <button className="lg:hidden text-gray-600 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
+                        {isOpen ? <X size={28} /> : <Menu size={28} />}
+                    </button>
 
-						{user ? (
-                        <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        >
-                            <motion.button whileHover={{ scale: 1.05 }}
+                    {/* Desktop Navigation */}
+                    <nav className="hidden lg:flex items-center space-x-6">
+                        {user && (
+                            <Link to="/cart" className="relative group text-gray-600 hover:text-emerald-500 transition">
+                                <ShoppingCart size={22} />
+                                <span className="hidden sm:inline">Cart</span>
+                            </Link>
+                        )}
+                        {isAdmin && (
+                            <Link
+                                to="/admin-dashboard"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center transition"
+                            >
+                                <Lock size={18} className="mr-2" />
+                                <span>Dashboard</span>
+                            </Link>
+                        )}
+                        {user ? (
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleLogout}
-                                className='w-full py-2 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
-                                 rounded-lg flex items-center shadow-lg hover:from-green-600 hover:to-emerald-700
-                                focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                className="py-2 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md flex items-center shadow-md transition hover:from-green-600 hover:to-emerald-700"
                             >
                                 <LogOut size={18} />
                                 <span className="hidden sm:inline ml-2">Log Out</span>
-                                
                             </motion.button>
+                        ) : (
+                            <>
+                                <Link to="/signup" className="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center transition">
+                                    <UserPlus size={18} className="mr-2" />
+                                    Sign Up
+                                </Link>
+                                <Link to="/login" className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition">
+                                    <LogIn size={18} className="mr-2" />
+                                    Login
+                                </Link>
+                            </>
+                        )}
+                    </nav>
+                </div>
+
+                {/* Mobile Navigation */}
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="lg:hidden mt-4 bg-white shadow-md rounded-lg p-4 space-y-4"
+                        >
+                            {user && (
+                                <Link to="/cart" className="flex items-center text-gray-600 hover:text-emerald-500 transition">
+                                    <ShoppingCart size={22} className="mr-2" />
+                                    Cart
+                                </Link>
+                            )}
+                            {isAdmin && (
+                                <Link
+                                    to="/admin-dashboard"
+                                    className="flex items-center bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md transition"
+                                >
+                                    <Lock size={18} className="mr-2" />
+                                    Dashboard
+                                </Link>
+                            )}
+                            {user ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md flex items-center justify-center shadow-md hover:from-green-600 hover:to-emerald-700"
+                                >
+                                    <LogOut size={18} />
+                                    <span className="ml-2">Log Out</span>
+                                </button>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/signup"
+                                        className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md text-center"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                    <Link
+                                        to="/login"
+                                        className="block w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-center"
+                                    >
+                                        Login
+                                    </Link>
+                                </>
+                            )}
                         </motion.div>
-							
-						 ) : ( 
-							<>
-								<Link
-									to={"/signup"}
-									className='bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 
-									rounded-md flex items-center transition duration-300 ease-in-out'
-								>
-									<UserPlus className='mr-2' size={18} />
-									Sign Up
-								</Link>
-								<Link
-									to={"/login"}
-									className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 
-									rounded-md flex items-center transition duration-300 ease-in-out'
-								>
-									<LogIn className='mr-2' size={18} />
-									Login
-								</Link>
-							</>
-						 )} 
-					</nav>
-				</div>
-			</div>
-		</header>
-	);
+                    )}
+                </AnimatePresence>
+            </div>
+        </header>
+    );
 };
+
 export default Navbar;

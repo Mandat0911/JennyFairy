@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { useAuthStore } from "../Store/authStore";
+import { useAuthStore } from "../../Store/authStore.js";
 
 const EmailVerificationPage = () => {
 	const [code, setCode] = useState(["", "", "", "", "", ""]);
