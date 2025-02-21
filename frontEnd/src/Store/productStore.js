@@ -1,27 +1,37 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 const useProductStore = create((set) => ({
     product: {
-        name: "",
-        price: "",
-        category: [],   // Changed to array
-        description: "",
-        sizes: [],      // Changed to array
-        images: [],     // Store images as files
+        name: '',
+        description: '',
+        price: '',
+        category: [],
+        sizes: [],
+        img: []
     },
-    setProduct: (field, value) => set((state) => ({
-        product: { ...state.product, [field]: value },
+    
+    setProduct: (key, value) => set((state) => ({
+        product: {
+            ...state.product,
+            [key]: value,
+        },
     })),
+    
     resetProduct: () => set({
-        product: { 
-            name: "", 
-            price: "", 
-            category: [], 
-            description: "", 
+        product: {
+            name: '',
+            description: '',
+            price: '',
+            category: [],
             sizes: [],
-            images: [],
-        }
-    })
+            img: []
+        },
+    }),
+    
+    isLoading: false,
+    setLoading: (loading) => set({ isLoading: loading })
 }));
 
 export default useProductStore;
+
+

@@ -1,48 +1,40 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "../lib/axios.lib.js";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import axios from "../lib/axios.lib.js";
 
-export const useCreateProduct = () => {
-    const queryClient = useQueryClient();
+// const uploadImageToCloudinary = async (imageFile) => {
+//     const formData = new FormData();
+//     formData.append("file", imageFile);
+//     formData.append("upload_preset", "your_upload_preset"); // Replace with your Cloudinary preset
 
-    return useMutation({
-        mutationFn: async (newProduct) => {
-            const formData = new FormData();
+//     const response = await axios.post("https://api.cloudinary.com/v1_1/dfewsut9x/image/upload", formData);
+//     return response.data.secure_url; // Return uploaded image URL
+// };
 
-            // Append non-image fields
-            formData.append("name", newProduct.name);
-            formData.append("price", newProduct.price);
-            formData.append("description", newProduct.description);
+// export const useCreateProduct = () => {
+//     const queryClient = useQueryClient();
 
-            // Append categories
-            newProduct.category.forEach((cat) => {
-                formData.append("category", cat);
-            });
+//     return useMutation({
+//         mutationFn: async (newProduct) => {
+//             // Upload all images to Cloudinary first
+//             const imageUploadPromises = newProduct.img.map(uploadImageToCloudinary);
+//             const uploadedImageUrls = await Promise.all(imageUploadPromises);
 
-            // Append sizes
-            newProduct.sizes.forEach((size) => {
-                formData.append("sizes", size);
-            });
+//             // Create final product object
+//             const finalProduct = {
+//                 name: newProduct.name,
+//                 price: newProduct.price,
+//                 description: newProduct.description,
+//                 category: newProduct.category,
+//                 sizes: newProduct.sizes,
+//                 img: uploadedImageUrls, // Send URLs, not files
+//             };
 
-            // Append images
-            newProduct.images.forEach((image) => {
-                formData.append("img", image);
-            });
-
-            // Debugging: Log FormData contents
-            for (let pair of formData.entries()) {
-                console.log(pair[0], pair[1]);
-            }
-
-            const response = await axios.post("/product/create-product", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            });
-
-            return response.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries(["products"]);
-        },
-    });
-};
+//             // Send product data to backend
+//             const response = await axios.post("/product/create-product", finalProduct);
+//             return response.data;
+//         },
+//         onSuccess: () => {
+//             queryClient.invalidateQueries(["products"]);
+//         },
+//     });
+// };
