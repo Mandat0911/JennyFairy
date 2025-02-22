@@ -53,6 +53,7 @@ export const getFeaturedProduct = async(req, res) => {
 export const createProduct = async (req, res) => {
     try {
         const { name, description, price, img, category, sizes } = req.body;
+        console.log(req.user);
         
         let imageUrls = [];
 

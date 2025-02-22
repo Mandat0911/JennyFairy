@@ -6,20 +6,25 @@ import { sizes } from '../Utils/Size';
 import useProductStore from '../Store/productStore.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { PRODUCT_API_ENDPOINTS } from "../Utils/config.js"
+import { useAuthStore } from '../Store/authStore.js';
+
 
 const CreateProductForm = () => {
     const [selectedSizes, setSelectedSizes] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-
     const { product, setProduct, resetProduct, isLoading, setLoading } = useProductStore();
-    const queryClient = useQueryClient();
+        const queryClient = useQueryClient();
 
     const mutation = useMutation({
         mutationFn: async (newProduct) => {
-            const response = await fetch('http://localhost:5002/api/product/create-product', {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.CREATE_PRODUCT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                 },
+                 credentials: 'include',
                 body: JSON.stringify(newProduct)
             });
             if (!response.ok) throw new Error('Failed to create product');
@@ -51,7 +56,15 @@ const CreateProductForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)
-        mutation.mutate(product);
+
+        mutation.mutate(product, {
+            onSuccess: () => {
+                setLoading(false);
+            },
+            onError: () => {
+                setLoading(false);
+            }
+        });
     };
 
     const handleCategoryChange = (e, cat) => {
@@ -77,6 +90,10 @@ const CreateProductForm = () => {
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         
+        if(files.length > 5) {
+            toast.error("You can only upload 5 images at a time!");
+        }
+
         const readFilesAsBase64 = (file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -219,6 +236,10 @@ const CreateProductForm = () => {
                     >
                         <Upload className="h-5 w-5 inline-block mr-2" /> Upload Images
                     </label>
+
+                        <p className="text-xs text-gray-400 mt-2 opacity-75 italic">
+                            Only 5 images at a time
+                        </p>
     
                     {/* Image Previews */}
                     <div className="mt-2 overflow-hidden max-h-[120px] w-full bg-gray-800 p-2 rounded-md">

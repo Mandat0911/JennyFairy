@@ -9,9 +9,7 @@ router.get("/", protectRoute(["USER", "MANAGER", "ADMIN"]), getAllProduct);
 router.get("/featured", getFeaturedProduct);
 router.get("recommended", getRecommendedProduct);
 router.get("/category/:category", getProductsByCategory);
-router.post("/create-product", 
-    // protectRoute(["MANAGER", "ADMIN"]), 
-    createProduct);
+router.post("/create-product", protectRoute(["MANAGER", "ADMIN"]), createProduct);
 router.patch("/:id/", protectRoute(["MANAGER", "ADMIN"]), toggleFeaturedProduct);
 router.delete("/delete/:id", protectRoute(["MANAGER", "ADMIN"]), deleteProduct);
 
