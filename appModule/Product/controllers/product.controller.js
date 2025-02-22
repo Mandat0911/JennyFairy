@@ -53,7 +53,6 @@ export const getFeaturedProduct = async(req, res) => {
 export const createProduct = async (req, res) => {
     try {
         const { name, description, price, img, category, sizes } = req.body;
-        console.log(req.user);
         
         let imageUrls = [];
 
@@ -185,22 +184,22 @@ export const getProductsByCategory = async(req, res) => {
     }
 }
 
-export const toggleFeaturedProduct = async(req, res) => {
+export const toggleFeaturedProduct = async (req, res) => {
     try {
-        const {id} = req.params;
-        const product = await Product.findById(id);
+        const { id } = req.params;
+        const product = await Product.findById(id).lean(); // Use .lean() for raw data
 
-        if  (product) {
+        if (product) {
             product.isFeatured = !product.isFeatured;
-            await product.save();
+            await Product.findByIdAndUpdate(id, { isFeatured: product.isFeatured });
 
-            // Clear the redis cache
-            await updateFeaturedProductCache();
+            // Update cache accordingly
+            await updateFeaturedProductCache(product, product.isFeatured);
 
-            return res.json({message: "Product updated successfully!"});
+            return res.json({ message: "Product updated successfully!" });
         }
     } catch (error) {
         console.error("Error in toggleFeaturedProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
-}
+};

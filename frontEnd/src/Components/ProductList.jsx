@@ -1,11 +1,14 @@
 import React from 'react'
 import { motion } from 'framer-motion';
-import { Trash, Star, Edit } from "lucide-react";
-import { useGetAllProduct } from '../Store/API/Product.API.js'
+import { Trash, Star, Edit, Loader } from "lucide-react";
+import { useDeleteProduct, useGetAllProduct, useToggleFeatureProduct } from '../Store/API/Product.API.js'
 
 const ProductList = () => {
 
-  const {data: products, isLoading} = useGetAllProduct()
+  const {data: products} = useGetAllProduct()
+  const {mutate:deleteMutation, isPending} = useDeleteProduct();
+  const toggleFeaturedProduct = useToggleFeatureProduct()
+
 
   return (
 <motion.div
@@ -42,7 +45,7 @@ const ProductList = () => {
 						>
 							InStock
 						</th>
-            <th
+            			<th
 							scope='col'
 							className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'
 						>
@@ -87,7 +90,7 @@ const ProductList = () => {
 
 							<td className='px-6 py-4 whitespace-nowrap'>
 								<button
-									onClick={() => toggleFeaturedProduct(product._id)}
+									onClick={() => toggleFeaturedProduct.mutate(product._id)}
 									className={`p-1 rounded-full ${
 										product.isFeatured ? "bg-yellow-400 text-gray-900" : "bg-gray-600 text-gray-300"
 									} hover:bg-yellow-500 transition-colors duration-200`}
@@ -96,14 +99,20 @@ const ProductList = () => {
 								</button>
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-								<button
-									onClick={() => deleteProduct(product._id)}
-									className='text-red-400 hover:text-red-300'
-								>
+							<button
+								onClick={() => deleteMutation(product._id)}
+								className='text-red-400 hover:text-red-300'
+								disabled={isPending} // Access isLoading from mutation object
+							
+							>
+								{isPending ? (
+									<Loader className="mr-2 h-5 w-5 animate-spin"/>
+								) : (
 									<Trash className='h-5 w-5' />
-								</button>
-                <button
-									onClick={() => EditProduct(product._id)}
+								)}
+							</button>
+                			<button
+									//onClick={() => EditProduct(product._id)}
 									className='text-green-400 hover:text-green-300 mx-2'
 								>
 									<Edit className='h-5 w-5' />

@@ -21,14 +21,37 @@ export const updateCachedRecommendedProducts = async (products) => {
     }
 };
 
-export const updateFeaturedProductCache = async () => {
+// export const updateFeaturedProductCache = async () => {
+//     try {
+//         const featuredProducts = await Product.find({isFeatured: true}).lean();
+//         if(!featuredProducts.length){
+//             return;
+//         }
+//         await redis.set("featured_products", JSON.stringify(featuredProducts), "EX", 3600);
+//     } catch (error) {
+//         console.error("Error in updateFeaturedProductCache controller: ", error.message);
+//     }
+// };
+
+
+export const updateFeaturedProductCache = async (product, isAdding) => {
     try {
-        const featuredProducts = await Product.find({isFeatured: true}).lean();
-        if(!featuredProducts.length){
-            return;
+        const cachedProducts = await redis.get("featured_products");
+        let featuredProducts = cachedProducts ? JSON.parse(cachedProducts) : [];
+
+        if (isAdding) {
+            // Add product if it's not already in cache
+            if (!featuredProducts.some(p => p._id === product._id.toString())) {
+                featuredProducts.push(product);
+            }
+        } else {
+            // Remove product from cache
+            featuredProducts = featuredProducts.filter(p => p._id !== product._id.toString());
         }
+
+        // Update Redis cache
         await redis.set("featured_products", JSON.stringify(featuredProducts), "EX", 3600);
     } catch (error) {
-        console.error("Error in updateFeaturedProductCache controller: ", error.message);
+        console.error("Error in updateFeaturedProductCache: ", error.message);
     }
 };

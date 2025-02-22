@@ -14,7 +14,7 @@ export const useCreateProduct = () => {
                 headers: { 
                     'Content-Type': 'application/json',
                  },
-                 credentials: 'include',
+                credentials: 'include',
                 body: JSON.stringify(newProduct)
             });
             if (!response.ok) throw new Error('Failed to create product');
@@ -51,3 +51,38 @@ export const useGetAllProduct = () => {
         },
     });
 };
+
+export const useDeleteProduct = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: async (productId) => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.DELETE_PRODUCT(productId), {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to delete product');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['products']); // Refresh the list after deletion
+            toast.success('Product deleted successfully!');
+        },
+    })
+}
+
+export const useToggleFeatureProduct = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: async (productId) => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.FEATURE_PRODUCT(productId), {
+                method: "PATCH",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to toggle product');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['products']); // Refresh the list after deletion
+        },
+    })
+}
