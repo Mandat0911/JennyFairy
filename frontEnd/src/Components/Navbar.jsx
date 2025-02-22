@@ -81,7 +81,11 @@ const Navbar = () => {
                             className="lg:hidden mt-4 bg-white shadow-md rounded-lg p-4 space-y-4"
                         >
                             {user && (
-                                <Link to="/cart" className="flex items-center text-gray-600 hover:text-emerald-500 transition">
+                                <Link
+                                    to="/cart"
+                                    onClick={() => setIsOpen(false)}  // Close menu on click
+                                    className="flex items-center text-gray-600 hover:text-emerald-500 transition"
+                                >
                                     <ShoppingCart size={22} className="mr-2" />
                                     Cart
                                 </Link>
@@ -89,6 +93,7 @@ const Navbar = () => {
                             {isAdmin && (
                                 <Link
                                     to="/admin-dashboard"
+                                    onClick={() => setIsOpen(false)}  // Close menu on click
                                     className="flex items-center bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md transition"
                                 >
                                     <Lock size={18} className="mr-2" />
@@ -97,7 +102,10 @@ const Navbar = () => {
                             )}
                             {user ? (
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={() => {
+                                        handleLogout();
+                                        setIsOpen(false);  // Close menu on logout
+                                    }}
                                     className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md flex items-center justify-center shadow-md hover:from-green-600 hover:to-emerald-700"
                                 >
                                     <LogOut size={18} />
@@ -107,12 +115,14 @@ const Navbar = () => {
                                 <>
                                     <Link
                                         to="/signup"
+                                        onClick={() => setIsOpen(false)}  // Close menu on click
                                         className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md text-center"
                                     >
                                         Sign Up
                                     </Link>
                                     <Link
                                         to="/login"
+                                        onClick={() => setIsOpen(false)}  // Close menu on click
                                         className="block w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-center"
                                     >
                                         Login

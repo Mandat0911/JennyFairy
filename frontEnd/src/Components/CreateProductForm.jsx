@@ -1,50 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { category } from '../Utils/Category';
-import { motion } from 'framer-motion';
-import { PlusCircle, Upload, Loader } from 'lucide-react';
-import { sizes } from '../Utils/Size';
-import useProductStore from '../Store/productStore.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { PRODUCT_API_ENDPOINTS } from "../Utils/config.js"
-import { useAuthStore } from '../Store/authStore.js';
+import { PlusCircle, Upload, Loader } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+import { category } from '../Utils/Category.js';
+import { sizes } from '../Utils/Size.js';
+import useProductStore from '../Store/productStore.js';
+import { useCreateProduct } from '../Store/API/Product.API.js';
 
 
 const CreateProductForm = () => {
     const [selectedSizes, setSelectedSizes] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-    const { product, setProduct, resetProduct, isLoading, setLoading } = useProductStore();
-        const queryClient = useQueryClient();
+    const { product, setProduct, isLoading, setLoading } = useProductStore();
 
-    const mutation = useMutation({
-        mutationFn: async (newProduct) => {
-            const response = await fetch(PRODUCT_API_ENDPOINTS.CREATE_PRODUCT, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                 },
-                 credentials: 'include',
-                body: JSON.stringify(newProduct)
-            });
-            if (!response.ok) throw new Error('Failed to create product');
-            return { product: response.json() };
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['products']);
-            resetProduct();
-            setSelectedCategory([]);
-            setSelectedSizes([]);
-            setImagePreviews([]);
-            setLoading(false)
-            toast.success('Product created successfully!');
-        },
-        onError: (error) => {
-            toast.error(`Error creating product: ${error.message}`);
-        }
-    });
+    const createMutation = useCreateProduct();
 
-    // Sync category & size selections with product
     useEffect(() => {
         setProduct((prev) => ({
             ...prev,
@@ -57,9 +29,12 @@ const CreateProductForm = () => {
         e.preventDefault();
         setLoading(true)
 
-        mutation.mutate(product, {
+        createMutation.mutate(product, {
             onSuccess: () => {
-                setLoading(false);
+            setSelectedCategory([]);
+            setSelectedSizes([]);
+            setImagePreviews([]);
+            setLoading(false);
             },
             onError: () => {
                 setLoading(false);
