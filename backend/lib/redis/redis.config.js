@@ -21,19 +21,6 @@ export const updateCachedRecommendedProducts = async (products) => {
     }
 };
 
-// export const updateFeaturedProductCache = async () => {
-//     try {
-//         const featuredProducts = await Product.find({isFeatured: true}).lean();
-//         if(!featuredProducts.length){
-//             return;
-//         }
-//         await redis.set("featured_products", JSON.stringify(featuredProducts), "EX", 3600);
-//     } catch (error) {
-//         console.error("Error in updateFeaturedProductCache controller: ", error.message);
-//     }
-// };
-
-
 export const updateFeaturedProductCache = async (product, isAdding) => {
     try {
         const cachedProducts = await redis.get("featured_products");

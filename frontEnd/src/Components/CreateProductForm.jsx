@@ -6,20 +6,10 @@ import { motion } from 'framer-motion';
 import { category } from '../Utils/Category.js';
 import { sizes } from '../Utils/Size.js';
 import useProductStore from '../Store/productStore.js';
-import { useCreateProduct } from '../Store/API/Product.API.js';
+import { useCreateProduct, useEditProduct } from '../Store/API/Product.API.js';
 
 
-const CreateProductForm = ({initialProduct}) => {
-
-    const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        price: "",
-        category: [],
-        sizes: [],
-        inStock: false,
-    });
-
+const CreateProductForm = ({ initialProduct }) => {
     const [selectedSizes, setSelectedSizes] = useState(initialProduct?.sizes || []);
     const [selectedCategory, setSelectedCategory] = useState(initialProduct?.category || []);
     const [imagePreviews, setImagePreviews] = useState(initialProduct?.img || []);
@@ -27,29 +17,29 @@ const CreateProductForm = ({initialProduct}) => {
 
     const isEditing = Boolean(initialProduct);
 
-    const createMutation = useCreateProduct();
-
-
+    const { mutate: createProduct } = useCreateProduct();
+    const { mutate: editProduct } = useEditProduct();
 
     // When `initialProduct` changes, update form fields
     useEffect(() => {
         if (initialProduct) {
-            setFormData({
+            setProduct({
                 name: initialProduct.name || "",
                 description: initialProduct.description || "",
                 price: initialProduct.price || "",
                 category: initialProduct.category || [],
-                sizes: initialProduct.sizes || [],  // Fixed `size` typo
+                sizes: initialProduct.sizes || [],
+                img: initialProduct.img || [],
                 inStock: initialProduct.inStock || false,
             });
-    
+
             setSelectedCategory(initialProduct.category || []);
             setSelectedSizes(initialProduct.sizes || []);
             setImagePreviews(initialProduct.img || []);
-    
+
             setProduct((prev) => ({
                 ...prev,
-                ...initialProduct,  // Populate the store with initial values
+                ...initialProduct, // Populate the store with initial values
             }));
         }
     }, [initialProduct, setProduct]);
@@ -66,46 +56,70 @@ const CreateProductForm = ({initialProduct}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true)
-
-        createMutation.mutate(product, {
-            onSuccess: () => {
-            setSelectedCategory([]);
-            setSelectedSizes([]);
-            setImagePreviews([]);
-            setLoading(false);
-            },
-            onError: () => {
-                setLoading(false);
-            }
-        });
+        setLoading(true);
+        
+        if (isEditing) {
+            editProduct(
+                { 
+                    productId: initialProduct._id, 
+                    newProduct: product // Ensure you're passing the updated product data 
+                },
+                {
+                    onSuccess: () => {
+                        setSelectedCategory([]);
+                        setSelectedSizes([]);
+                        setImagePreviews([]);
+                        setLoading(false);
+                    },
+                    onError: () => {
+                        setLoading(false);
+                    }
+                }
+            );
+        } else {
+            createProduct(product, {
+                onSuccess: () => {
+                    setSelectedCategory([]);
+                    setSelectedSizes([]);
+                    setImagePreviews([]);
+                    setLoading(false);
+                },
+                onError: () => {
+                    setLoading(false);
+                }
+            });
+        }
     };
 
     const handleCategoryChange = (e, cat) => {
+        const { product, setProduct } = useProductStore.getState(); // Directly access state
+        
         const isChecked = e.target.checked;
-        setProduct(
-            'category',
-            isChecked
-                ? [...(product.category || []), cat]
-                : (product.category || []).filter((c) => c !== cat)
-        );
+        const updatedCategories = isChecked
+            ? [...product.category, cat] // Add new category
+            : product.category.filter((c) => c !== cat); // Remove category
+    
+        setProduct({ category: updatedCategories }); // Update Zustand store properly
     };
 
     const handleSizeChange = (e, size) => {
+        const { product, setProduct } = useProductStore.getState();
         const isChecked = e.target.checked;
-        setProduct(
-            'sizes',
-            isChecked
-                ? [...(product.sizes || []), size]
-                : (product.sizes || []).filter((s) => s !== size)
-        );
+
+        const updatedSizes = isChecked
+            ? [...product.sizes, size] // Add new size
+            : product.sizes.filter((s) => s !== size); // Remove size
+    
+        setProduct({ sizes: updatedSizes }); // Update Zustand store properly
     };
 
     const handleImageChange = (e) => {
+        const { product, setProduct } = useProductStore.getState(); // Get Zustand state
         const files = Array.from(e.target.files);
-        
-        if(files.length > 5) {
+
+        if (files.length > 5) {
             toast.error("You can only upload 5 images at a time!");
+            return; // Stop further execution if limit exceeds
         }
 
         const readFilesAsBase64 = (file) => {
@@ -116,10 +130,11 @@ const CreateProductForm = ({initialProduct}) => {
                 reader.onerror = (error) => reject(error);
             });
         };
-        
+
         Promise.all(files.map(readFilesAsBase64))
             .then((base64Images) => {
-                setProduct('img', [...(product.img || []), ...base64Images]);
+                const updatedImages = [...(product.img || []), ...base64Images];
+                setProduct({ img: updatedImages }); // Update Zustand store properly
                 setImagePreviews((prev) => [...prev, ...base64Images]);
             })
             .catch((error) => {
@@ -131,7 +146,7 @@ const CreateProductForm = ({initialProduct}) => {
         const updatedImages = product.img.filter((_, i) => i !== index);
         const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
 
-        setProduct('img', updatedImages);
+        setProduct({ img: updatedImages });
         setImagePreviews(updatedPreviews);
     };
 
@@ -142,7 +157,9 @@ const CreateProductForm = ({initialProduct}) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
-            <h2 className="text-2xl font-semibold mb-6 text-emerald-300">{isEditing ? "Edit Product" : "Create New Product"}</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-emerald-300">
+                {isEditing ? "Edit Product" : "Create New Product"}
+            </h2>
     
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Product Name */}
@@ -154,8 +171,8 @@ const CreateProductForm = ({initialProduct}) => {
                         type="text"
                         id="name"
                         name="name"
-                        value={isEditing ? formData.name : product.name}
-                        onChange={(e) => setProduct("name", e.target.value)}
+                        value={product.name}
+                        onChange={(e) => setProduct({ name: e.target.value })}
                         placeholder="Name"
                         className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                         required
@@ -170,8 +187,8 @@ const CreateProductForm = ({initialProduct}) => {
                     <textarea
                         id="description"
                         name="description"
-                        value={isEditing ? formData.description : product.description}
-                        onChange={(e) => setProduct("description", e.target.value)}
+                        value={product.description}
+                        onChange={(e) => setProduct({ description: e.target.value })}
                         rows="3"
                         placeholder="Description"
                         className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -188,8 +205,8 @@ const CreateProductForm = ({initialProduct}) => {
                         type="number"
                         id="price"
                         name="price"
-                        value={isEditing? formData.price : product.price}
-                        onChange={(e) => setProduct("price", e.target.value)}
+                        value={product.price}
+                        onChange={(e) => setProduct({ price: e.target.value })}
                         step="1000"
                         placeholder="Price"
                         className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -230,7 +247,7 @@ const CreateProductForm = ({initialProduct}) => {
                             >
                                 <input
                                     type="checkbox"
-                                    value={isEditing ? formData.sizes : size}
+                                    value={product.size}
                                     checked={Array.isArray(product.sizes) && product.sizes.includes(size)}
                                     onChange={(e) => handleSizeChange(e, size)}
                                     className="w-5 h-5 text-emerald-500 bg-gray-900 border-gray-600 rounded-md focus:ring-2 focus:ring-emerald-400"
@@ -250,12 +267,7 @@ const CreateProductForm = ({initialProduct}) => {
                     >
                         <Upload className="h-5 w-5 inline-block mr-2" /> Upload Images
                     </label>
-
-                        <p className="text-xs text-gray-400 mt-2 opacity-75 italic">
-                            Only 5 images at a time
-                        </p>
-    
-                    {/* Image Previews */}
+                    <p className="text-xs text-gray-400 mt-2 opacity-75 italic">Only 5 images at a time</p>
                     <div className="mt-2 overflow-hidden max-h-[120px] w-full bg-gray-800 p-2 rounded-md">
                         <div className="grid grid-cols-5 gap-2">
                             {imagePreviews.map((preview, index) => (
@@ -288,4 +300,3 @@ const CreateProductForm = ({initialProduct}) => {
 };
     
 export default CreateProductForm;
-    

@@ -9,14 +9,14 @@ const useProductStore = create((set) => ({
         sizes: [],
         img: []
     },
-    
-    setProduct: (key, value) => set((state) => ({
+
+    setProduct: (updatedFields) => set((state) => ({
         product: {
             ...state.product,
-            [key]: value,
+            ...updatedFields, // Allows updating multiple fields at once
         },
     })),
-    
+
     resetProduct: () => set({
         product: {
             name: '',
@@ -27,11 +27,9 @@ const useProductStore = create((set) => ({
             img: []
         },
     }),
-    
+
     isLoading: false,
     setLoading: (loading) => set({ isLoading: loading })
 }));
 
 export default useProductStore;
-
-

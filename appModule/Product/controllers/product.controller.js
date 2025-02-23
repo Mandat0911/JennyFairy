@@ -111,9 +111,11 @@ export const editProduct = async(req, res) => {
     try {
         const {id: productId} = req.params;
         const { name, description, price, img, category, sizes } = req.body;
+
         let imageUrls = [];
+
         let product = await Product.findById(productId);
-        console.log(product.sizes)
+
         if(!product){
             return res.status(404).json({ message: "Product not found!" }); 
         };
@@ -145,7 +147,7 @@ export const editProduct = async(req, res) => {
             .map(result => result.value.url);
 
             if (imageUrls.length > 0) {
-                updatedImages = uploadedUrls; // Replace with new images
+                updatedImages = imageUrls; // Replace with new images
             }
         }
 

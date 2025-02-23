@@ -35,30 +35,37 @@ export const useCreateProduct = () => {
 export const useEditProduct = () => {
     const queryClient = useQueryClient();
     const { resetProduct, setLoading } = useProductStore();
+
     return useMutation({
-        mutationFn: async (productId) => {
+        mutationFn: async ({ productId, newProduct }) => {
+            console.log("Editing product:", productId, newProduct);
+            
             const response = await fetch(PRODUCT_API_ENDPOINTS.EDIT_PRODUCT(productId), {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
-                 },
+                },
                 credentials: 'include',
-                body: JSON.stringify(newProduct)
+                body: JSON.stringify(newProduct), // Ensure data is sent
             });
+
             if (!response.ok) throw new Error('Failed to edit product');
             return response.json();
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             resetProduct();
-            setLoading(false)
-            toast.success('Product edit successfully!');
+            toast.success('Product updated successfully!');
         },
         onError: (error) => {
-            toast.error(`Error edit product: ${error.message}`);
+            toast.error(`Error editing product: ${error.message}`);
+        },
+        onSettled: () => {
+            setLoading(false); // Ensure loading state is reset
         }
-    })
+    });
 };
+
 
 export const useGetAllProduct = () => {
     return useQuery({
