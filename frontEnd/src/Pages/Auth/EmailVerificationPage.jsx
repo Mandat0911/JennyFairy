@@ -102,12 +102,12 @@ const EmailVerificationPage = () => {
 	}, [code]);
 
 	return (
-		<div className='max-w-md w-full bg-pink-400/30 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden'>
+		<div className='w-full max-w-md md:max-w-lg bg-pink-400/30 backdrop-filter backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden mx-4 sm:mx-auto'>
 			<motion.div
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5 }}
-				className='bg-pink-400/30 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md'
+				className='p-2 sm:p-4 overflow-y-auto'
 			>
       			<h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-pink-600 to-rose-800 bg-clip-text text-transparent'>
 					Verify Your Email

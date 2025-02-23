@@ -16,7 +16,6 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-
     try {
       await signUp(email, password, fullName);
       navigate("/verify-email");
@@ -30,9 +29,9 @@ const SignUpPage = () => {
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-md w-full bg-pink-400/30 backdrop-filter backdrop-blur-lx rounded-2xl shadow-xl overflow-hidden"
+      className="w-full max-w-md md:max-w-lg bg-pink-400/30 backdrop-filter backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden mx-4 sm:mx-auto"
     >
-      <div className="p-8">
+      <div className="p-6 sm:p-8 overflow-y-auto">
         <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-pink-600 to-rose-800 bg-clip-text text-transparent">
           Create an account
         </h2>
