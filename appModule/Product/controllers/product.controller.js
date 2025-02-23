@@ -107,6 +107,66 @@ export const createProduct = async (req, res) => {
     }
 };
 
+export const editProduct = async(req, res) => {
+    try {
+        const {id: productId} = req.params;
+        const { name, description, price, img, category, sizes } = req.body;
+        let imageUrls = [];
+        let product = await Product.findById(productId);
+        console.log(product.sizes)
+        if(!product){
+            return res.status(404).json({ message: "Product not found!" }); 
+        };
+        // Keep existing img if no new img prodvide
+        let updatedImages = product.img;
+
+        if(img && Array.isArray(img) && img.length > 0){
+            const uploadResults = await Promise.allSettled(
+                img.map(async (image) => {
+                    try {
+                        const response = await cloudinary.uploader.upload(image, {
+                            folder: "products",
+                            quality: "auto", // Automatically adjusts compression
+                            fetch_format: "webp", // Converts to optimal format (WebP, etc.)
+                            width: 800, // Resize to limit large uploads
+                            height: 800,
+                            crop: "limit",
+                        });
+                        return { status: "fulfilled", url: response.secure_url };
+                    } catch (error) {
+                        console.error("Upload error:", error.message);
+                        return { status: "rejected", reason: error.message };
+                    }
+                })
+            );
+
+            imageUrls = uploadResults
+            .filter(result => result.status === "fulfilled")
+            .map(result => result.value.url);
+
+            if (imageUrls.length > 0) {
+                updatedImages = uploadedUrls; // Replace with new images
+            }
+        }
+
+        product.name = name || product.name;
+        product.description = description || product.description;
+        product.price = price || product.price;
+        product.img = updatedImages
+        product.category = category || product.category;
+        product.sizes = sizes || product.sizes;
+
+        await product.save();
+        res.status(201).json(product);
+
+    } catch (error) {
+        console.error("Error in editProduct controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
+
+
 export const deleteProduct = async (req, res) => {
     try {
         const { id: productId } = req.params;

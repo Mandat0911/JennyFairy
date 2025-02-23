@@ -32,6 +32,34 @@ export const useCreateProduct = () => {
     })
 };
 
+export const useEditProduct = () => {
+    const queryClient = useQueryClient();
+    const { resetProduct, setLoading } = useProductStore();
+    return useMutation({
+        mutationFn: async (productId) => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.EDIT_PRODUCT(productId), {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                 },
+                credentials: 'include',
+                body: JSON.stringify(newProduct)
+            });
+            if (!response.ok) throw new Error('Failed to edit product');
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['products']);
+            resetProduct();
+            setLoading(false)
+            toast.success('Product edit successfully!');
+        },
+        onError: (error) => {
+            toast.error(`Error edit product: ${error.message}`);
+        }
+    })
+};
+
 export const useGetAllProduct = () => {
     return useQuery({
         queryKey: ['products'],

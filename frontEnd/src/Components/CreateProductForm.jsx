@@ -9,20 +9,59 @@ import useProductStore from '../Store/productStore.js';
 import { useCreateProduct } from '../Store/API/Product.API.js';
 
 
-const CreateProductForm = () => {
-    const [selectedSizes, setSelectedSizes] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
+const CreateProductForm = ({initialProduct}) => {
+
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        price: "",
+        category: [],
+        sizes: [],
+        inStock: false,
+    });
+
+    const [selectedSizes, setSelectedSizes] = useState(initialProduct?.sizes || []);
+    const [selectedCategory, setSelectedCategory] = useState(initialProduct?.category || []);
+    const [imagePreviews, setImagePreviews] = useState(initialProduct?.img || []);
     const { product, setProduct, isLoading, setLoading } = useProductStore();
+
+    const isEditing = Boolean(initialProduct);
 
     const createMutation = useCreateProduct();
 
+
+
+    // When `initialProduct` changes, update form fields
     useEffect(() => {
-        setProduct((prev) => ({
-            ...prev,
-            categories: selectedCategory,
-            sizes: selectedSizes,
-        }));
+        if (initialProduct) {
+            setFormData({
+                name: initialProduct.name || "",
+                description: initialProduct.description || "",
+                price: initialProduct.price || "",
+                category: initialProduct.category || [],
+                sizes: initialProduct.sizes || [],  // Fixed `size` typo
+                inStock: initialProduct.inStock || false,
+            });
+    
+            setSelectedCategory(initialProduct.category || []);
+            setSelectedSizes(initialProduct.sizes || []);
+            setImagePreviews(initialProduct.img || []);
+    
+            setProduct((prev) => ({
+                ...prev,
+                ...initialProduct,  // Populate the store with initial values
+            }));
+        }
+    }, [initialProduct, setProduct]);
+
+    useEffect(() => {
+        if (selectedCategory.length > 0 || selectedSizes.length > 0) {
+            setProduct((prev) => ({
+                ...prev,
+                category: selectedCategory.length > 0 ? selectedCategory : prev.category,
+                sizes: selectedSizes.length > 0 ? selectedSizes : prev.sizes,
+            }));
+        }
     }, [selectedCategory, selectedSizes]);
 
     const handleSubmit = (e) => {
@@ -103,7 +142,7 @@ const CreateProductForm = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
-            <h2 className="text-2xl font-semibold mb-6 text-emerald-300">Create New Product</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-emerald-300">{isEditing ? "Edit Product" : "Create New Product"}</h2>
     
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Product Name */}
@@ -115,7 +154,7 @@ const CreateProductForm = () => {
                         type="text"
                         id="name"
                         name="name"
-                        value={product.name}
+                        value={isEditing ? formData.name : product.name}
                         onChange={(e) => setProduct("name", e.target.value)}
                         placeholder="Name"
                         className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -131,7 +170,7 @@ const CreateProductForm = () => {
                     <textarea
                         id="description"
                         name="description"
-                        value={product.description}
+                        value={isEditing ? formData.description : product.description}
                         onChange={(e) => setProduct("description", e.target.value)}
                         rows="3"
                         placeholder="Description"
@@ -149,7 +188,7 @@ const CreateProductForm = () => {
                         type="number"
                         id="price"
                         name="price"
-                        value={product.price}
+                        value={isEditing? formData.price : product.price}
                         onChange={(e) => setProduct("price", e.target.value)}
                         step="1000"
                         placeholder="Price"
@@ -191,7 +230,7 @@ const CreateProductForm = () => {
                             >
                                 <input
                                     type="checkbox"
-                                    value={size}
+                                    value={isEditing ? formData.sizes : size}
                                     checked={Array.isArray(product.sizes) && product.sizes.includes(size)}
                                     onChange={(e) => handleSizeChange(e, size)}
                                     className="w-5 h-5 text-emerald-500 bg-gray-900 border-gray-600 rounded-md focus:ring-2 focus:ring-emerald-400"
@@ -241,7 +280,7 @@ const CreateProductForm = () => {
                     disabled={isLoading}
                 >
                     {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <PlusCircle className="mr-2 h-5 w-5" />}
-                    {isLoading ? "Loading..." : "Create Product"}
+                    {isLoading ? "Loading..." : isEditing ? "Update Product" : "Create Product"}
                 </button>
             </form>
         </motion.div>
