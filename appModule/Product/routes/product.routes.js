@@ -5,7 +5,7 @@ import {protectRoute } from "../../utils/middleware/protectRoute.js";
 
 const router = express.Router();
 
-router.get("/", protectRoute(["USER", "MANAGER", "ADMIN"]), getAllProduct);
+router.get("/", getAllProduct);
 router.get("/featured", getFeaturedProduct);
 router.get("recommended", getRecommendedProduct);
 router.get("/category/:category", getProductsByCategory);

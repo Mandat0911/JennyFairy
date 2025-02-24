@@ -12,8 +12,7 @@ const EmailVerificationPage = () => {
 	const [isVerifying, setIsVerifying] = useState(false);
 
 	const navigate = useNavigate();
-
-    const{verifyEmail, checkAuth, resendVerificationEmail, error} = useAuthStore()
+	const { verifyEmail, checkAuth, resendVerificationEmail, error } = useAuthStore();
 	const { user } = useAuthStore.getState(); // Get user email if stored
 
 	const handleChange = (index, value) => {
@@ -52,14 +51,11 @@ const EmailVerificationPage = () => {
 		e.preventDefault();
 		const verificationCode = code.join("");
 		setIsVerifying(true);
-	
+
 		try {
 			await verifyEmail(verificationCode);
-			await checkAuth(); // Refresh authentication state
-	
-			// Get updated authentication state
+			await checkAuth();
 			const { isAuthenticated, account } = useAuthStore.getState();
-	
 			if (isAuthenticated && account?.isVerified) {
 				toast.success("Email verified successfully");
 				setTimeout(() => navigate("/"), 100);
@@ -68,7 +64,7 @@ const EmailVerificationPage = () => {
 			}
 		} catch (error) {
 			toast.error(error.response?.data?.message || "Error verifying email");
-		}finally {
+		} finally {
 			setIsVerifying(false);
 		}
 	};
@@ -78,9 +74,9 @@ const EmailVerificationPage = () => {
 			toast.error("No email found. Please sign up again.");
 			return;
 		}
-	
+
 		try {
-			setIsResending(true); // Set separate loading state
+			setIsResending(true);
 			await resendVerificationEmail(user.email);
 			toast.success("Verification code resent!");
 			setResendDisabled(true);
@@ -88,13 +84,10 @@ const EmailVerificationPage = () => {
 		} catch (error) {
 			toast.error(error.response?.data?.message || "Error resending code");
 		} finally {
-			setIsResending(false); // Reset loading state
+			setIsResending(false);
 		}
 	};
-	
-	
 
-	// Auto submit when all fields are filled
 	useEffect(() => {
 		if (code.every((digit) => digit !== "")) {
 			handleSubmit(new Event("submit"));
@@ -102,59 +95,59 @@ const EmailVerificationPage = () => {
 	}, [code]);
 
 	return (
-		<div className='w-full max-w-md md:max-w-lg bg-pink-400/30 backdrop-filter backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden mx-4 sm:mx-auto'>
+		<div className="w-full min-h-screen flex items-center justify-center bg-gray-100 px-4">
 			<motion.div
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5 }}
-				className='p-2 sm:p-4 overflow-y-auto'
+				className="w-full max-w-md md:max-w-lg bg-white shadow-lg rounded-xl p-6 sm:p-8"
 			>
-      			<h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-pink-600 to-rose-800 bg-clip-text text-transparent'>
-					Verify Your Email
+				<h2 className="text-2xl font-semibold text-center text-gray-800">
+					Email Verification
 				</h2>
-				<p className='text-center text-white mb-6'>Enter the 6-digit code sent to your email address.</p>
+				<p className="text-center text-gray-600 mt-2">
+					Enter the 6-digit code sent to your email.
+				</p>
 
-				<form onSubmit={handleSubmit} className='space-y-6'>
-					<div className='flex justify-between'>
+				<form onSubmit={handleSubmit} className="mt-6">
+					<div className="flex justify-center gap-2 sm:gap-4">
 						{code.map((digit, index) => (
 							<input
 								key={index}
 								ref={(el) => (inputRefs.current[index] = el)}
-								type='text'
-								maxLength='6'
+								type="text"
+								maxLength="6"
 								value={digit}
 								onChange={(e) => handleChange(index, e.target.value)}
 								onKeyDown={(e) => handleKeyDown(index, e)}
-								className='w-12 h-12 text-center text-2xl font-bold bg-rose-200 text-white border-2 border-pink-600 rounded-lg focus:border-rose-300 focus:outline-none'
+								className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl sm:text-2xl font-semibold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-700 transition"
 							/>
 						))}
 					</div>
-				
-					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
-					
+
+					{error && <p className="text-red-500 text-sm mt-3 text-center">{error}</p>}
+
 					<motion.button
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						type='submit'
+						whileHover={{ scale: 1.03 }}
+						whileTap={{ scale: 0.97 }}
+						type="submit"
 						disabled={isVerifying || code.some((digit) => !digit)}
-						className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-pink-300 to-rose-400 text-white font-bold rounded-lg
-								shadow-lg hover:from-pink-500 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
-								focus:ring-offset-gray-500 transition duration-200'
+						className="w-full mt-6 py-3 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 transition"
 					>
 						{isVerifying ? "Verifying..." : "Verify Email"}
 					</motion.button>
 
 					{/* Resend verification email button */}
 					<motion.button
-						whileHover={{ scale: resendDisabled || isResending ? 1.0 : 1.05 }}
-						whileTap={{ scale: 0.95 }}
+						whileHover={{ scale: resendDisabled || isResending ? 1.0 : 1.03 }}
+						whileTap={{ scale: 0.97 }}
 						type="button"
 						onClick={handleResendCode}
 						disabled={resendDisabled || isResending}
-						className={`mt-3 w-full py-3 px-4 text-white font-bold rounded-lg shadow-lg transition duration-200 ${
+						className={`w-full mt-4 py-3 text-black font-semibold rounded-lg shadow-md transition ${
 							resendDisabled || isResending
-								? "bg-gray-400 cursor-not-allowed"
-								: "bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 focus:ring-2 focus:ring-pink-500"
+								? "bg-gray-300 cursor-not-allowed"
+								: "border border-gray-700 hover:bg-gray-200 focus:ring-2 focus:ring-gray-700"
 						}`}
 					>
 						{isResending ? "Resending..." : resendDisabled ? "Resend in 30s..." : "Resend Code"}
@@ -164,4 +157,5 @@ const EmailVerificationPage = () => {
 		</div>
 	);
 };
+
 export default EmailVerificationPage;

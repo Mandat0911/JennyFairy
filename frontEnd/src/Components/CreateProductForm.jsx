@@ -152,164 +152,132 @@ const CreateProductForm = ({ initialProduct }) => {
 
     return (
         <motion.div
-            className="bg-gray-800 shadow-lg rounded-lg p-8 mb-8 max-w-xl mx-auto"
+            className="bg-white shadow-xl rounded-lg p-6 mb-8 max-w-lg mx-auto border border-gray-200"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
-            <h2 className="text-2xl font-semibold mb-6 text-emerald-300">
-                {isEditing ? "Edit Product" : "Create New Product"}
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center uppercase tracking-wide">
+                {isEditing ? "Edit Product" : "New Product"}
             </h2>
     
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Product Name */}
                 <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                        Product Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700">Product Name</label>
                     <input
                         type="text"
-                        id="name"
-                        name="name"
                         value={product.name}
-                        onChange={(e) => setProduct({ name: e.target.value })}
-                        placeholder="Name"
-                        className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                        placeholder="Enter product name"
+                        className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                         required
                     />
                 </div>
     
                 {/* Description */}
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-300">
-                        Description
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
-                        id="description"
-                        name="description"
                         value={product.description}
-                        onChange={(e) => setProduct({ description: e.target.value })}
+                        onChange={(e) => setProduct({ ...product, description: e.target.value })}
                         rows="3"
-                        placeholder="Description"
-                        className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        placeholder="Product description"
+                        className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                         required
                     />
                 </div>
     
-                {/* Price & Quantity in the same row */}
-                <div className="flex space-x-4">
-                    {/* Price */}
-                    <div className="w-1/2">
-                        <label htmlFor="price" className="block text-sm font-medium text-gray-300">
-                            Price
-                        </label>
+                {/* Price & Quantity */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Price</label>
                         <input
                             type="number"
-                            id="price"
-                            name="price"
                             value={product.price}
-                            onChange={(e) => setProduct({ price: e.target.value })}
+                            onChange={(e) => setProduct({ ...product, price: e.target.value })}
                             step="1000"
                             placeholder="Price"
-                            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                             required
                         />
                     </div>
-
-                    {/* Quantity */}
-                    <div className="w-1/2">
-                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-300">
-                            Quantity
-                        </label>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Quantity</label>
                         <input
                             type="number"
-                            id="quantity"
-                            name="quantity"
                             value={product.quantity}
-                            onChange={(e) => setProduct({ quantity: e.target.value })}
+                            onChange={(e) => setProduct({ ...product, quantity: e.target.value })}
                             step="1"
                             placeholder="Quantity"
-                            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                             required
                         />
                     </div>
                 </div>
     
                 {/* Category Selection */}
-                <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-                    <label className="block text-lg font-semibold text-emerald-400 mb-2">Select Category</label>
-                    <div className="grid grid-cols-3 gap-3">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Category</label>
+                    <div className="grid grid-cols-3 gap-2">
                         {category.map((cat) => (
-                            <label
-                                key={cat}
-                                className="flex items-center space-x-2 p-2 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-emerald-500 hover:text-white"
-                            >
+                            <label key={cat} className="flex items-center space-x-2 p-2 bg-gray-100 rounded-md cursor-pointer transition duration-300 hover:bg-gray-200">
                                 <input
                                     type="checkbox"
-                                    value={cat}
-                                    checked={Array.isArray(product.category) && product.category.includes(cat)}
+                                    checked={product.category?.includes(cat)}
                                     onChange={(e) => handleCategoryChange(e, cat)}
-                                    className="w-5 h-5 text-emerald-500 bg-gray-900 border-gray-600 rounded-md focus:ring-2 focus:ring-emerald-400"
+                                    className="w-5 h-5 text-gray-800 border-gray-300 rounded focus:ring-2 focus:ring-gray-800"
                                 />
-                                <span className="text-white">{cat}</span>
+                                <span className="text-gray-800">{cat}</span>
                             </label>
                         ))}
                     </div>
                 </div>
     
                 {/* Size Selection */}
-                <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-                    <label className="block text-lg font-semibold text-emerald-400 mb-2">Select Size</label>
-                    <div className="grid grid-cols-3 gap-3">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Size</label>
+                    <div className="grid grid-cols-3 gap-2">
                         {sizes.map((size) => (
-                            <label
-                                key={size}
-                                className="flex items-center space-x-2 p-2 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-emerald-500 hover:text-white"
-                            >
+                            <label key={size} className="flex items-center space-x-2 p-2 bg-gray-100 rounded-md cursor-pointer transition duration-300 hover:bg-gray-200">
                                 <input
                                     type="checkbox"
-                                    value={product.size}
-                                    checked={Array.isArray(product.sizes) && product.sizes.includes(size)}
+                                    checked={product.sizes?.includes(size)}
                                     onChange={(e) => handleSizeChange(e, size)}
-                                    className="w-5 h-5 text-emerald-500 bg-gray-900 border-gray-600 rounded-md focus:ring-2 focus:ring-emerald-400"
+                                    className="w-5 h-5 text-gray-800 border-gray-300 rounded focus:ring-2 focus:ring-gray-800"
                                 />
-                                <span className="text-white">{size}</span>
+                                <span className="text-gray-800">{size}</span>
                             </label>
                         ))}
                     </div>
                 </div>
     
                 {/* Image Upload */}
-                <div className="w-full">
+                <div>
                     <input type="file" id="img" className="sr-only" accept="image/*" multiple onChange={handleImageChange} />
-                    <label
-                        htmlFor="img"
-                        className="cursor-pointer bg-gray-700 py-2 px-3 border border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-                    >
+                    <label htmlFor="img" className="block cursor-pointer bg-gray-100 py-2 px-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">
                         <Upload className="h-5 w-5 inline-block mr-2" /> Upload Images
                     </label>
-                    <p className="text-xs text-gray-400 mt-2 opacity-75 italic">Only 5 images at a time</p>
-                    <div className="mt-2 overflow-hidden max-h-[120px] w-full bg-gray-800 p-2 rounded-md">
-                        <div className="grid grid-cols-5 gap-2">
-                            {imagePreviews.map((preview, index) => (
-                                <div key={index} className="relative">
-                                    <img src={preview} alt={`Preview ${index}`} className="w-20 h-20 rounded-md shadow-md object-cover" />
-                                    <span
-                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded cursor-pointer"
-                                        onClick={() => handleRemoveImage(index)}
-                                    >
-                                        ✕
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+                    <p className="text-xs text-gray-500 mt-2 italic">Max 5 images</p>
+                    <div className="mt-2 grid grid-cols-5 gap-2">
+                        {imagePreviews.map((preview, index) => (
+                            <div key={index} className="relative">
+                                <img src={preview} alt="Preview" className="w-20 h-20 rounded-md object-cover border border-gray-300" />
+                                <button
+                                    className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
+                                    onClick={() => handleRemoveImage(index)}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
     
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
                     disabled={isLoading}
                 >
                     {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <PlusCircle className="mr-2 h-5 w-5" />}

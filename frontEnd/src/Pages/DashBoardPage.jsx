@@ -18,45 +18,50 @@ const containerVariants = {
 
 const DashboardPage = () => {
 	return (
-		<motion.div 
-		  initial="hidden" 
-		  animate="visible" 
-		  variants={containerVariants} 
-		  className="mt-4 relative min-h-screen text-white overflow-hidden"
+		<motion.div
+			initial="hidden"
+			animate="visible"
+			variants={containerVariants}
+			className="mt-4 relative min-h-screen text-white overflow-hidden"
 		>
-		  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-			<motion.h1 
-			  initial={{ opacity: 0, y: -20 }} 
-			  animate={{ opacity: 1, y: 0 }} 
-			  transition={{ duration: 0.8, ease: "easeOut" }} 
-			  className="text-center text-5xl sm:text-6xl font-bold text-emerald-400 mb-4"
-			>
-			  Explore Our New Collections
-			</motion.h1>
-	  
-			<motion.p 
-			  initial={{ opacity: 0 }} 
-			  animate={{ opacity: 1 }} 
-			  transition={{ duration: 1, ease: "easeOut" }} 
-			  className="text-center text-xl text-white mb-5"
-			>
-			  Discover the latest trends
-			</motion.p>
-	  
-			<motion.div 
-			  variants={containerVariants} 
-			  initial="hidden" 
-			  animate="visible" 
-			  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-			>
-			  {categories.map((category) => (
-				<motion.div key={category.name} variants={itemVariants}>
-				  <LookBookItem category={category} />
+			<div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				{/* Title */}
+				<motion.h1
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.8, ease: "easeOut" }}
+					className="text-center text-4xl sm:text-5xl lg:mt-5 md:mt-4 sm: mt-4 font-semibold uppercase tracking-wide text-gray-900"
+				>
+					Explore Our New Collections
+				</motion.h1>
+
+				{/* Subtitle */}
+				<motion.p
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 1, ease: "easeOut" }}
+					className="text-center text-lg sm:text-xl text-gray-500 mt-3 mb-8"
+				>
+					Discover the latest trends in fashion
+				</motion.p>
+
+				{/* Product Grid */}
+				<motion.div
+					variants={containerVariants}
+					className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4"
+				>
+					{categories.map((category) => (
+						<motion.div
+							key={category.name}
+							variants={itemVariants}
+							className="group relative overflow-hidden rounded-xl shadow-lg bg-gray-50"
+						>
+							<LookBookItem category={category} />
+						</motion.div>
+					))}
 				</motion.div>
-			  ))}
-			</motion.div>
-		  </div>
+			</div>
 		</motion.div>
-	  );
+	);
 };
 export default DashboardPage;

@@ -9,13 +9,6 @@ import Product from "../model/product.models.js";
 
 export const getAllProduct = async(req, res) => {
     try {
-        const userRole = req.account?.userType;
-    
-        if(userRole !== "ADMIN"){
-            console.log(userRole);
-            return res.status(403).json({message: "Access denied - Admin only"})
-        }
-
         const products = await Product.find({});
         res.json({products})
     } catch (error) {

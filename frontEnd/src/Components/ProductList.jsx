@@ -13,61 +13,55 @@ const ProductList = () => {
 
     return (
         <motion.div
-            className="bg-gray-800 shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto"
+            className="bg-white shadow-xl rounded-lg overflow-hidden max-w-5xl mx-auto p-4 md:p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-700">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-100">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Product</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Price</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">InStock</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Featured</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Product</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Price</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider hidden md:table-cell">Category</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Stock</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Featured</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-gray-800 divide-y divide-gray-700">
+                    <tbody className="bg-white divide-y divide-gray-200">
                         {products?.map((product) => (
-                            <tr key={product._id} className="hover:bg-gray-700">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0 h-10 w-10">
-                                            <img className="h-10 w-10 rounded-full object-cover" src={product.img[0]} alt={product.name} />
-                                        </div>
-                                        <div className="ml-4">
-                                            <div className="text-sm font-medium text-white">{product.name}</div>
-                                        </div>
-                                    </div>
+                            <tr key={product._id} className="hover:bg-gray-50 transition duration-200">
+                                <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
+                                    <img className="h-12 w-12 rounded-lg object-cover" src={product.img[0]} alt={product.name} />
+                                    <span className="text-sm font-medium text-gray-900">{product.name}</span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="inline-block px-3 py-1 text-sm font-semibold text-green-800 bg-green-200 rounded-full">
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                    <span className="text-sm font-semibold text-gray-700">
                                         {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex flex-wrap gap-2">
+                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                    <div className="flex flex-wrap gap-1">
                                         {Array.isArray(product.category) &&
                                             product.category.map((cat, index) => (
-                                                <span key={index} className="bg-emerald-600 text-white text-xs font-medium px-2 py-1 rounded-md">
+                                                <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
                                                     {cat}
                                                 </span>
                                             ))}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${product.quantity ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${product.quantity ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
                                         {product.quantity ? "In Stock" : "Out of Stock"}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-4 py-3 whitespace-nowrap">
                                     <button
                                         onClick={() => toggleFeaturedProduct.mutate(product._id)}
-                                        className={`flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full transition-colors duration-200 ${
-                                            product.isFeatured ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                        className={`flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg transition duration-200 ${
+                                            product.isFeatured ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500" : "bg-gray-300 text-gray-700 hover:bg-gray-400"
                                         }`}
                                     >
                                         <Star className="h-4 w-4" />
@@ -82,7 +76,7 @@ const ProductList = () => {
                                                 onSettled: () => setDeletingProductId(null),
                                             });
                                         }}
-                                        className="text-red-400 hover:text-red-300"
+                                        className="text-red-500 hover:text-red-400"
                                         disabled={deletingProductId === product._id || isDeleting}
                                     >
                                         {deletingProductId === product._id || isDeleting ? (
@@ -105,16 +99,16 @@ const ProductList = () => {
             </div>
             {editProductData && (
                 <div
-                    className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-white/30 z-50"
+                    className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-black/30 z-50"
                     onClick={() => setEditProductData(null)}
                 >
                     <div
-                        className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[80vh] overflow-y-auto relative"
+                        className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[80vh] overflow-y-auto relative"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={() => setEditProductData(null)}
-                            className="sticky top-0 text-gray-400 hover:text-gray-200 justify-end"
+                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                         >
                             <X className="h-6 w-6" />
                         </button>
