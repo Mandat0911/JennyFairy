@@ -14,6 +14,8 @@ import ResetPasswordPage from './Pages/Auth/ResetPasswordPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import CL1 from './Pages/Collection/CL1.jsx';
+import CategoryPage from './Pages/Category/CategoryPage.jsx';
+import ProductPage from './Pages/Product/ProductPage.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -31,7 +33,7 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     if (!account?.isVerified) return <Navigate to="/verify-email" replace />;
 
     if(requiredRoles.length > 0 && !requiredRoles.includes(account?.userType)){
-        return <Navigate to="/unauthorized" replace/>
+        return <Navigate to="/" replace />
     }
 
     return children;
@@ -47,7 +49,7 @@ function App() {
     if (isCheckingAuth) return <LoadingSpinner />;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-300 via-pink-200 to-rose-300 flex items-center justify-center relative overflow-hidden">
+        <div>
             <FloatingShape color="bg-pink-300" size="w-64 h-64" top="-5%" left="10%" delay={0} />
             <FloatingShape color="bg-rose-400" size="w-48 h-48" top="70%" left="80%" delay={5} />
             <FloatingShape color="bg-white" size="w-32 h-32" top="40%" left="-10%" delay={2} />
@@ -56,7 +58,7 @@ function App() {
                 <Route path="/" element={
                     //  <ProtectedRoute>
                         <DashBoardPage />
-                        //  </ProtectedRoute>
+                         // </ProtectedRoute> 
                         } />
                 <Route path="/signup" element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
                 <Route path="/login" element={<RedirectAuthenticatedUser><LoginPage /></RedirectAuthenticatedUser>} />
@@ -64,10 +66,12 @@ function App() {
                 <Route path="/verify-email" element={<EmailVerificationPage />} />
                 <Route path="/reset-password/:token" element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
 
-                <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole={["MANAGER", "ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin-dashboard" element={<ProtectedRoute requiredRoles={["MANAGER", "ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+                
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/products" element={<ProductPage />} />
 
-
-                <Route path="/category/CL1" element={<CL1/>} />
+                <Route path="/lookbook/CL1" element={<CL1/>} />
                 {/* <Route path="/category/CL2" element={<CL2/>} />
                 <Route path="/category/CL3" element={<CL3/>} />
                 <Route path="/category/CL4" element={<CL4/>} />

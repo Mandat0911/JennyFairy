@@ -5,5 +5,6 @@ export const PRODUCT_API_ENDPOINTS = {
   CREATE_PRODUCT: `${API_BE_URL}/product/create-product`,
   EDIT_PRODUCT: (productId) => `${API_BE_URL}/product/edit-product/${productId}`,
   DELETE_PRODUCT: (productId) => `${API_BE_URL}/product/delete/${productId}`,
-  FEATURE_PRODUCT: (productId) => `${API_BE_URL}/product/toggle/${productId}`
+  FEATURE_PRODUCT: (productId) => `${API_BE_URL}/product/toggle/${productId}`,
+  GET_PRODUCT_BY_CATEGORY: (category) => `${API_BE_URL}/product/category/${category}`,
 }

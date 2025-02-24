@@ -59,8 +59,8 @@ const ProductList = () => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${product.inStock ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                        {product.inStock ? "In Stock" : "Out of Stock"}
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${product.quantity ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                                        {product.quantity ? "In Stock" : "Out of Stock"}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">

@@ -5,6 +5,7 @@ const useProductStore = create((set) => ({
         name: '',
         description: '',
         price: '',
+        quantity: '',
         category: [],
         sizes: [],
         img: []
@@ -22,6 +23,7 @@ const useProductStore = create((set) => ({
             name: '',
             description: '',
             price: '',
+            quantity: '',
             category: [],
             sizes: [],
             img: []

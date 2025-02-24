@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, Menu, X } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, Menu, X, Shirt } from "lucide-react";
 import { useAuthStore } from "../Store/authStore";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,9 +31,13 @@ const Navbar = () => {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center space-x-6">
+                        <Link to="/products" className="flex items-center text-gray-600 hover:text-emerald-500 transition">
+                            <Shirt size={22} className="mr-1" />
+                            <span className="hidden sm:inline">Products</span>
+                        </Link>
                         {user && (
-                            <Link to="/cart" className="relative group text-gray-600 hover:text-emerald-500 transition">
-                                <ShoppingCart size={22} />
+                            <Link to="/cart" className="flex items-center text-gray-600 hover:text-emerald-500 transition">
+                                <ShoppingCart size={22} className="mr-1"/>
                                 <span className="hidden sm:inline">Cart</span>
                             </Link>
                         )}
@@ -80,6 +84,14 @@ const Navbar = () => {
                             exit={{ opacity: 0, y: -10 }}
                             className="lg:hidden mt-4 bg-white shadow-md rounded-lg p-4 space-y-4"
                         >
+                            <Link
+                                to="/products"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center text-gray-600 hover:text-emerald-500 transition"
+                            >
+                                <Shirt size={22} className="mr-2" />
+                                Products
+                            </Link>
                             {user && (
                                 <Link
                                     to="/cart"

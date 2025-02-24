@@ -121,3 +121,21 @@ export const useToggleFeatureProduct = () => {
         },
     })
 }
+
+export const useGetProductByCategory = (category) => {
+    return useQuery({
+        queryKey: ['products', category],
+        queryFn: async () => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_BY_CATEGORY(category), {
+                
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get products');
+            }
+
+            return response.json(); // Return JSON data
+        },
+        enabled: !!category,  // Ensure query runs only if category is provided
+    });
+}

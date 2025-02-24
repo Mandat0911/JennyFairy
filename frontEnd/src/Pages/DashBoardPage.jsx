@@ -1,4 +1,4 @@
-import { CategoryItem } from "../Components/CategoryItem.jsx";
+import { LookBookItem } from "../Components/LookBookItem.jsx";
 import {categories} from "../Utils/Category.js";
 import {motion} from "framer-motion";
 
@@ -51,7 +51,7 @@ const DashboardPage = () => {
 			>
 			  {categories.map((category) => (
 				<motion.div key={category.name} variants={itemVariants}>
-				  <CategoryItem category={category} />
+				  <LookBookItem category={category} />
 				</motion.div>
 			  ))}
 			</motion.div>

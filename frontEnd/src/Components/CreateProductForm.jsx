@@ -30,7 +30,7 @@ const CreateProductForm = ({ initialProduct }) => {
                 category: initialProduct.category || [],
                 sizes: initialProduct.sizes || [],
                 img: initialProduct.img || [],
-                inStock: initialProduct.inStock || false,
+                quantity: initialProduct.quantity || false,
             });
 
             setSelectedCategory(initialProduct.category || []);
@@ -196,22 +196,43 @@ const CreateProductForm = ({ initialProduct }) => {
                     />
                 </div>
     
-                {/* Price */}
-                <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-300">
-                        Price
-                    </label>
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        value={product.price}
-                        onChange={(e) => setProduct({ price: e.target.value })}
-                        step="1000"
-                        placeholder="Price"
-                        className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                        required
-                    />
+                {/* Price & Quantity in the same row */}
+                <div className="flex space-x-4">
+                    {/* Price */}
+                    <div className="w-1/2">
+                        <label htmlFor="price" className="block text-sm font-medium text-gray-300">
+                            Price
+                        </label>
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={product.price}
+                            onChange={(e) => setProduct({ price: e.target.value })}
+                            step="1000"
+                            placeholder="Price"
+                            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required
+                        />
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="w-1/2">
+                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-300">
+                            Quantity
+                        </label>
+                        <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            value={product.quantity}
+                            onChange={(e) => setProduct({ quantity: e.target.value })}
+                            step="1"
+                            placeholder="Quantity"
+                            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required
+                        />
+                    </div>
                 </div>
     
                 {/* Category Selection */}

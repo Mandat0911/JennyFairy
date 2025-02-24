@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
-export const CategoryItem = ({ category }) => {
+export const LookBookItem = ({ category }) => {
 	return (
 		<div className='relative overflow-hidden h-96 w-full rounded-lg group'>
-			<Link to={"/category" + category.id}>
+			<Link to={"/lookbook" + category.id}>
 				<div className='w-full h-full cursor-pointer'>
 					<div className='absolute inset-0 bg-gradient-to-b from-transparent to-gray-600 opacity-50 z-10' />
 					<img

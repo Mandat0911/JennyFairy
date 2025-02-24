@@ -52,7 +52,7 @@ export const getFeaturedProduct = async(req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const { name, description, price, img, category, sizes } = req.body;
+        const { name, description, price, img, category, sizes, quantity } = req.body;
         
         let imageUrls = [];
 
@@ -94,6 +94,7 @@ export const createProduct = async (req, res) => {
             name,
             description,
             price,
+            quantity,
             img: imageUrls,
             category,
             sizes,
