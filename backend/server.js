@@ -10,6 +10,7 @@ import cartRoute from "../appModule/cart/routes/cart.routes.js"
 import cartCoupons from "../appModule/Coupons/routes/coupon.routes.js"
 import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
 import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
+import collectionRoute from "../appModule/Collections/routes/collections.routes.js"
 
 
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 // API auth
 app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
+app.use("/api/collection/", collectionRoute);
 app.use("/api/cart/", cartRoute);
 app.use("/api/coupons/", cartCoupons);
 app.use("/api/payment/", paymentRoute)

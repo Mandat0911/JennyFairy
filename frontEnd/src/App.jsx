@@ -13,8 +13,7 @@ import ForgotPasswordPage from './Pages/Auth/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './Pages/Auth/ResetPasswordPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
-import CL1 from './Pages/Collection/CL1.jsx';
-import CategoryPage from './Pages/Category/CategoryPage.jsx';
+import CL1 from './Pages/Collection/CollectionDetail.jsx';
 import ProductPage from './Pages/Product/ProductPage.jsx';
 import ProductDetail from './Pages/Product/ProductDetail.jsx';
 
@@ -69,11 +68,10 @@ function App() {
 
                 <Route path="/admin-dashboard" element={<ProtectedRoute requiredRoles={["MANAGER", "ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
                 
-                <Route path="/category/:category" element={<CategoryPage />} />
                 <Route path="/products" element={<ProductPage />} />
                 <Route path="/product/:productId" element={<ProductDetail />} />
 
-                <Route path="/lookbook/CL1" element={<CL1/>} />
+                <Route path="/Collection/:collectionId" element={<CL1/>} />
                 {/* <Route path="/category/CL2" element={<CL2/>} />
                 <Route path="/category/CL3" element={<CL3/>} />
                 <Route path="/category/CL4" element={<CL4/>} />

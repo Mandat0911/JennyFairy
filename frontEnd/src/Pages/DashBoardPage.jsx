@@ -1,5 +1,5 @@
 import { LookBookItem } from "../Components/LookBookItem.jsx";
-import {categories} from "../Utils/Category.js";
+import { collections} from "../Utils/Category.js";
 import {motion} from "framer-motion";
 
 const containerVariants = {
@@ -50,14 +50,14 @@ const DashboardPage = () => {
 					variants={containerVariants}
 					className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4"
 				>
-					{categories.map((category) => (
+					{collections.map((collection) => (
 						<motion.div
-							key={category.name}
+							key={collection.name}
 							variants={itemVariants}
 							className="group relative overflow-hidden rounded-xl shadow-lg bg-gray-50"
 						>
-							<LookBookItem category={category} />
-						</motion.div>
+							<LookBookItem collection={collection} />
+						</motion.div> 
 					))}
 				</motion.div>
 			</div>

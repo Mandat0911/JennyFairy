@@ -1,6 +1,6 @@
 export const category = ["Stylish blouse", "Camisole", "sweater", "Skirt"];
 
-export const categories = [
+export const collections = [
 	{ id: "/CL1", name: "F'01", imageUrl: "/Collection/CL1.webp" },
 	{ id: "/CL2", name: "F'02", imageUrl: "/Collection/CL2.webp" },
 	{ id: "/CL3", name: "F'03", imageUrl: "/Collection/CL3.webp" },
