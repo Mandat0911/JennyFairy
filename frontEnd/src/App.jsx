@@ -16,6 +16,7 @@ import AdminDashboard from './Pages/AdminDashboard.jsx';
 import CL1 from './Pages/Collection/CL1.jsx';
 import CategoryPage from './Pages/Category/CategoryPage.jsx';
 import ProductPage from './Pages/Product/ProductPage.jsx';
+import ProductDetail from './Pages/Product/ProductDetail.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -70,6 +71,7 @@ function App() {
                 
                 <Route path="/category/:category" element={<CategoryPage />} />
                 <Route path="/products" element={<ProductPage />} />
+                <Route path="/product/:productId" element={<ProductDetail />} />
 
                 <Route path="/lookbook/CL1" element={<CL1/>} />
                 {/* <Route path="/category/CL2" element={<CL2/>} />

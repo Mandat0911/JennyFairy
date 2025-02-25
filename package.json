@@ -25,6 +25,7 @@
     "mongoose": "^8.9.5",
     "nodemailer": "^6.9.16",
     "react-hot-toast": "^2.5.1",
+    "react-swipeable": "^7.0.2",
     "sharp": "^0.33.5",
     "stripe": "^17.5.0",
     "uuid": "^11.0.5"

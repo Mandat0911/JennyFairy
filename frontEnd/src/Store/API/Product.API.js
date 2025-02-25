@@ -1,5 +1,6 @@
 import { PRODUCT_API_ENDPOINTS } from "../../Utils/config.js"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams } from "react-router-dom";
 import useProductStore from '../../Store/productStore.js';
 import toast from 'react-hot-toast';
 
@@ -9,6 +10,7 @@ export const useCreateProduct = () => {
     const { resetProduct, setLoading } = useProductStore();
     return useMutation({
         mutationFn: async (newProduct) => {
+            console.log(newProduct)
             const response = await fetch(PRODUCT_API_ENDPOINTS.CREATE_PRODUCT, {
                 method: 'POST',
                 headers: { 
@@ -87,6 +89,25 @@ export const useGetAllProduct = () => {
     });
 };
 
+export const useGetProductDetail = () => {
+    const { productId } = useParams(); 
+
+    return useQuery({
+        queryKey: ['product', productId], // Ensure cache is per product
+        queryFn: async () => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId), {
+                
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch product');
+            }
+
+            return response.json();
+        },
+        enabled: !!productId, // Only run query when productId exists
+    });
+};
 export const useDeleteProduct = () => {
     const queryClient = useQueryClient();
     

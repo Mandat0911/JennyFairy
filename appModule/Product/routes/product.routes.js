@@ -1,11 +1,12 @@
 import express from "express"
-import {getAllProduct, getFeaturedProduct, createProduct, deleteProduct, getRecommendedProduct, getProductsByCategory, toggleFeaturedProduct, editProduct} from "../../Product/controllers/product.controller.js"
+import {getAllProduct, getFeaturedProduct, createProduct, deleteProduct, getRecommendedProduct, getProductsByCategory, toggleFeaturedProduct, editProduct, getProductDetail} from "../../Product/controllers/product.controller.js"
 import {protectRoute } from "../../utils/middleware/protectRoute.js";
 
 
 const router = express.Router();
 
 router.get("/", getAllProduct);
+router.get("/:id", getProductDetail)
 router.get("/featured", getFeaturedProduct);
 router.get("recommended", getRecommendedProduct);
 router.get("/category/:category", getProductsByCategory);

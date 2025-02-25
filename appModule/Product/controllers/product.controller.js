@@ -17,6 +17,22 @@ export const getAllProduct = async(req, res) => {
     }
 }
 
+export const getProductDetail = async(req, res) => {
+    try {
+        const {id: productId} = req.params;
+
+        const product = await Product.findById(productId);
+
+        if(!product) {
+            return res.status(404).json({message: "Product not found!"});
+        }
+        res.json(product)
+    } catch (error) {
+        console.error("Error in getProductDetail controller: ", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
+
 export const getFeaturedProduct = async(req, res) => {
     try {
         // Check redis cache first
