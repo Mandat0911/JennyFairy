@@ -1,6 +1,8 @@
 import { PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplate.js";
 import {transporter} from "./email.Config.js";
+
 import dotenv from "dotenv";
+
 
 dotenv.config();
 

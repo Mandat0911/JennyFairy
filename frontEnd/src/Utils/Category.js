@@ -1,4 +1,4 @@
-export const category = ["jeans", "t-shirts", "shoes", "glasses", "jackets", "suits", "bags"];
+export const category = ["Stylish blouse", "Camisole", "sweater", "Skirt"];
 
 export const categories = [
 	{ id: "/CL1", name: "F'01", imageUrl: "/Collection/CL1.webp" },

@@ -93,7 +93,6 @@ export const createCheckoutSession = async (req, res) => {
             },
         });
 
-        console.log(session)
 
         const formattedProducts = productDetails.map((product, index) => ({
             product: products[index].productId, 
@@ -158,15 +157,12 @@ export const checkoutSuccess = async (req, res) => {
                 { new: true }
             );
 
-            console.log(updatedPayment)
-
             if (!updatedPayment) {
                 return res.status(404).json({ error: "Payment record not found!" });
             }
 
             // Create order after successful payment
             const products = JSON.parse(session.metadata.products);
-            console.log(products)
             const newOrder = new Order({
                 user: session.metadata.userId,
                 products: products.map((product) => ({
