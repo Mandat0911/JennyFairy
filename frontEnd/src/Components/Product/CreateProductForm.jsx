@@ -3,10 +3,10 @@ import toast from 'react-hot-toast';
 import { PlusCircle, Upload, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-import { category } from '../Utils/Category.js';
-import { sizes } from '../Utils/Size.js';
-import useProductStore from '../Store/productStore.js';
-import { useCreateProduct, useEditProduct } from '../Store/API/Product.API.js';
+import { category } from '../../Utils/Category.js';
+import { sizes } from '../../Utils/Size.js';
+import useProductStore from '../../Store/Zustand/productStore.js';
+import { useCreateProduct, useEditProduct } from '../../Store/API/Product.API.js';
 
 
 const CreateProductForm = ({ initialProduct }) => {

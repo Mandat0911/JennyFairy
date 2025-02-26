@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trash, Edit, Loader, X } from "lucide-react";
 import { useDeleteCollection, useGetAllCollection } from '../../Store/API/Collection.API.js';
-import CreateCollectionForm from '../Collection/CreateCollectionForm.jsx';
+import CreateCollectionForm from './CreateCollectionForm.jsx';
 
 
 const CollectionList = () => {

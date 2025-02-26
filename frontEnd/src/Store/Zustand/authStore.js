@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import axios from "../lib/axios.lib.js";
+import axios from "../../lib/axios.lib.js";
 
 export const useAuthStore = create((set) => ({
     user: null,

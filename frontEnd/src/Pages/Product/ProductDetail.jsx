@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useGetProductDetail } from "../../Store/API/Product.API.js";
-import LoadingSpinner from "../../Components/LoadingSpinner.jsx";
-import { useAuthStore } from "../../Store/authStore.js";
+import LoadingSpinner from "../../Components/Other/LoadingSpinner.jsx";
+import { useAuthStore } from "../../Store/Zustand/authStore.js";
 import toast from "react-hot-toast";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ProductDetail = () => {
     const { isAuthenticated } = useAuthStore();
@@ -22,7 +23,6 @@ const ProductDetail = () => {
             // addToCart(productDetail);
         }
     };
-
     const handleSwipe = (direction) => {
         setSwipeDirection(direction);
         setSelectedImage((prev) => {
@@ -55,14 +55,18 @@ const ProductDetail = () => {
                             src={productDetail.img[selectedImage]}
                             alt="Main Product"
                             className="w-full h-full object-cover"
-                            initial={{ x: swipeDirection === "left" ? "100%" : "-100%", opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: swipeDirection === "left" ? "-100%" : "100%", opacity: 0 }}
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.1 }}
                             transition={{ duration: 0.4, ease: "easeOut" }}
                         />
                     </AnimatePresence>
-                    <button className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black transition hidden md:block" onClick={() => handleSwipe("right")}>❮</button>
-                    <button className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black transition hidden md:block" onClick={() => handleSwipe("left")}>❯</button>
+                    <button className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black transition hidden md:block" onClick={() => handleSwipe("right")}>
+                    <ChevronLeft className="w-7 h-7" />
+                    </button>
+                    <button className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black transition hidden md:block" onClick={() => handleSwipe("left")}>
+                    <ChevronRight className="w-7 h-7" />
+                    </button>
                 </div>
                 {productDetail.img?.length > 1 && (
                     <div className="mt-4 flex gap-2 overflow-x-auto md:justify-center">

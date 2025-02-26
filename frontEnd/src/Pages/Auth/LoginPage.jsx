@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Loader } from 'lucide-react';
-import Input from '../../Components/Input';
+import Input from '../../Components/Other/Input.jsx';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../Store/authStore';
+import { useAuthStore } from '../../Store/Zustand/authStore.js';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

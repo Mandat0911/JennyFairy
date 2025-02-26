@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ProductCard from "../../Components/ProductCard.jsx";
+import ProductCard from "../../Components/Product/ProductCard.jsx";
 import { useGetAllProduct } from "../../Store/API/Product.API.js";
 import { motion } from "framer-motion";
 import { category } from "../../Utils/Category.js";

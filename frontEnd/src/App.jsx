@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuthStore } from './Store/authStore.js';
+import { useAuthStore } from './Store/Zustand/authStore.js';
 
-import FloatingShape from './Components/FloatingShape.jsx';
-import LoadingSpinner from './Components/LoadingSpinner.jsx';
+import FloatingShape from './Components/Other/FloatingShape.jsx';
+import LoadingSpinner from './Components/Other/LoadingSpinner.jsx';
 import SignUpPage from './Pages/Auth/SignUpPage';
 import LoginPage from './Pages/Auth/LoginPage';
 import EmailVerificationPage from './Pages/Auth/EmailVerificationPage.jsx';
 import DashBoardPage from './Pages/DashBoardPage.jsx';
 import ForgotPasswordPage from './Pages/Auth/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './Pages/Auth/ResetPasswordPage.jsx';
-import Navbar from './Components/Navbar.jsx';
+import Navbar from './Components/Other/Navbar.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import ProductPage from './Pages/Product/ProductPage.jsx';
 import ProductDetail from './Pages/Product/ProductDetail.jsx';

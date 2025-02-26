@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
-import Input from "../../Components/Input.jsx";
+import Input from "../../Components/Other/Input.jsx";
 import { Lock } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAuthStore } from "../../Store/authStore";
+import { useAuthStore } from "../../Store/Zustand/authStore.js";
 
 const ResetPasswordPage = () => {
 	const [password, setPassword] = useState("");

@@ -28,7 +28,7 @@ app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
 app.use("/api/collection/", collectionRoute);
 app.use("/api/cart/", cartRoute);
-app.use("/api/coupons/", cartCoupons);
+app.use("/api/coupon/", cartCoupons);
 app.use("/api/payment/", paymentRoute)
 app.use("/api/analytic/", analyticRoute)
 

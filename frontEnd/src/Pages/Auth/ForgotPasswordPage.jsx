@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import Input from "../../Components/Input";
+import Input from "../../Components/Other/Input.jsx";
 import { ArrowLeft, Loader, Mail, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuthStore } from "../../Store/authStore";
+import { useAuthStore } from "../../Store/Zustand/authStore.js";
 
 const ForgotPasswordPage = () => {
 	const [email, setEmail] = useState("");

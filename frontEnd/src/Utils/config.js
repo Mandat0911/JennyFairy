@@ -17,3 +17,19 @@ export const COLLECTION_API_ENDPOINTS = {
   DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
   EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
 }
+
+export const CART_API_ENDPOINTS = {
+  GET_CART: `${API_BE_URL}/cart/`,
+  // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
+  // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
+  // DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
+  // EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+}
+
+export const COUPON_API_ENDPOINTS = {
+  GET_COUPON: `${API_BE_URL}/coupon/`,
+  // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
+  CREATE_COUPON: `${API_BE_URL}/coupon/create`,
+  // DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
+  // EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+}

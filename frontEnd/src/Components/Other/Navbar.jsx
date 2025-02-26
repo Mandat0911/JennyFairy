@@ -1,13 +1,15 @@
 import { useState } from "react";
 import {  Menu, X} from "lucide-react";
-import { useAuthStore } from "../Store/authStore";
+import { useAuthStore } from "../../Store/Zustand/authStore.js";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGetCartItems } from "../../Store/API/Cart.API.js";
 
 const Navbar = () => {
     const { user, account, logout } = useAuthStore();
     const isAdmin = account?.userType === "ADMIN";
     const [isOpen, setIsOpen] = useState(false);
+    const { data: cart} = useGetCartItems();
 
     const handleLogout = () => {
         logout();
@@ -33,9 +35,20 @@ const Navbar = () => {
                         Products
                     </Link>
                     {user && (
-                        <Link to="/cart" className="hover:underline underline-offset-4 transition duration-300">
-                            Cart
-                        </Link>
+                        <Link 
+                        to="/cart" 
+                        className="relative text-black tracking-wide text-sm hover:opacity-70 transition duration-300"
+                    >
+                        Cart
+                        {cart?.length > 0 && (
+                            <span className="absolute -top-2 -right-3 bg-black text-white rounded-full 
+                            w-4 h-4 flex items-center justify-center text-xs font-medium shadow-md 
+                            transition-all duration-300 ease-in-out">
+                                {cart.length}
+                            </span>
+                        )}
+                    </Link>
+                    
                     )}
                     {isAdmin && (
                         <Link

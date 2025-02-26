@@ -17,7 +17,7 @@ export const getCartProducts = async(req, res) => {
             return {...product.toJSON(), quantity: item.quantity};
         });
 
-        res.json({cartItems})
+        res.json(cartItems)
     } catch (error) {
         console.error("Error in getCartProducts controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

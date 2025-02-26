@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trash, Star, Edit, Loader, X } from "lucide-react";
-import { useDeleteProduct, useGetAllProduct, useToggleFeatureProduct } from '../Store/API/Product.API.js';
+import { useDeleteProduct, useGetAllProduct, useToggleFeatureProduct } from '../../Store/API/Product.API.js';
 import CreateProductForm from './CreateProductForm.jsx';
 
 const ProductList = () => {

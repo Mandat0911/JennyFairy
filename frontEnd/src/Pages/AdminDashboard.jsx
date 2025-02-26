@@ -1,11 +1,11 @@
 import { BarChart, PlusCircle, ShoppingBasket, Image } from 'lucide-react';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import CreateProductForm from '../Components/CreateProductForm.jsx';
-import ProductList from '../Components/ProductList.jsx';
-import AnalyticsView from '../Components/AnalyticsView.jsx';
+import CreateProductForm from '../Components/Product/CreateProductForm.jsx';
+import ProductList from '../Components/Product/ProductList.jsx';
+import AnalyticsView from '../Components/Analytic/AnalyticsView.jsx';
 import CreateCollectionForm from '../Components/Collection/CreateCollectionForm.jsx';
-import CollectionList from '../Components/Admin/CollectionList.jsx';
+import CollectionList from '../Components/Collection/CollectionList.jsx';
 
 
 const tabs = [
