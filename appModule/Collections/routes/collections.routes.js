@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", getAllCollection);
 router.get("/:id", getCollectionDetail)
-router.post("/create-collections", protectRoute(["MANAGER", "ADMIN"]), createCollection);
+router.post("/create-collection", protectRoute(["MANAGER", "ADMIN"]), createCollection);
 router.put("/edit-collection/:id", protectRoute(["MANAGER", "ADMIN"]), editCollection)
 router.delete("/delete/:id", protectRoute(["MANAGER", "ADMIN"]), deleteCollection);
 

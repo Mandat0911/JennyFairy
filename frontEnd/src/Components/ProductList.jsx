@@ -77,9 +77,9 @@ const ProductList = () => {
                                             });
                                         }}
                                         className="text-red-500 hover:text-red-400"
-                                        disabled={deletingProductId === product._id || isDeleting}
+                                        disabled={deletingProductId === product._id}
                                     >
-                                        {deletingProductId === product._id || isDeleting ? (
+                                        {deletingProductId === product._id ? (
                                             <Loader className="mr-2 h-5 w-5 animate-spin" />
                                         ) : (
                                             <Trash className="h-5 w-5" />

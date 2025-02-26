@@ -1,26 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuthStore } from "../Store/authStore.js";
-
-
 
 const ProductCard = ({ product }) => {
-	const { isAuthenticated } = useAuthStore();
     const formatPrice = (price) => {
 		return new Intl.NumberFormat("vi-VN", {
 			style: "currency",
 			currency: "VND",
 		}).format(price);
 	};
-	const handleAddToCart = () => {
-        if  (!isAuthenticated) {
-            toast.error("Please login to add product to cart", {id: "login"});
-            return;
-        }else {
-            // add to cart
-            // addToCart(productDetail);
-        }
-    }
 	return (
 		<Link to={`/product/${product._id}`}>
 		<div className="relative group w-full bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 transform hover:scale-105">
@@ -30,6 +17,7 @@ const ProductCard = ({ product }) => {
 					src={product.img[0]}
 					alt={product.name}
 					className="object-cover w-full h-full group-hover:opacity-80 transition"
+					loading="lazy"
 				/>
 			</div>
 	

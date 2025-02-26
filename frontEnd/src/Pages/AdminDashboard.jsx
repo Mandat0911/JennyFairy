@@ -1,14 +1,18 @@
-import { BarChart, PlusCircle, ShoppingBasket } from 'lucide-react';
+import { BarChart, PlusCircle, ShoppingBasket, Image } from 'lucide-react';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import CreateProductForm from '../Components/CreateProductForm.jsx';
 import ProductList from '../Components/ProductList.jsx';
 import AnalyticsView from '../Components/AnalyticsView.jsx';
+import CreateCollectionForm from '../Components/Collection/CreateCollectionForm.jsx';
+import CollectionList from '../Components/Admin/CollectionList.jsx';
 
 
 const tabs = [
     {id: "create", label: "Create Product", icon: PlusCircle},
     {id: "products", label: "View Products", icon: ShoppingBasket},
+    {id: "collections", label: "Create Collection", icon: PlusCircle},
+    {id: "View collections", label: "View Collection", icon: Image},
     {id: "analytics", label: "Analytics", icon: BarChart},
 ]
 const AdminDashboard = () => {
@@ -55,6 +59,7 @@ const AdminDashboard = () => {
                             <CreateProductForm />
                         </motion.div>
                     )}
+                    
                     {activeTab === "products" && (
                         <motion.div
                             key="products"
@@ -64,6 +69,28 @@ const AdminDashboard = () => {
                             transition={{ duration: 0.3 }}
                         >
                             <ProductList />
+                        </motion.div>
+                    )}
+                    {activeTab === "collections" && (
+                        <motion.div
+                            key="collections"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <CreateCollectionForm />
+                        </motion.div>
+                    )}
+                    {activeTab === "View collections" && (
+                        <motion.div
+                            key="View collections"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <CollectionList />
                         </motion.div>
                     )}
                     {activeTab === "analytics" && (

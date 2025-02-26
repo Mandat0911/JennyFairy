@@ -13,9 +13,9 @@ import ForgotPasswordPage from './Pages/Auth/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './Pages/Auth/ResetPasswordPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
-import CL1 from './Pages/Collection/CollectionDetail.jsx';
 import ProductPage from './Pages/Product/ProductPage.jsx';
 import ProductDetail from './Pages/Product/ProductDetail.jsx';
+import CollectionDetail from './Pages/Collection/CollectionDetail.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -71,12 +71,8 @@ function App() {
                 <Route path="/products" element={<ProductPage />} />
                 <Route path="/product/:productId" element={<ProductDetail />} />
 
-                <Route path="/Collection/:collectionId" element={<CL1/>} />
-                {/* <Route path="/category/CL2" element={<CL2/>} />
-                <Route path="/category/CL3" element={<CL3/>} />
-                <Route path="/category/CL4" element={<CL4/>} />
-                <Route path="/category/CL5" element={<CL5/>} />
-                <Route path="/category/CL6" element={<CL6/>} /> */}
+                <Route path="/Collection/:collectionId" element={<CollectionDetail/>} />
+
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             

@@ -121,16 +121,16 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Floating Add to Cart Button (Only on Mobile) */}
-<div className="fixed bottom-0 left-0 right-0 p-4 border-gray-300 shadow-md md:static md:shadow-none md:border-0">
-    <button
-        className="w-full py-3 text-lg font-semibold text-white bg-black rounded-md 
-            transition-all duration-300 hover:bg-gray-800 active:scale-95 focus:outline-none 
-            focus:ring-2 focus:ring-gray-600 tracking-wide"
-        onClick={handleAddToCart}
-    >
-        ADD TO CART
-    </button>
-</div>
+                <div className="fixed bottom-0 left-0 right-0 p-4 border-gray-300 shadow-md md:static md:shadow-none md:border-0">
+                    <button
+                        className="w-full py-3 text-lg font-semibold text-white bg-black rounded-md 
+                            transition-all duration-300 hover:bg-gray-800 active:scale-95 focus:outline-none 
+                            focus:ring-2 focus:ring-gray-600 tracking-wide"
+                        onClick={handleAddToCart}
+                    >
+                        ADD TO CART
+                    </button>
+                </div>
 
                 
             </div>

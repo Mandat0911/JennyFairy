@@ -9,3 +9,11 @@ export const PRODUCT_API_ENDPOINTS = {
   FEATURE_PRODUCT: (productId) => `${API_BE_URL}/product/toggle/${productId}`,
   GET_PRODUCT_BY_CATEGORY: (category) => `${API_BE_URL}/product/category/${category}`,
 }
+
+export const COLLECTION_API_ENDPOINTS = {
+  GET_COLLECTION: `${API_BE_URL}/collection`,
+  GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
+  CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
+  DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
+  EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+}
