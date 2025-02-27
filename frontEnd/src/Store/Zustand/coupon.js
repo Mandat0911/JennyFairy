@@ -4,7 +4,6 @@ const useCouponStore = create((set) => ({
     coupon: {
         code: '',
         discountPercentage: '',
-        price: '',
         expirationDate: ''
     },
 
@@ -19,7 +18,6 @@ const useCouponStore = create((set) => ({
         coupon: {
             code: '',
             discountPercentage: '',
-            price: '',
             expirationDate: ''
         },
     }),

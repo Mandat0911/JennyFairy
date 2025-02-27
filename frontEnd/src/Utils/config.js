@@ -28,8 +28,7 @@ export const CART_API_ENDPOINTS = {
 
 export const COUPON_API_ENDPOINTS = {
   GET_COUPON: `${API_BE_URL}/coupon/`,
-  // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   CREATE_COUPON: `${API_BE_URL}/coupon/create`,
-  // DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
+  DELETE_COUPON: (couponId) => `${API_BE_URL}/coupon/delete/${couponId}`,
   // EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
 }

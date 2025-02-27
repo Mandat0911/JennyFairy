@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import useCouponStore from "../Zustand/coupon.js";
 
 
-export const useCreateCollection = () => {
+export const useCreateCoupon = () => {
     const queryClient = useQueryClient();
     const { resetCoupon, setLoading } = useCouponStore();
     return useMutation({
@@ -32,3 +32,53 @@ export const useCreateCollection = () => {
         }
     })
 };
+
+
+export const useGetAllCoupon = () => {
+    return useQuery({
+        queryKey: ['coupons'],
+        queryFn: async () => {
+            try {
+                const response = await fetch(COUPON_API_ENDPOINTS.GET_COUPON, {
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    const errorMessage = `Failed to fetch coupons: ${response.status} ${response.statusText}`;
+                    console.error(errorMessage);
+                    throw new Error(errorMessage);
+                }
+
+                const data = await response.json();
+
+                // Ensure it's always an array
+                const coupons = Array.isArray(data) 
+                    ? data 
+                    : (Array.isArray(data.coupons) ? data.coupons : []);
+
+                return coupons;
+            } catch (error) {
+                console.error("Error fetching coupons:", error);
+                throw new Error("Unable to retrieve coupons. Please try again later.");
+            }
+        },
+    });
+};
+
+export const useDeleteCoupon = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: async (couponId) => {
+            const response = await fetch(COUPON_API_ENDPOINTS.DELETE_COUPON(couponId), {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to delete Coupon');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['coupons']); // Refresh the list after deletion
+            toast.success('Coupon deleted successfully!');
+        },
+    })
+}
