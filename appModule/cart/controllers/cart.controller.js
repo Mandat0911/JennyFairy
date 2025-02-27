@@ -1,44 +1,60 @@
 import Product from "../../Product/model/product.models.js";
 
-export const getCartProducts = async(req, res) => {
-
+export const getCartProducts = async (req, res) => {
     try {
         const user = req.user;
 
-        // Find all product id match user's cartItems array
-        const products = await Product.find({ _id: { $in: req.user.cartItems.map((item)  => item.product)}});
+        // Find all product IDs in user's cart
+        const products = await Product.find({ _id: { $in: user.cartItems.map((item) => item.product) } });
 
-        // Add quantity for each product
-        const cartItems = products.map((product) => {
-            // Find the product in cartItems that matches the current product
-            const item = req.user.cartItems.find((cartItem) => cartItem.product.toString() === product.id.toString());
+        // Create a cart summary grouped by cartItemId
+        const cartItems = user.cartItems.map((cartItem) => {
+            // Find the matching product details
+            const product = products.find((p) => p._id.toString() === cartItem.product.toString());
 
-            //Return the product details along with its quantity
-            return {...product.toJSON(), quantity: item.quantity};
+            return {
+                cartItemId: cartItem._id,  // Unique cart item ID (useful for deletion)
+                productId: product._id,
+                name: product.name,
+                img: product.img,
+                price: product.price,
+                size: cartItem.size, // Ensure different sizes appear separately
+                quantity: cartItem.quantity, // Keep track of quantity
+            };
         });
 
-        res.json(cartItems)
+        res.json(cartItems);
     } catch (error) {
         console.error("Error in getCartProducts controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
-}
+};
+
+
+
+
 
 export const addToCart = async(req, res) => {
     try {
-        const {productId, quantity = 1} = req.body;
+        const {productId, quantity = 1, size} = req.body;
         const user = req.user;
 
         if (!productId) {
             return res.status(400).json({ error: "Product ID is required!" });
         }
 
-        const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId));
+        if (!size) {
+            return res.status(400).json({ error: "Size is required!" });
+        }
+
+        const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId)  && item.size === size);
+
         if(existingItem) {
             existingItem.quantity += quantity;
         }else{
             user.cartItems.push({ 
             product: productId, // Push product as an ObjectId
+            size: size,
             quantity,
         });
         }
@@ -57,29 +73,27 @@ export const addToCart = async(req, res) => {
 
 export const removeCartItem = async (req, res) => {
     try {
-        const { productId } = req.body;
+        const { id: cartItemId } = req.params; // Use cartItem ID
         const user = req.user;
 
-        // Find the index pf the product in the cart
-        const itemIndex = user.cartItems.findIndex((item) => item.product.toString() === String(productId));
+        // Check if the item exists in the cart
+        const existingItem = user.cartItems.find((item) => item._id.toString() === String(cartItemId));
 
-        if (itemIndex !== -1) {
-            if(user.cartItems[itemIndex].quantity > 1){
-                user.cartItems[itemIndex].quantity -= 1;
-            }else{
-                user.cartItems = user.cartItems.filter((item) => item.product.toString() !== String(productId));
-            }
-
-            await user.save();
-            return res.json({success: true, cartItems: user.cartItems});
-        }else{
-            return res.status(404).json({error: "Item not found in cart!"})
+        if (!existingItem) {
+            return res.status(404).json({ error: "Cart item not found!" });
         }
+
+        // Remove the item completely
+        user.cartItems = user.cartItems.filter((item) => item._id.toString() !== String(cartItemId));
+
+        await user.save();
+        return res.json({ success: true, cartItems: user.cartItems });
     } catch (error) {
-        console.error("Error in removeCartItem controller: ", error.message);
+        console.error("Error in removeCartItem controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
-}
+};
+
 
 export const removeAllItem = async (req, res) => {
     try {

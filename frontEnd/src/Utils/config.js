@@ -23,8 +23,8 @@ export const CART_API_ENDPOINTS = {
   ADD_TO_CART: `${API_BE_URL}/cart/addItem`,
   // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
-  // DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
-  // EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+  DELETE_ITEM: (cartItemId) => `${API_BE_URL}/cart/removeItem/${cartItemId}`,
+  UPDATE_QUANTITY: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
 }
 
 export const COUPON_API_ENDPOINTS = {

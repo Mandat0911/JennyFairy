@@ -1,6 +1,6 @@
 import { COUPON_API_ENDPOINTS } from "../../Utils/config.js"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import toast from 'react-hot-toast';
 import useCouponStore from "../Zustand/coupon.js";
 

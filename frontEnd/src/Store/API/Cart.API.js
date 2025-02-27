@@ -1,6 +1,6 @@
 import { CART_API_ENDPOINTS } from "../../Utils/config.js"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { useCartStore } from "../Zustand/cartStore.js";
 
@@ -38,7 +38,7 @@ export const useGetCartItems = () => {
 
 export const useAddItemToCart = () => {
     const { addToCart } = useCartStore();
-
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newItem) => {
             const response = await fetch(CART_API_ENDPOINTS.ADD_TO_CART, {
@@ -58,14 +58,34 @@ export const useAddItemToCart = () => {
             return response.json();
         },
         onMutate: async (newItem) => {
-           
+          
             addToCart(newItem);
         },
-        onSuccess: (data) => {
-            toast.success('Item added to cart successfully!');
+        onSuccess: () => {
+            queryClient.invalidateQueries(['cart'])
+            toast.success('Item added to cart successfully!', {id :"added"});
         },
         onError: (error) => {
             toast.error(`Error adding item to cart: ${error.message}`);
         }
     });
 };
+
+export const useDeleteCartItem = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: async (cartItemId) => {
+            const response = await fetch(CART_API_ENDPOINTS.DELETE_ITEM(cartItemId), {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to delete cart item');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['cart']); // Refresh the list after deletion
+            toast.success('Cart item deleted successfully!');
+        },
+    })
+}
+

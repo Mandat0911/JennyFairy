@@ -6,8 +6,8 @@ import { addToCart, removeCartItem, removeAllItem, updateQuantity, getCartProduc
 const router = express.Router();
 router.get("/", protectRoute(["USER","MANAGER", "ADMIN"]), getCartProducts)
 router.post("/addItem", protectRoute(["USER","MANAGER", "ADMIN"]), addToCart);
-router.post("/removeItem", protectRoute(["USER","MANAGER", "ADMIN"]), removeCartItem);
-router.post("/removeAllItem", protectRoute(["USER","MANAGER", "ADMIN"]), removeAllItem);
+router.delete("/removeItem/:id", protectRoute(["USER","MANAGER", "ADMIN"]), removeCartItem);
+router.delete("/removeAllItem", protectRoute(["USER","MANAGER", "ADMIN"]), removeAllItem);
 router.patch("/update-quantity/:id", protectRoute(["USER","MANAGER", "ADMIN"]), updateQuantity);
 
 

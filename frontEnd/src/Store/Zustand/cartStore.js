@@ -1,19 +1,21 @@
 import { create } from 'zustand';
 
 export const useCartStore = create((set, get) => ({
+    
     cart: [], 
     coupon: null, 
     subtotal: 0, 
     total: 0,
+    isCouponApplied: false,
 
     // Add item to cart
     addToCart: (product) => {
         set((state) => {
-            const existingItem = state.cart.find(item => item.productId === product.productId);
+            const existingItem = state.cart.find((item) => item.productId === product.productId);
             
             let updatedCart;
             if (existingItem) {
-                updatedCart = state.cart.map(item =>
+                updatedCart = state.cart.map((item) =>
                     item.productId === product.productId
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
@@ -31,7 +33,7 @@ export const useCartStore = create((set, get) => ({
     // Remove item from cart
     removeFromCart: (productId) => {
         set((state) => {
-            const updatedCart = state.cart.filter(item => item.productId !== productId);
+            const updatedCart = state.cart.filter((item) => item.productId !== productId);
             return { cart: updatedCart };
         });
 

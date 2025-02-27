@@ -27,7 +27,8 @@ const ProductDetail = () => {
             addToCart(
                 {
                     productId : productDetail._id,
-                    quantity: quantity
+                    quantity: quantity,
+                    size: selectedSize
                 }, {
                     onSuccess: () =>{},
                     onError: () =>{},

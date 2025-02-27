@@ -10,6 +10,7 @@ const Navbar = () => {
     const isAdmin = account?.userType === "ADMIN";
     const [isOpen, setIsOpen] = useState(false);
     const { data: cart} = useGetCartItems();
+    
 
     const handleLogout = () => {
         logout();
@@ -21,7 +22,13 @@ const Navbar = () => {
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                 {/* Logo */}
                 <Link to="/" className="text-2xl sm:text-3xl font-semibold text-gray-800 tracking-wide uppercase">
-                    JennyFairy
+                <img 
+                    src="\Logo\NavbarLogo.svg" 
+                    alt="JennyFairy Logo" 
+                    width="200" 
+                    height="75" 
+                    className="h-12 w-auto object-contain" 
+                />
                 </Link>
 
                 {/* Hamburger Menu (Mobile & Tablet) */}

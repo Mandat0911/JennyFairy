@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
                 type: Number,
                 default: 1,
             },
+            size: {
+                type: String,
+                default: "S"
+            },
             product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Product",

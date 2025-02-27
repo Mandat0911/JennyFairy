@@ -16,6 +16,7 @@ import AdminDashboard from './Pages/AdminDashboard.jsx';
 import ProductPage from './Pages/Product/ProductPage.jsx';
 import ProductDetail from './Pages/Product/ProductDetail.jsx';
 import CollectionDetail from './Pages/Collection/CollectionDetail.jsx';
+import CartPage from './Pages/Cart/CartPage.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -72,6 +73,9 @@ function App() {
                 <Route path="/product/:productId" element={<ProductDetail />} />
 
                 <Route path="/Collection/:collectionId" element={<CollectionDetail/>} />
+
+                
+                <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
