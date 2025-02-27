@@ -20,6 +20,7 @@ export const COLLECTION_API_ENDPOINTS = {
 
 export const CART_API_ENDPOINTS = {
   GET_CART: `${API_BE_URL}/cart/`,
+  ADD_TO_CART: `${API_BE_URL}/cart/addItem`,
   // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
   // DELETE_COLLECTION: (collectionId) => `${API_BE_URL}/collection/delete/${collectionId}`,
@@ -30,5 +31,5 @@ export const COUPON_API_ENDPOINTS = {
   GET_COUPON: `${API_BE_URL}/coupon/`,
   CREATE_COUPON: `${API_BE_URL}/coupon/create`,
   DELETE_COUPON: (couponId) => `${API_BE_URL}/coupon/delete/${couponId}`,
-  // EDIT_COLLECTION: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+  VALIDATE_COUPON: `${API_BE_URL}/collection/validate/`,
 }

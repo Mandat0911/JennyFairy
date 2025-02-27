@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useAddItemToCart } from "../../Store/API/Cart.API.js";
 
 const ProductDetail = () => {
     const { isAuthenticated } = useAuthStore();
@@ -13,6 +14,9 @@ const ProductDetail = () => {
     const { data: productDetail, isLoading, error } = useGetProductDetail();
     const [selectedImage, setSelectedImage] = useState(0);
     const [swipeDirection, setSwipeDirection] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
+    const {mutate: addToCart} = useAddItemToCart();
 
     const handleAddToCart = () => {
         if (!isAuthenticated) {
@@ -20,9 +24,26 @@ const ProductDetail = () => {
             return;
         } else {
             // add to cart
-            // addToCart(productDetail);
+            addToCart(
+                {
+                    productId : productDetail._id,
+                    quantity: quantity
+                }, {
+                    onSuccess: () =>{},
+                    onError: () =>{},
+                });
         }
     };
+
+    const increaseQuantity = () => {
+        setQuantity((prev) => prev + 1);
+    };
+
+    // Decrease quantity function (minimum 1)
+    const decreaseQuantity = () => {
+        setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+    };
+
     const handleSwipe = (direction) => {
         setSwipeDirection(direction);
         setSelectedImage((prev) => {
@@ -123,6 +144,22 @@ const ProductDetail = () => {
                         </p>
                     </div>
                 </div>
+                {/* ✅ Quantity Selector */}
+                <div className="mt-6 flex items-center space-x-4">
+                        <button
+                            className="px-3 py-2 text-lg font-semibold bg-gray-200 rounded-md hover:bg-gray-300 transition"
+                            onClick={decreaseQuantity}
+                        >
+                            -
+                        </button>
+                        <span className="text-xl font-semibold">{quantity}</span>
+                        <button
+                            className="px-3 py-2 text-lg font-semibold bg-gray-200 rounded-md hover:bg-gray-300 transition"
+                            onClick={increaseQuantity}
+                        >
+                            +
+                        </button>
+                    </div>
 
                 {/* Floating Add to Cart Button (Only on Mobile) */}
                 <div className="fixed bottom-0 left-0 right-0 p-4 border-gray-300 shadow-md md:static md:shadow-none md:border-0">

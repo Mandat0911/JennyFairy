@@ -26,21 +26,28 @@ export const getCartProducts = async(req, res) => {
 
 export const addToCart = async(req, res) => {
     try {
-        const {productId} = req.body;
+        const {productId, quantity = 1} = req.body;
         const user = req.user;
 
+        if (!productId) {
+            return res.status(400).json({ error: "Product ID is required!" });
+        }
+
         const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId));
-        console.log(existingItem) 
         if(existingItem) {
-            existingItem.quantity += 1;
+            existingItem.quantity += quantity;
         }else{
             user.cartItems.push({ 
             product: productId, // Push product as an ObjectId
+            quantity,
         });
         }
 
         await user.save();
-        res.json(user.cartItems);
+        res.status(200).json({
+            message: "Product added to cart successfully!",
+            cartItems: user.cartItems,
+        });
 
     } catch (error) {
         console.error("Error in addToCart controller: ", error.message);
