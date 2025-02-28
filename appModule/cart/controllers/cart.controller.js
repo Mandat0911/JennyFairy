@@ -87,18 +87,18 @@ export const addToCart = async (req, res) => {
 
 export const removeCartItem = async (req, res) => {
     try {
-        const { id: cartItemId } = req.params; // Use cartItem ID
+        const { id :productId } = req.params; // Get productId from request parameters
         const user = req.user;
 
-        // Check if the item exists in the cart
-        const existingItem = user.cartItems.find((item) => item._id.toString() === String(cartItemId));
+        // Check if the product exists in the user's cart
+        const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId));
 
         if (!existingItem) {
-            return res.status(404).json({ error: "Cart item not found!" });
+            return res.status(404).json({ error: "Product not found in cart!" });
         }
 
-        // Remove the item completely
-        user.cartItems = user.cartItems.filter((item) => item._id.toString() !== String(cartItemId));
+        // Remove all items matching the given productId
+        user.cartItems = user.cartItems.filter((item) => item.product.toString() !== String(productId));
 
         await user.save();
         return res.json({ success: true, cartItems: user.cartItems });
@@ -107,6 +107,9 @@ export const removeCartItem = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
+
+
 
 
 export const removeAllItem = async (req, res) => {

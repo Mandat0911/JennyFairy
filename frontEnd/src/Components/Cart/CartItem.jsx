@@ -1,10 +1,12 @@
 import { X, ChevronUp, ChevronDown } from "lucide-react";
 import { useDeleteCartItem } from "../../Store/API/Cart.API.js";
 import { useState } from "react";
+import useCartStore from "../../Store/Zustand/cartStore.js";
 
 const CartItem = ({ item }) => {
 	const { mutate: removeItem } = useDeleteCartItem();
 	const [quantity, setQuantity] = useState(item.quantity);
+	const {removeFromCart} = useCartStore();
 
 	const increaseQuantity = () => {
 		setQuantity((prev) => prev + 1);
@@ -57,7 +59,8 @@ const CartItem = ({ item }) => {
 			{/* Remove Button */}
 			<button
 				className="p-3 sm:p-2 rounded-full hover:bg-gray-200 transition"
-				onClick={() => removeItem(item.cartItemId)}
+				onClick={() => (removeItem(item.productId),
+					removeFromCart(item.productId))}
 			>
 				<X size={20} />
 			</button>

@@ -12,6 +12,7 @@ import OrderSummary from '../../Components/Other/OrderSummary.jsx';
 
 const CartPage = () => {
 	const { data: cart} = useGetCartItems();
+	console.log("cart:", cart)
 
 
 	return (
@@ -29,7 +30,7 @@ const CartPage = () => {
 						) : (
 							<div className='space-y-6'>
 								{cart?.map((item) => (
-                            <CartItem key={`${item.cartItemId}-${item.size}`} item={item} />
+                            <CartItem key={`${item.productId}-${item.size}`} item={item} />
                                 ))}
 							</div>
 						)}

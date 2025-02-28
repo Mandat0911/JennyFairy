@@ -16,7 +16,6 @@ import useCartStore from "../../Store/Zustand/cartStore";
 const OrderSummary = () => {
 	const { total, subtotal,  isCouponApplied, cart, calculateTotals  } = useCartStore();
 	const { coupon } = useCouponStore();
-	console.log(cart)
 	const savings = subtotal - total;
 	
 	const formatCurrency = (amount) => 

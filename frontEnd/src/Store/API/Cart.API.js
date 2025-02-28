@@ -50,22 +50,20 @@ export const useAddItemToCart = () => {
                 credentials: 'include',
                 body: JSON.stringify(newItem),
             });
-            
+
             const data = await response.json();
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to add item to cart');
             }
 
-            // Ensure cartItems is an array
-            const cartItems = Array.isArray(data.cartItems) ? data.cartItems : [];
-            return cartItems;
+            // ✅ Ensure localStorage updates correctly with new cart items
+            localStorage.setItem("cart-storage", JSON.stringify(data.cartItems));
+
+            return data.cartItems; // Return updated cart
         },
         onMutate: async (newItem) => {
-            // Optimistically update Zustand store before server response
-            const { productId, size, quantity } = newItem;
-
             // Fetch full product details before adding to Zustand store
-            const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId));
+            const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(newItem.productId));
             const productData = await productResponse.json();
 
             if (!productResponse.ok) {
@@ -73,14 +71,15 @@ export const useAddItemToCart = () => {
             }
 
             const detailedItem = {
-                ...productData,  // Include full product details (name, price, image)
-                productId,
-                size,
-                quantity,
+                ...productData,
+                productId: newItem.productId,
+                size: newItem.size,
+                quantity: newItem.quantity,
             };
 
+            // ✅ Update Zustand Store & LocalStorage
             addToCart(detailedItem);
-            console.log("Adding item with details to Zustand store:", detailedItem);
+            console.log("Adding item to cart:", detailedItem);
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['cart']);
@@ -92,21 +91,29 @@ export const useAddItemToCart = () => {
     });
 };
 
+
+
 export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
-    
+    const removeFromCart = useCartStore((state) => state.removeFromCart);
+    const calculateTotals = useCartStore((state) => state.calculateTotals);
+
     return useMutation({
-        mutationFn: async (cartItemId) => {
-            const response = await fetch(CART_API_ENDPOINTS.DELETE_ITEM(cartItemId), {
+        mutationFn: async (productId) => {
+            console.log("cartItemId: ", productId)
+            const response = await fetch(CART_API_ENDPOINTS.DELETE_ITEM(productId), {
                 method: "DELETE",
-                credentials: 'include',
+                credentials: "include",
             });
-            if (!response.ok) throw new Error('Failed to delete cart item');
+            if (!response.ok) throw new Error("Failed to delete cart item");
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['cart']); // Refresh the list after deletion
-            toast.success('Cart item deleted successfully!');
+        onSuccess: (_, productId) => {
+            removeFromCart(productId); // Remove from Zustand store
+            calculateTotals(); // Ensure total and subtotal update
+            queryClient.invalidateQueries(["cart"]); // Refetch cart from API
+            toast.success("Cart item deleted successfully!");
         },
-    })
-}
+    });
+};
+
 

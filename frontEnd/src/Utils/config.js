@@ -23,7 +23,7 @@ export const CART_API_ENDPOINTS = {
   ADD_TO_CART: `${API_BE_URL}/cart/addItem`,
   // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
-  DELETE_ITEM: (cartItemId) => `${API_BE_URL}/cart/removeItem/${cartItemId}`,
+  DELETE_ITEM: (productId) => `${API_BE_URL}/cart/removeItem/${productId}`,
   UPDATE_QUANTITY: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
 }
 
