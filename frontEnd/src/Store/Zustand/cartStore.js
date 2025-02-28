@@ -1,70 +1,60 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import useCouponStore from "./coupon";
 
-export const useCartStore = create((set, get) => ({
-    
-    cart: [], 
-    coupon: null, 
-    subtotal: 0, 
-    total: 0,
-    isCouponApplied: false,
+const useCartStore = create(
+    persist(
+        (set, get) => ({
+            cart: [],
+            subtotal: 0,
+            total: 0,
+            addToCart: (product) => {
+                set((state) => {
+                    const existingItem = state.cart.find((item) => item.id === product.id);
 
-    // Add item to cart
-    addToCart: (product) => {
-        set((state) => {
-            const existingItem = state.cart.find((item) => item.productId === product.productId);
-            
-            let updatedCart;
-            if (existingItem) {
-                updatedCart = state.cart.map((item) =>
-                    item.productId === product.productId
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                );
-            } else {
-                updatedCart = [...state.cart, { ...product, quantity: 1 }];
-            }
+                    let updatedCart;
+                    if (existingItem) {
+                        updatedCart = state.cart.map((item) =>
+                            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+                        );
+                    } else {
+                        updatedCart = [...state.cart, { ...product, quantity: 1 }];
+                    }
 
-            return { cart: updatedCart };
-        });
+                    return { cart: updatedCart };
+                });
 
-        get().calculateTotals();
-    },
+                get().calculateTotals(); // Recalculate totals when adding a product
+            },
+            removeFromCart: (productId) => {
+                set((state) => ({
+                    cart: state.cart.filter((item) => item.id !== productId),
+                }));
 
-    // Remove item from cart
-    removeFromCart: (productId) => {
-        set((state) => {
-            const updatedCart = state.cart.filter((item) => item.productId !== productId);
-            return { cart: updatedCart };
-        });
+                get().calculateTotals(); // Recalculate totals after removal
+            },
+            calculateTotals: () => {
+                set((state) => {
+                    const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-        get().calculateTotals();
-    },
+                    // Fetch the latest applied coupon from Zustand
+                    const coupon = useCouponStore.getState().coupon;
+                    const discountAmount = coupon?.discountPercentage
+                        ? (subtotal * coupon.discountPercentage) / 100
+                        : 0;
 
-    // Update item quantity
-    updateQuantity: (productId, quantity) => {
-        set((state) => ({
-            cart: state.cart.map(item =>
-                item.productId === productId ? { ...item, quantity } : item
-            )
-        }));
+                    const total = subtotal - discountAmount;
 
-        get().calculateTotals();
-    },
+                    return { subtotal, discount: discountAmount, total };
+                });
+            },
+            clearCart: () => set({ cart: [], subtotal: 0, total: 0 }),
+        }),
+        {
+            name: "cart-storage", // Name for localStorage key
+            getStorage: () => localStorage, // Use localStorage for persistence
+        }
+    )
+);
 
-    // Apply coupon and update total
-    applyCoupon: (couponCode, discount) => {
-        set({ coupon: { code: couponCode, discount } });
-        get().calculateTotals();
-    },
-
-    // Calculate Subtotal & Total
-    calculateTotals: () => {
-        set((state) => {
-            const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-            const discountAmount = state.coupon ? (subtotal * state.coupon.discount) / 100 : 0;
-            const total = subtotal - discountAmount;
-
-            return { subtotal, total };
-        });
-    }
-}));
+export default useCartStore;

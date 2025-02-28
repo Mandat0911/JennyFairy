@@ -1,5 +1,5 @@
 import Product from "../../Product/model/product.models.js";
-
+import User from "../../User/models/user.models.js";
 export const getCartProducts = async (req, res) => {
     try {
         const user = req.user;
@@ -34,10 +34,15 @@ export const getCartProducts = async (req, res) => {
 
 
 
-export const addToCart = async(req, res) => {
+export const addToCart = async (req, res) => {
     try {
-        const {productId, quantity = 1, size} = req.body;
-        const user = req.user;
+        const { productId, quantity = 1, size } = req.body;
+        const user = req.user
+        // const user = await User.findById(req.user._id).populate('cartItems.product');
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
         if (!productId) {
             return res.status(400).json({ error: "Product ID is required!" });
@@ -47,29 +52,38 @@ export const addToCart = async(req, res) => {
             return res.status(400).json({ error: "Size is required!" });
         }
 
-        const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId)  && item.size === size);
+        const existingItem = user.cartItems.find(
+            (item) => item.product._id.toString() === String(productId) && item.size === size
+        );
 
-        if(existingItem) {
+        if (existingItem) {
             existingItem.quantity += quantity;
-        }else{
-            user.cartItems.push({ 
-            product: productId, // Push product as an ObjectId
-            size: size,
-            quantity,
-        });
+        } else {
+            user.cartItems.push({
+                product: productId,
+                size: size,
+                quantity,
+            });
         }
 
         await user.save();
+
+        // Fetch and populate the updated user
+        const updatedUser = await User.findById(user._id).populate({
+            path: "cartItems.product",
+            select: "name price image"
+        });
+
         res.status(200).json({
             message: "Product added to cart successfully!",
-            cartItems: user.cartItems,
+            cartItems: updatedUser.cartItems,
         });
 
     } catch (error) {
-        console.error("Error in addToCart controller: ", error.message);
+        console.error("Error in addToCart controller: ", error);
         res.status(500).json({ error: "Internal Server Error!" });
     }
-}
+};
 
 export const removeCartItem = async (req, res) => {
     try {

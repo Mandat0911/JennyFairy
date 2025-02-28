@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
-// import { useCartStore } from "../stores/useCartStore";
+
 import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
+
+import { useEffect } from "react";
+import useCouponStore from "../../Store/Zustand/coupon";
+import useCartStore from "../../Store/Zustand/cartStore";
 // import { loadStripe } from "@stripe/stripe-js";
 // import axios from "../lib/axios";
 
@@ -10,12 +14,24 @@ import { MoveRight } from "lucide-react";
 // );
 
 const OrderSummary = () => {
-	// const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
+	const { total, subtotal,  isCouponApplied, cart, calculateTotals  } = useCartStore();
+	const { coupon } = useCouponStore();
+	console.log(cart)
+	const savings = subtotal - total;
+	
+	const formatCurrency = (amount) => 
+		new Intl.NumberFormat("vi-VN", {
+			style: "currency",
+			currency: "VND",
+		}).format(amount); 
 
-	// const savings = subtotal - total;
-	// const formattedSubtotal = subtotal.toFixed(2);
-	// const formattedTotal = total.toFixed(2);
-	// const formattedSavings = savings.toFixed(2);
+	const formattedSubtotal = formatCurrency(subtotal);
+	const formattedTotal = formatCurrency(total);
+	const formattedSavings = formatCurrency(savings);
+
+      useEffect(() => {
+        calculateTotals();
+    }, [cart, coupon]);
 
 	// const handlePayment = async () => {
 	// 	const stripe = await stripePromise;
@@ -47,26 +63,27 @@ const OrderSummary = () => {
 				<div className="space-y-2 text-gray-700">
 					<dl className="flex items-center justify-between">
 						<dt className="text-sm">Subtotal</dt>
-						{/* <dd className='text-base font-medium text-white'>${formattedSubtotal}</dd> */}
+						<dd className='text-base font-medium text-gray-900'>{formattedSubtotal}</dd>
 					</dl>
 
-					{/* {savings > 0 && (
+					{savings < 0 && (
 						<dl className='flex items-center justify-between gap-4'>
 							<dt className='text-base font-normal text-gray-300'>Savings</dt>
 							<dd className='text-base font-medium text-emerald-400'>-${formattedSavings}</dd>
 						</dl>
-					)} */}
+					)}
 
-					{/* {coupon && isCouponApplied && (
-						<dl className='flex items-center justify-between gap-4'>
-							<dt className='text-base font-normal text-gray-300'>Coupon ({coupon.code})</dt>
-							<dd className='text-base font-medium text-emerald-400'>-{coupon.discountPercentage}%</dd>
-						</dl>
-					)} */}
-					<dl className='flex items-center justify-between gap-4 border-t border-gray-600 pt-2'>
-						<dt className='text-base font-bold text-white'>Total</dt>
-						{/* <dd className='text-base font-bold text-emerald-400'>${formattedTotal}</dd> */}
-					</dl>
+{coupon && isCouponApplied && (
+    <dl className='flex items-center justify-between gap-4'>
+        <dt className='text-base font-normal text-gray-300'>Coupon ({coupon.code})</dt>
+        <dd className='text-base font-medium text-emerald-400'>-{coupon.discount}%</dd>
+    </dl>
+)}
+<dl className='flex items-center justify-between gap-4 border-t border-gray-600 pt-2'>
+    <dt className='text-base font-bold text-gray-900'>Total</dt>
+    <dd className='text-base font-bold text-emerald-400'>{formattedTotal}</dd>
+</dl>
+
 				</div>
 
 				<motion.button

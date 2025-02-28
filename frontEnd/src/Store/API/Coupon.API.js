@@ -36,27 +36,30 @@ export const useCreateCoupon = () => {
 
 export const useValidateCoupon = () => {
     const queryClient = useQueryClient();
-    const { resetCoupon, setLoading } = useCouponStore();
+    const { setCoupon, setLoading } = useCouponStore();
     return useMutation({
-        mutationFn: async () => {
+        mutationFn: async (code) => {
             const response = await fetch(COUPON_API_ENDPOINTS.VALIDATE_COUPON, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                  },
                 credentials: 'include',
-                body: JSON.stringify()
+                body: JSON.stringify(code)
+                
             });
+            console.log(response)
             if (!response.ok) throw new Error('Failed to validate Coupon');
             return response.json();
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries(['coupons']);
-            resetCoupon();
+            setCoupon(data);
             setLoading(false)
             toast.success('Coupon validate successfully!');
         },
         onError: (error) => {
+            setLoading(false);
             toast.error(`Error validate Coupon: ${error.message}`);
         }
     })

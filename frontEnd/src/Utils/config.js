@@ -31,5 +31,5 @@ export const COUPON_API_ENDPOINTS = {
   GET_COUPON: `${API_BE_URL}/coupon/`,
   CREATE_COUPON: `${API_BE_URL}/coupon/create`,
   DELETE_COUPON: (couponId) => `${API_BE_URL}/coupon/delete/${couponId}`,
-  VALIDATE_COUPON: `${API_BE_URL}/collection/validate/`,
+  VALIDATE_COUPON: `${API_BE_URL}/coupon/validate/`,
 }

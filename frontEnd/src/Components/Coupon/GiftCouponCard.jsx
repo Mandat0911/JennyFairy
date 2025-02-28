@@ -1,31 +1,50 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useCartStore } from "../../Store/Zustand/cartStore.js";
-import { TicketPercent, XCircle } from "lucide-react";
+import { TicketPercent } from "lucide-react";
 import { useValidateCoupon } from "../../Store/API/Coupon.API.js";
+import useCouponStore from "../../Store/Zustand/coupon.js";
+import toast from "react-hot-toast";
+import useCartStore from "../../Store/Zustand/cartStore.js";
+
 
 const GiftCouponCard = () => {
 	const [userInputCode, setUserInputCode] = useState("");
-	const { coupon, isCouponApplied, getMyCoupon, removeCoupon } = useCartStore();
+	const {calculateTotals} = useCartStore();
+	const { isLoading, setLoading, coupon, setCoupon } = useCouponStore();
     const {mutate: applyCoupon} = useValidateCoupon();
 
-	// useEffect(() => {
-	// 	getMyCoupon();
-	// }, [getMyCoupon]);
+	useEffect(() => {
+        if (coupon.code) {
+            toast.error(`Coupon "${coupon.code}" is already applied!`, {id: "applied"});
+        }
+    }, [coupon]);
 
-	// useEffect(() => {
-	// 	if (coupon) setUserInputCode(coupon.code);
-	// }, [coupon]);
+	const handleApplyCoupon = () => {
+		if(!userInputCode.trim()){
+			toast.warn("Please enter a valid coupon code!");
+			return;
+		}
+		setLoading(true)
+		applyCoupon({
+			code: userInputCode
+		}, {
+			onSuccess:(data) => {
+				
+				setCoupon({
+                    code: data.code,
+                    discountPercentage: data.discountPercentage,
+                    expirationDate: data.expirationDate
+                });
+				setUserInputCode("")
+				toast.success(`Coupon "${data.code}" applied successfully!`);
+				setTimeout(() => {
+                    calculateTotals();
+                }, 0);
+			},
+			onError: () => {setLoading(false)},
+		})
+	};
 
-	// const handleApplyCoupon = () => {
-	// 	if (!userInputCode) return;
-	// 	applyCoupon(userInputCode);
-	// };
-
-	// const handleRemoveCoupon = async () => {
-	// 	await removeCoupon();
-	// 	setUserInputCode("");
-	// };
 
 	return (
 		<motion.div
@@ -62,45 +81,11 @@ const GiftCouponCard = () => {
 					text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300"
 					whileHover={{ scale: 1.02 }}
 					whileTap={{ scale: 0.98 }}
-					 onClick={applyCoupon}
+					 onClick={handleApplyCoupon}
 				>
-					Apply Code
+					{isLoading ? "Loading..." : "Apply"}
 				</motion.button>
 			</div>
-
-			{/* Applied Coupon */}
-			{isCouponApplied && coupon && (
-				<div className="mt-4 border-t pt-4">
-					<h3 className="text-md font-medium text-gray-800">Applied Coupon</h3>
-
-					<div className="mt-2 flex items-center justify-between bg-gray-100 rounded-md p-3">
-						<p className="text-sm text-gray-700">
-							{coupon.code} - {coupon.discountPercentage}% off
-						</p>
-
-						{/* Remove Coupon Button */}
-						<motion.button
-							type="button"
-							className="text-red-500 hover:text-red-700"
-							whileHover={{ scale: 1.1 }}
-							whileTap={{ scale: 0.95 }}
-							// onClick={handleRemoveCoupon}
-						>
-							<XCircle size={18} />
-						</motion.button>
-					</div>
-				</div>
-			)}
-
-			{/* Available Coupon */}
-			{coupon && !isCouponApplied && (
-				<div className="mt-4 border-t pt-4">
-					<h3 className="text-md font-medium text-gray-800">Available Coupon</h3>
-					<p className="mt-2 text-sm text-gray-700">
-						{coupon.code} - {coupon.discountPercentage}% off
-					</p>
-				</div>
-			)}
 		</motion.div>
 	);
 };

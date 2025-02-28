@@ -1,29 +1,37 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-const useCouponStore = create((set) => ({
-    coupon: {
-        code: '',
-        discountPercentage: '',
-        expirationDate: ''
-    },
-
-    setCoupon: (updatedFields) => set((state) => ({
-        coupon: {
-            ...state.coupon,
-            ...updatedFields, // Allows updating multiple fields at once
-        },
-    })),
-
-    resetCoupon: () => set({
-        coupon: {
-            code: '',
-            discountPercentage: '',
-            expirationDate: ''
-        },
-    }),
-
-    isLoading: false,
-    setLoading: (loading) => set({ isLoading: loading })
-}));
+const useCouponStore = create(
+    persist(
+        (set) => ({
+            coupon: {
+                code: "",
+                discountPercentage: 0,
+                expirationDate: "",
+            },
+            setCoupon: (updatedFields) =>
+                set((state) => ({
+                    coupon: {
+                        ...state.coupon,
+                        ...updatedFields,
+                    },
+                })),
+            resetCoupon: () =>
+                set({
+                    coupon: {
+                        code: "",
+                        discountPercentage: 0,
+                        expirationDate: "",
+                    },
+                }),
+            isLoading: false,
+            setLoading: (loading) => set({ isLoading: loading }),
+        }),
+        {
+            name: "coupon-storage", // Name for localStorage key
+            getStorage: () => localStorage, // Use localStorage for persistence
+        }
+    )
+);
 
 export default useCouponStore;
