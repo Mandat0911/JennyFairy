@@ -1,24 +1,33 @@
 import { X, ChevronUp, ChevronDown } from "lucide-react";
-import { useDeleteCartItem } from "../../Store/API/Cart.API.js";
+import { useDeleteCartItem, useUpdateQuantityCartItem } from "../../Store/API/Cart.API.js";
 import { useState } from "react";
 import useCartStore from "../../Store/Zustand/cartStore.js";
 
 const CartItem = ({ item }) => {
 	const { mutate: removeItem } = useDeleteCartItem();
 	const [quantity, setQuantity] = useState(item.quantity);
-	const {removeFromCart} = useCartStore();
+	const {removeFromCart, updateQuantity } = useCartStore();
+	const {mutate: updateQuantityAPI} = useUpdateQuantityCartItem();
 
-	const increaseQuantity = () => {
-		setQuantity((prev) => prev + 1);
-	};
+	const handleQuantityChange = (newQuantity) => {
+		if (newQuantity < 1) return; // Prevent invalid quantity
 
-	const decreaseQuantity = () => {
-		setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+		setQuantity(newQuantity);
+		updateQuantityAPI({
+			productId: item.productId,
+			size: item.size,
+			quantity: newQuantity,
+		}, {
+			onSuccess: () => {
+				updateQuantity(item.productId, item.size, newQuantity);
+			}
+		});
 	};
 
 	const handleRemove = () => {
 		removeItem({ productId: item.productId, size: item.size });
 		removeFromCart(item.productId, item.size);
+		resetC
 	};
 
 	return (
@@ -40,14 +49,14 @@ const CartItem = ({ item }) => {
 			<div className="flex items-center border border-gray-300 rounded-md px-2 py-1">
 				<button
 					className="p-2 sm:p-1 hover:text-gray-700 transition"
-					onClick={decreaseQuantity}
+					onClick={() => handleQuantityChange(quantity - 1)}
 				>
 					<ChevronDown size={18} />
 				</button>
-				<span className="px-2 sm:px-3 text-md font-medium">{quantity}</span>
+				<span className="px-2 sm:px-3 text-md font-medium">{item.quantity}</span>
 				<button
 					className="p-2 sm:p-1 hover:text-gray-700 transition"
-					onClick={increaseQuantity}
+					onClick={() => handleQuantityChange(quantity + 1)}
 				>
 					<ChevronUp size={18} />
 				</button>

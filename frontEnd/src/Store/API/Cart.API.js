@@ -92,8 +92,6 @@ export const useAddItemToCart = () => {
     });
 };
 
-
-
 export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
     const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -102,7 +100,6 @@ export const useDeleteCartItem = () => {
 
     return useMutation({
         mutationFn: async ({ productId, size }) => {
-            console.log("Removing item:", { productId, size });
 
             const response = await fetch(CART_API_ENDPOINTS.DELETE_ITEM(productId), {
                 method: "DELETE",
@@ -118,11 +115,46 @@ export const useDeleteCartItem = () => {
         onSuccess: (_, { productId, size }) => {
             removeFromCart(productId, size); // Remove from Zustand store
             calculateTotals(); // Ensure total and subtotal update
-            resetCoupon()
+            // resetCoupon()
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
             toast.success("Cart item deleted successfully!");
         },
     });
 };
 
+
+export const useUpdateQuantityCartItem = () => {
+    const queryClient = useQueryClient();
+    const updateQuantity = useCartStore((state) => state.updateQuantity);
+    const calculateTotals = useCartStore((state) => state.calculateTotals);
+
+    return useMutation({
+        mutationFn: async ({ productId, quantity }) => {
+            const response = await fetch(CART_API_ENDPOINTS.UPDATE_QUANTITY(productId), {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ quantity }), // Fixed the API request payload
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update cart item");
+            }
+
+            return await response.json(); // Ensure a valid return value
+        },
+        onSuccess: (data) => {
+            console.log(data)
+            updateQuantity(data.product, data.size, data.quantity)
+            calculateTotals()
+            queryClient.invalidateQueries(["cart"]); // Refetch cart from API
+            toast.success("Cart item updated successfully!");
+        },
+        onError: () => {
+            toast.error("Failed to update cart item. Please try again.");
+        },
+    });
+};
 

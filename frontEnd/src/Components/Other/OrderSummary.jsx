@@ -71,7 +71,7 @@ const OrderSummary = () => {
 					{/* Subtotal */}
 					<dl className="flex items-center justify-between text-gray-700">
 						<dt className="text-sm">Subtotal</dt>
-						<dd className="text-base font-medium text-gray-900">{formattedSubtotal}</dd>
+						<dd className="text-base font-light text-gray-900">{formattedSubtotal}</dd>
 					</dl>
 	
 					{/* Savings */}

@@ -37,12 +37,37 @@ const useCartStore = create(
             removeFromCart: (productId, size) => {
                 set((state) => {
                     const updatedCart = state.cart.filter((item) => !(item.productId === productId && item.size === size));
+                    const isCartEmpty = updatedCart.length === 0;
+                    if (isCartEmpty) {
+                        useCouponStore.getState().resetCoupon(); // Reset coupon if cart is empty
+                    }
                     return { cart: updatedCart };
                 });
 
                 get().calculateTotals(); // Update totals
             },
 
+            updateQuantity: (productId, size, quantity) => {
+                console.log("cart store: ",productId)
+                set((state) => {
+                    const updatedCart = state.cart.map((item) =>
+                        item.productId === productId && item.size === size
+                            ? { ...item, quantity } // Ensure quantity is updated
+                            : item
+                    );
+            
+                    // 🔹 Calculate subtotal and total inside set to ensure proper update
+                    const subtotal = updatedCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+                    const coupon = useCouponStore.getState().coupon;
+                    const discountAmount = coupon?.discountPercentage
+                        ? (subtotal * coupon.discountPercentage) / 100
+                        : 0;
+                    const total = subtotal - discountAmount;
+            
+                    return { cart: updatedCart, subtotal, discount: discountAmount, total };
+                });
+            },
+            
             calculateTotals: () => {
                 set((state) => {
                     const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -61,8 +86,9 @@ const useCartStore = create(
             setIsCouponApplied: (isApplied) => set({ isCouponApplied: isApplied }),
 
             clearCart: () => {
-                set({ cart: [], subtotal: 0, total: 0 });
-            },
+                useCouponStore.getState().resetCoupon(); // Reset coupon on clear
+                set({ cart: [], subtotal: 0, total: 0, discount: 0, isCouponApplied: false });
+            },            
         }),
         {
             name: "cart-storage", // Name of localStorage key

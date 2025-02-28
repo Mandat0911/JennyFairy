@@ -24,7 +24,7 @@ export const CART_API_ENDPOINTS = {
   // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
   DELETE_ITEM: (productId) => `${API_BE_URL}/cart/removeItem/${productId}`,
-  UPDATE_QUANTITY: (collectionId) => `${API_BE_URL}/collection/edit-collection/${collectionId}`,
+  UPDATE_QUANTITY: (productId) => `${API_BE_URL}/cart/update-quantity/${productId}`,
 }
 
 export const COUPON_API_ENDPOINTS = {
