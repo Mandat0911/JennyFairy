@@ -6,6 +6,7 @@ import { MoveRight } from "lucide-react";
 import { useEffect } from "react";
 import useCouponStore from "../../Store/Zustand/coupon";
 import useCartStore from "../../Store/Zustand/cartStore";
+import { useGetCartItems } from "../../Store/API/Cart.API";
 // import { loadStripe } from "@stripe/stripe-js";
 // import axios from "../lib/axios";
 
@@ -14,7 +15,12 @@ import useCartStore from "../../Store/Zustand/cartStore";
 // );
 
 const OrderSummary = () => {
-	const { total, subtotal,  isCouponApplied, cart, calculateTotals  } = useCartStore();
+	const { total, subtotal,  isCouponApplied, calculateTotals  } = useCartStore();
+
+	const { data: cart} = useGetCartItems();
+
+
+	
 	const { coupon } = useCouponStore();
 	const savings = subtotal - total;
 	
@@ -49,63 +55,74 @@ const OrderSummary = () => {
 	// 	}
 	// };
 
-	return (
-		<motion.div
-        className="space-y-6 rounded-lg border border-gray-300 bg-white p-6 shadow-lg sm:p-8"
-        initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5 }}
-		>
-			<h2 className="text-lg font-semibold tracking-wide text-gray-900">Order Summary</h2>
-
-			<div className="space-y-4">
-				<div className="space-y-2 text-gray-700">
-					<dl className="flex items-center justify-between">
+	
+	
+		return (
+			<motion.div
+				className="rounded-lg border border-gray-200 bg-white p-6 shadow-md sm:p-8"
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.4 }}
+			>
+				{/* Title */}
+				<h2 className="text-lg font-semibold text-gray-900 tracking-tight">Order Summary</h2>
+	
+				<div className="space-y-5 mt-4">
+					{/* Subtotal */}
+					<dl className="flex items-center justify-between text-gray-700">
 						<dt className="text-sm">Subtotal</dt>
-						<dd className='text-base font-medium text-gray-900'>{formattedSubtotal}</dd>
+						<dd className="text-base font-medium text-gray-900">{formattedSubtotal}</dd>
 					</dl>
-
-					{savings < 0 && (
-						<dl className='flex items-center justify-between gap-4'>
-							<dt className='text-base font-normal text-gray-300'>Savings</dt>
-							<dd className='text-base font-medium text-emerald-400'>-${formattedSavings}</dd>
+	
+					{/* Savings */}
+					{savings > 0 && (
+						<dl className="flex items-center justify-between">
+							<dt className="text-sm text-gray-500">Savings</dt>
+							<dd className="text-base font-medium text-emerald-500">{formattedSavings}</dd>
 						</dl>
 					)}
-
-{coupon && isCouponApplied && (
-    <dl className='flex items-center justify-between gap-4'>
-        <dt className='text-base font-normal text-gray-300'>Coupon ({coupon.code})</dt>
-        <dd className='text-base font-medium text-emerald-400'>-{coupon.discount}%</dd>
-    </dl>
-)}
-<dl className='flex items-center justify-between gap-4 border-t border-gray-600 pt-2'>
-    <dt className='text-base font-bold text-gray-900'>Total</dt>
-    <dd className='text-base font-bold text-emerald-400'>{formattedTotal}</dd>
-</dl>
-
-				</div>
-
-				<motion.button
-					className='flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300'
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
-					// onClick={handlePayment}
-				>
-					Proceed to Checkout
-				</motion.button>
-
-				<div className='flex items-center justify-center gap-2'>
-					<span className='text-sm font-normal text-gray-400'>or</span>
-					<Link
-						to='/'
-						className='inline-flex items-center gap-2 text-sm font-medium text-emerald-400 underline hover:text-emerald-300 hover:no-underline'
+	
+					{/* Coupon Discount */}
+					{coupon && isCouponApplied && (
+						<dl className="flex items-center justify-between">
+							<dt className="text-sm text-gray-500">Coupon ({coupon.code})</dt>
+							<dd className="text-base font-medium text-emerald-500">-{coupon.discountPercentage}%</dd>
+						</dl>
+					)}
+	
+					{/* Divider */}
+					<div className="border-t border-gray-300 pt-3"></div>
+	
+					{/* Total */}
+					<dl className="flex items-center justify-between text-gray-900">
+						<dt className="text-base font-semibold">Total</dt>
+						<dd className="text-lg font-bold text-gray-900">{formattedTotal}</dd>
+					</dl>
+	
+					{/* Checkout Button */}
+					<motion.button
+						className="w-full rounded-md bg-gray-900 px-6 py-3 text-sm font-medium text-white tracking-wide hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-700"
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.97 }}
 					>
-						Continue Shopping
-						<MoveRight size={16} />
-					</Link>
+						Proceed to Checkout
+					</motion.button>
+	
+					{/* Continue Shopping */}
+					<div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-2">
+						<span>or</span>
+						<Link
+							to="/"
+							className="inline-flex items-center gap-1 text-gray-800 hover:text-gray-600 transition-all"
+						>
+							Continue Shopping
+							<MoveRight size={16} />
+						</Link>
+					</div>
 				</div>
-			</div>
-		</motion.div>
-	);
-};
-export default OrderSummary;
+			</motion.div>
+		);
+	};
+	
+	export default OrderSummary;
+	

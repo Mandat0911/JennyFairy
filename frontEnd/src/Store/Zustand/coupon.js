@@ -28,8 +28,8 @@ const useCouponStore = create(
             setLoading: (loading) => set({ isLoading: loading }),
         }),
         {
-            name: "coupon-storage", // Name for localStorage key
-            getStorage: () => localStorage, // Use localStorage for persistence
+            name: "coupon-storage", // Local storage key
+            getStorage: () => localStorage, // Store in localStorage
         }
     )
 );

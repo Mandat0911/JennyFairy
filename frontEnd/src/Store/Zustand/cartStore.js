@@ -9,45 +9,38 @@ const useCartStore = create(
             subtotal: 0,
             total: 0,
             discount: 0,
+            isCouponApplied: false,
 
-            addToCart: (product) => {
+            addToCart: (item) => {
                 set((state) => {
-                    const existingItem = state.cart.find((item) => item.productId === product.productId);
-            
+                    const existingItem = state.cart.find(
+                        (cartItem) => cartItem.productId === item.productId && cartItem.size === item.size
+                    );
+
                     let updatedCart;
                     if (existingItem) {
-                        updatedCart = state.cart.map((item) =>
-                            item.productId === product.productId ? { ...item, quantity: item.quantity + 1 } : item
+                        updatedCart = state.cart.map((cartItem) =>
+                            cartItem.productId === item.productId && cartItem.size === item.size
+                                ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+                                : cartItem
                         );
                     } else {
-                        updatedCart = [...state.cart, product]; // Keep all items
+                        updatedCart = [...state.cart, item];
                     }
-            
-                    // ✅ Store updated cart in localStorage
-                    localStorage.setItem("cart-ids", JSON.stringify(updatedCart.map((item) => item.productId)));
-            
+
                     return { cart: updatedCart };
                 });
-            
-                get().calculateTotals();
+
+                get().calculateTotals(); // Ensure total updates
             },
-            
-            
-            
 
-            removeFromCart: (productId) => {
+            removeFromCart: (productId, size) => {
                 set((state) => {
-                    // ✅ Ensure correct property is used for filtering
-                    const updatedCart = state.cart.filter((item) => item.id !== productId);
-
-                    // ✅ Update localStorage
-                    localStorage.setItem("cart-storage", JSON.stringify(updatedCart));
-
+                    const updatedCart = state.cart.filter((item) => !(item.productId === productId && item.size === size));
                     return { cart: updatedCart };
                 });
 
-                // ✅ Immediately recalculate totals
-                get().calculateTotals();
+                get().calculateTotals(); // Update totals
             },
 
             calculateTotals: () => {
@@ -61,25 +54,19 @@ const useCartStore = create(
 
                     const total = subtotal - discountAmount;
 
-                    // ✅ Remove cart from localStorage if empty
-                    if (state.cart.length === 0) {
-                        localStorage.removeItem("cart-storage");
-                    }
-
                     return { subtotal, discount: discountAmount, total };
                 });
             },
 
+            setIsCouponApplied: (isApplied) => set({ isCouponApplied: isApplied }),
+
             clearCart: () => {
                 set({ cart: [], subtotal: 0, total: 0 });
-
-                // ✅ Ensure storage is cleared
-                localStorage.removeItem("cart-storage");
             },
         }),
         {
-            name: "cart-storage",
-            getStorage: () => localStorage, // Persist cart in localStorage
+            name: "cart-storage", // Name of localStorage key
+            getStorage: () => localStorage, // Use localStorage to persist cart
         }
     )
 );

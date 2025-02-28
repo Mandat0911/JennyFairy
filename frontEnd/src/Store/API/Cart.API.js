@@ -2,6 +2,7 @@ import { CART_API_ENDPOINTS, PRODUCT_API_ENDPOINTS } from "../../Utils/config.js
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import useCartStore from "../Zustand/cartStore.js";
+import useCouponStore from "../Zustand/coupon.js";
 
 
 export const useGetCartItems = () => {
@@ -56,7 +57,7 @@ export const useAddItemToCart = () => {
                 throw new Error(data.error || 'Failed to add item to cart');
             }
 
-            // ✅ Ensure localStorage updates correctly with new cart items
+            // Ensure localStorage updates correctly with new cart items
             localStorage.setItem("cart-storage", JSON.stringify(data.cartItems));
 
             return data.cartItems; // Return updated cart
@@ -77,7 +78,7 @@ export const useAddItemToCart = () => {
                 quantity: newItem.quantity,
             };
 
-            // ✅ Update Zustand Store & LocalStorage
+            // Update Zustand Store & LocalStorage
             addToCart(detailedItem);
             console.log("Adding item to cart:", detailedItem);
         },
@@ -97,19 +98,27 @@ export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
     const removeFromCart = useCartStore((state) => state.removeFromCart);
     const calculateTotals = useCartStore((state) => state.calculateTotals);
+    const {resetCoupon} = useCouponStore();
 
     return useMutation({
-        mutationFn: async (productId) => {
-            console.log("cartItemId: ", productId)
+        mutationFn: async ({ productId, size }) => {
+            console.log("Removing item:", { productId, size });
+
             const response = await fetch(CART_API_ENDPOINTS.DELETE_ITEM(productId), {
                 method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 credentials: "include",
+                body: JSON.stringify({ productId, size }), // Send size in request body
             });
+
             if (!response.ok) throw new Error("Failed to delete cart item");
         },
-        onSuccess: (_, productId) => {
-            removeFromCart(productId); // Remove from Zustand store
+        onSuccess: (_, { productId, size }) => {
+            removeFromCart(productId, size); // Remove from Zustand store
             calculateTotals(); // Ensure total and subtotal update
+            resetCoupon()
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
             toast.success("Cart item deleted successfully!");
         },

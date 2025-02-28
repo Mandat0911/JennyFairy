@@ -16,6 +16,11 @@ const CartItem = ({ item }) => {
 		setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 	};
 
+	const handleRemove = () => {
+		removeItem({ productId: item.productId, size: item.size });
+		removeFromCart(item.productId, item.size);
+	};
+
 	return (
 		<div className="flex flex-col sm:flex-row  items-center justify-between gap-4 border-b border-gray-300 py-4 sm:py-6">
 			{/* Product Image & Details */}
@@ -59,8 +64,7 @@ const CartItem = ({ item }) => {
 			{/* Remove Button */}
 			<button
 				className="p-3 sm:p-2 rounded-full hover:bg-gray-200 transition"
-				onClick={() => (removeItem(item.productId),
-					removeFromCart(item.productId))}
+				onClick={handleRemove}
 			>
 				<X size={20} />
 			</button>

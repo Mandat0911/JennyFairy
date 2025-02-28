@@ -87,18 +87,27 @@ export const addToCart = async (req, res) => {
 
 export const removeCartItem = async (req, res) => {
     try {
-        const { id :productId } = req.params; // Get productId from request parameters
+        const { id: productId } = req.params; // Get productId from request parameters
+        const { size } = req.body; // Get size from request body
         const user = req.user;
 
-        // Check if the product exists in the user's cart
-        const existingItem = user.cartItems.find((item) => item.product.toString() === String(productId));
-
-        if (!existingItem) {
-            return res.status(404).json({ error: "Product not found in cart!" });
+        if (!size) {
+            return res.status(400).json({ error: "Size is required to remove an item!" });
         }
 
-        // Remove all items matching the given productId
-        user.cartItems = user.cartItems.filter((item) => item.product.toString() !== String(productId));
+        // Check if the product with the matching size exists in the user's cart
+        const existingItem = user.cartItems.find(
+            (item) => item.product.toString() === String(productId) && item.size === size
+        );
+
+        if (!existingItem) {
+            return res.status(404).json({ error: "Product with specified size not found in cart!" });
+        }
+
+        // Remove only the item that matches the given productId and size
+        user.cartItems = user.cartItems.filter(
+            (item) => !(item.product.toString() === String(productId) && item.size === size)
+        );
 
         await user.save();
         return res.json({ success: true, cartItems: user.cartItems });

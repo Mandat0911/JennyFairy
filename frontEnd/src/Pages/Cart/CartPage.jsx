@@ -12,7 +12,7 @@ import OrderSummary from '../../Components/Other/OrderSummary.jsx';
 
 const CartPage = () => {
 	const { data: cart} = useGetCartItems();
-	console.log("cart:", cart)
+
 
 
 	return (

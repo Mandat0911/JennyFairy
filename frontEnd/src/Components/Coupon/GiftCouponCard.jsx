@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { TicketPercent } from "lucide-react";
 import { useValidateCoupon } from "../../Store/API/Coupon.API.js";
 import useCouponStore from "../../Store/Zustand/coupon.js";
@@ -9,41 +9,51 @@ import useCartStore from "../../Store/Zustand/cartStore.js";
 
 const GiftCouponCard = () => {
 	const [userInputCode, setUserInputCode] = useState("");
-	const {calculateTotals} = useCartStore();
+	const {calculateTotals, setIsCouponApplied} = useCartStore();
 	const { isLoading, setLoading, coupon, setCoupon } = useCouponStore();
     const {mutate: applyCoupon} = useValidateCoupon();
 
-	useEffect(() => {
-        if (coupon.code) {
-            toast.error(`Coupon "${coupon.code}" is already applied!`, {id: "applied"});
-        }
-    }, [coupon]);
-
 	const handleApplyCoupon = () => {
-		if(!userInputCode.trim()){
+		if (!userInputCode.trim()) {
 			toast.warn("Please enter a valid coupon code!");
 			return;
 		}
-		setLoading(true)
-		applyCoupon({
-			code: userInputCode
-		}, {
-			onSuccess:(data) => {
-				
-				setCoupon({
-                    code: data.code,
-                    discountPercentage: data.discountPercentage,
-                    expirationDate: data.expirationDate
-                });
-				setUserInputCode("")
-				toast.success(`Coupon "${data.code}" applied successfully!`);
-				setTimeout(() => {
-                    calculateTotals();
-                }, 0);
-			},
-			onError: () => {setLoading(false)},
-		})
+	
+		// Check if the coupon is already applied
+		if (coupon.code === userInputCode.trim()) {
+			toast.error(`Coupon "${coupon.code}" is already applied!`, { id: "applied" });
+			setUserInputCode("");
+			return;
+		}
+	
+		setLoading(true);
+		
+		applyCoupon(
+			{ code: userInputCode },
+			{
+				onSuccess: (data) => {
+					setCoupon({
+						code: data.code,
+						discountPercentage: data.discountPercentage,
+						expirationDate: data.expirationDate
+					});
+					setUserInputCode("");
+					setIsCouponApplied(true)
+					toast.success(`Coupon "${data.code}" applied successfully!`);
+	
+					setTimeout(() => {
+						calculateTotals();
+					}, 0);
+				},
+				onError: () => {
+					setLoading(false);
+					setUserInputCode("");
+				}
+			}
+		);
 	};
+	
+	
 
 
 	return (

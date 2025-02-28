@@ -15,10 +15,14 @@ const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [swipeDirection, setSwipeDirection] = useState(null);
     const [quantity, setQuantity] = useState(1);
-
+    const [sizeError, setSizeError] = useState(false);
     const {mutate: addToCart} = useAddItemToCart();
 
     const handleAddToCart = () => {
+        if(!selectedSize){
+            setSizeError(true);
+            return;
+        }
         if (!isAuthenticated) {
             toast.error("Please login to add product to cart", { id: "login" });
             return;
@@ -128,14 +132,19 @@ const ProductDetail = () => {
                             <div className="flex gap-2 mt-2">
                                 {productDetail.sizes.map((size, index) => (
                                     <button
+                                        required
                                         key={index}
                                         className={`px-4 py-2 border rounded-md text-sm md:text-base transition ${selectedSize === size ? "border-black bg-gray-200" : "border-gray-400 hover:bg-gray-200"}`}
-                                        onClick={() => setSelectedSize(size)}
+                                        onClick={() =>{
+                                            setSelectedSize(size);
+                                            setSizeError(false);
+                                            }}
                                     >
                                         {size}
                                     </button>
                                 ))}
                             </div>
+                            {sizeError && <p className="text-red-500 text-sm mt-1">Please select a size before adding to cart.</p>}
                         </div>
                     )}
                     <div className="mt-4 mb-4 border-t border-gray-300 pt-6 max-w-3xl">
