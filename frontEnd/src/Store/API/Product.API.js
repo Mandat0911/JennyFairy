@@ -89,6 +89,26 @@ export const useGetAllProduct = () => {
     });
 };
 
+export const useGetRecommendedProduct = () => {
+    return useQuery({
+        queryKey: ['products'],
+        queryFn: async () => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.GET_RECOMMENDED_PRODUCT, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch products');
+            }
+
+            const data = await response.json();
+
+            // Ensure it's an array
+            return Array.isArray(data) ? data : data.products || [];
+        },
+    });
+};
+
 export const useGetProductDetail = () => {
     const { productId } = useParams(); 
 

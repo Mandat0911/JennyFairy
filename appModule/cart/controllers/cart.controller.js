@@ -123,19 +123,20 @@ export const removeCartItem = async (req, res) => {
 
 export const removeAllItem = async (req, res) => {
     try {
-        const { productId } = req.body;
         const user = req.user;
 
-        // Filter out the product from cart
-        const updatedCart = user.cartItems.filter((item) => item.product.toString() !== String(productId));
-
-        // Check if the product was actually in the cart
-        if (updatedCart.length === user.cartItems.length) {
-            return res.status(404).json({ error: "Item not found in cart!" });
+        if(!user) {
+            return res.status(404).json({ error: "User not found !" });
         }
-            user.cartItems = updatedCart;
-            await user.save();
-            return res.json({success: true, cartItems: user.cartItems});
+
+        if(user.cartItems.length < 0) {
+            return res.status(200).json({message: "Cart is empty!"});
+        }
+
+        user.cartItems = [];
+        await user.save();
+
+        return res.json({success: true, cartItems: []});
         
     } catch (error) {
         console.error("Error in removeAllItem controller: ", error.message);

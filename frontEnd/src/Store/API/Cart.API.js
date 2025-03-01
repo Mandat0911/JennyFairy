@@ -96,8 +96,6 @@ export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
     const removeFromCart = useCartStore((state) => state.removeFromCart);
     const calculateTotals = useCartStore((state) => state.calculateTotals);
-    const {resetCoupon} = useCouponStore();
-
     return useMutation({
         mutationFn: async ({ productId, size }) => {
 
@@ -115,12 +113,37 @@ export const useDeleteCartItem = () => {
         onSuccess: (_, { productId, size }) => {
             removeFromCart(productId, size); // Remove from Zustand store
             calculateTotals(); // Ensure total and subtotal update
-            // resetCoupon()
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
             toast.success("Cart item deleted successfully!");
         },
     });
 };
+
+
+export const useDeleteAllCartItem = () => {
+    const queryClient = useQueryClient();
+    const {clearCart} = useCartStore();
+    return useMutation({
+        mutationFn: async () => {
+
+            const response = await fetch(CART_API_ENDPOINTS.DELETE_ALL_ITEM, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            
+            });
+            if (!response.ok) throw new Error("Failed to delete cart item");
+        },
+        onSuccess: () => {
+            clearCart();
+            queryClient.invalidateQueries(["cart"]); // Refetch cart from API
+            toast.success("Cart item deleted successfully!");
+        },
+    });
+};
+
 
 
 export const useUpdateQuantityCartItem = () => {

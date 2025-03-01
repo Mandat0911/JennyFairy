@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {  Menu, X} from "lucide-react";
 import { useAuthStore } from "../../Store/Zustand/authStore.js";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ const Navbar = () => {
     const isAdmin = account?.userType === "ADMIN";
     const [isOpen, setIsOpen] = useState(false);
     const { data: cart} = useGetCartItems();
-    
+
 
     const handleLogout = () => {
         logout();
@@ -38,9 +38,13 @@ const Navbar = () => {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center space-x-8 text-gray-700 font-medium">
+                    <Link to="/" className="hover:underline underline-offset-4 transition duration-300">
+                        Home
+                    </Link>
                     <Link to="/products" className="hover:underline underline-offset-4 transition duration-300">
                         Products
                     </Link>
+                    
                     {user && (
                         <Link 
                         to="/cart" 
@@ -99,9 +103,19 @@ const Navbar = () => {
                         <button className="absolute top-6 right-6 text-gray-700" onClick={() => setIsOpen(false)}>
                             <X size={32} />
                         </button>
+                        <Link to="/" onClick={() => setIsOpen(false)} className="text-lg font-medium text-gray-800 hover:underline">Home</Link>
                         <Link to="/products" onClick={() => setIsOpen(false)} className="text-lg font-medium text-gray-800 hover:underline">Products</Link>
                         {user && (
-                            <Link to="/cart" onClick={() => setIsOpen(false)} className="text-lg font-medium text-gray-800 hover:underline">Cart</Link>
+                            <Link to="/cart" onClick={() => setIsOpen(false)} className="relative text-lg font-medium text-gray-800 hover:underline">
+                            Cart
+                            {cart?.length > 0 && (
+                                <span className="absolute -top-1 -right-5 bg-black text-white rounded-full 
+                                    w-5 h-5 flex items-center justify-center text-xs font-medium shadow-md 
+                                    transition-all duration-300 ease-in-out">
+                                    {cart.length}
+                                </span>
+                            )}
+                        </Link>
                         )}
                         {isAdmin && (
                             <Link to="/admin-dashboard" onClick={() => setIsOpen(false)} className="px-5 py-2 bg-black text-white rounded-full">Dashboard</Link>

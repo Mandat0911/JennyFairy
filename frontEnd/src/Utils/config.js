@@ -2,6 +2,7 @@ const API_BE_URL = "http://localhost:5002/api";
 
 export const PRODUCT_API_ENDPOINTS = {
   GET_PRODUCT: `${API_BE_URL}/product`,
+  GET_RECOMMENDED_PRODUCT: `${API_BE_URL}/product/recommendations/recommendations`,
   GET_PRODUCT_DETAIL: (productId) => `${API_BE_URL}/product/${productId}`,
   CREATE_PRODUCT: `${API_BE_URL}/product/create-product`,
   EDIT_PRODUCT: (productId) => `${API_BE_URL}/product/edit-product/${productId}`,
@@ -24,6 +25,7 @@ export const CART_API_ENDPOINTS = {
   // GET_COLLECTION_DETAIL: (collectionId) => `${API_BE_URL}/collection/${collectionId}`,
   // CREATE_COLLECTION: `${API_BE_URL}/collection/create-collection`,
   DELETE_ITEM: (productId) => `${API_BE_URL}/cart/removeItem/${productId}`,
+  DELETE_ALL_ITEM: `${API_BE_URL}/cart/removeAllItem/`,
   UPDATE_QUANTITY: (productId) => `${API_BE_URL}/cart/update-quantity/${productId}`,
 }
 
