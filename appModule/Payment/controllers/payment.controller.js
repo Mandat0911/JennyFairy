@@ -56,6 +56,16 @@ export const createCheckoutSession = async (req, res) => {
             };
         });
 
+        
+            const usedCoupon = await Payment.findOne({
+                couponCode: couponCode,
+            });
+
+            if (usedCoupon) {
+                return res.status(400).json({ error: "You already used this coupon" });
+            }
+        
+
         if (couponCode) {
             coupon = await Coupon.findOne({
                 code: couponCode,
@@ -77,7 +87,7 @@ export const createCheckoutSession = async (req, res) => {
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
-            success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECK_SESSION_ID}`,
+            success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
             discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : [],
             metadata: {
@@ -92,6 +102,8 @@ export const createCheckoutSession = async (req, res) => {
                 )
             },
         });
+
+        console.log("session:", session)
 
 
         const formattedProducts = productDetails.map((product, index) => ({
@@ -153,7 +165,10 @@ export const checkoutSuccess = async (req, res) => {
             // Update the Payment record with the coupon code
             const updatedPayment = await Payment.findOneAndUpdate(
                 { "paymentDetails.transactionId": sessionId },
-                { couponCode: sessionCouponCode },
+                { couponCode: sessionCouponCode,
+                    isPaid: true,
+                     paymentStatus: "completed"
+                 },
                 { new: true }
             );
 

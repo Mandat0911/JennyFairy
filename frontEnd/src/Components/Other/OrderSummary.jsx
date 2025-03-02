@@ -1,25 +1,20 @@
 import { motion } from "framer-motion";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 
 import { useEffect } from "react";
 import useCouponStore from "../../Store/Zustand/coupon";
 import useCartStore from "../../Store/Zustand/cartStore";
 import { useGetCartItems } from "../../Store/API/Cart.API";
-// import { loadStripe } from "@stripe/stripe-js";
-// import axios from "../lib/axios";
-
-// const stripePromise = loadStripe(
-// 	"pk_test_51KZYccCoOZF2UhtOwdXQl3vcizup20zqKqT9hVUIsVzsdBrhqbUI2fE0ZdEVLdZfeHjeyFXtqaNsyCJCmZWnjNZa00PzMAjlcL"
-// );
 
 const OrderSummary = () => {
 	const { total, subtotal,  isCouponApplied, calculateTotals  } = useCartStore();
 
 	const { data: cart} = useGetCartItems();
 
-
+	const location = useLocation(); // Get current page URL
+	const isCheckoutPage = location.pathname === "/checkout"; // Check if on checkout page
 	
 	const { coupon } = useCouponStore();
 	const savings = subtotal - total;
@@ -37,24 +32,6 @@ const OrderSummary = () => {
       useEffect(() => {
         calculateTotals();
     }, [cart, coupon]);
-
-	// const handlePayment = async () => {
-	// 	const stripe = await stripePromise;
-	// 	const res = await axios.post("/payments/create-checkout-session", {
-	// 		products: cart,
-	// 		couponCode: coupon ? coupon.code : null,
-	// 	});
-
-	// 	const session = res.data;
-	// 	const result = await stripe.redirectToCheckout({
-	// 		sessionId: session.id,
-	// 	});
-
-	// 	if (result.error) {
-	// 		console.error("Error:", result.error);
-	// 	}
-	// };
-
 	
 	
 		return (
@@ -100,25 +77,36 @@ const OrderSummary = () => {
 					</dl>
 	
 					{/* Checkout Button */}
-					<motion.button
-						className="w-full rounded-md bg-gray-900 px-6 py-3 text-sm font-medium text-white tracking-wide hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-700"
-						whileHover={{ scale: 1.02 }}
-						whileTap={{ scale: 0.97 }}
-					>
-						Proceed to Checkout
-					</motion.button>
-	
-					{/* Continue Shopping */}
-					<div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-2">
-						<span>or</span>
-						<Link
-							to="/"
-							className="inline-flex items-center gap-1 text-gray-800 hover:text-gray-600 transition-all"
-						>
-							Continue Shopping
-							<MoveRight size={16} />
-						</Link>
-					</div>
+					{!isCheckoutPage && (
+          <>
+            {/* Checkout Button */}
+            <motion.button
+              className="w-full rounded-md bg-gray-900 px-6 py-3 text-sm font-medium text-white tracking-wide hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-700"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Link
+                to="/checkout"
+                className="inline-flex items-center gap-1 text-white hover:text-gray-300 transition-all"
+              >
+                Proceed to Checkout
+                <MoveRight size={16} />
+              </Link>
+            </motion.button>
+
+            {/* Continue Shopping */}
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-2">
+              <span>or</span>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 text-gray-800 hover:text-gray-600 transition-all"
+              >
+                Continue Shopping
+                <MoveRight size={16} />
+              </Link>
+            </div>
+          </>
+        )}
 				</div>
 			</motion.div>
 		);

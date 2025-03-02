@@ -2,7 +2,6 @@ import { CART_API_ENDPOINTS, PRODUCT_API_ENDPOINTS } from "../../Utils/config.js
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import useCartStore from "../Zustand/cartStore.js";
-import useCouponStore from "../Zustand/coupon.js";
 
 
 export const useGetCartItems = () => {
@@ -17,7 +16,6 @@ export const useGetCartItems = () => {
 
                 if (!response.ok) {
                     const errorMessage = `Failed to fetch collections: ${response.status} ${response.statusText}`;
-                    console.error(errorMessage);
                     throw new Error(errorMessage);
                 }
 

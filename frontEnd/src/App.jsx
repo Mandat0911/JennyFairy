@@ -17,6 +17,9 @@ import ProductPage from './Pages/Product/ProductPage.jsx';
 import ProductDetail from './Pages/Product/ProductDetail.jsx';
 import CollectionDetail from './Pages/Collection/CollectionDetail.jsx';
 import CartPage from './Pages/Cart/CartPage.jsx';
+import CheckoutPage from './Pages/CheckOut/CheckoutPage.jsx';
+import SuccessPage from './Pages/CheckOut/SuccessPage.jsx';
+import CancelPage from './Pages/CheckOut/CancelPage.jsx';
 
 const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
@@ -76,6 +79,9 @@ function App() {
 
                 
                 <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+                <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+                <Route path="/purchase-success" element={<ProtectedRoute><SuccessPage /></ProtectedRoute>} />
+                <Route path="/purchase-cancel" element={<ProtectedRoute><CancelPage /></ProtectedRoute>} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

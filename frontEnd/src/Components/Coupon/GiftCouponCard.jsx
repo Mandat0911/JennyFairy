@@ -15,7 +15,7 @@ const GiftCouponCard = () => {
 
 	const handleApplyCoupon = () => {
 		if (!userInputCode.trim()) {
-			toast.warn("Please enter a valid coupon code!");
+			toast.error("Please enter a valid coupon code!");
 			return;
 		}
 	

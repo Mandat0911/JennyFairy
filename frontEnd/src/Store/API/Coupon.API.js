@@ -48,19 +48,19 @@ export const useValidateCoupon = () => {
                 body: JSON.stringify(code)
                 
             });
-            console.log(response)
-            if (!response.ok) throw new Error('Failed to validate Coupon');
-            return response.json();
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Failed to validate Coupon');
+            return data;
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['coupons']);
             setCoupon(data);
             setLoading(false)
-            toast.success('Coupon validate successfully!');
         },
         onError: (error) => {
             setLoading(false);
-            toast.error(`Error validate Coupon: ${error.message}`);
+            toast.error(error.message);
         }
     })
 };

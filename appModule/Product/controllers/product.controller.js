@@ -224,18 +224,19 @@ export const deleteProduct = async (req, res) => {
 export const getRecommendedProduct = async(req, res) => {
     try {
         //Check redis cache first
-        const cachedProduct = await getCachedRecommendedProducts();
-        if(cachedProduct){
-            return res.json(cachedProduct);
-        }
+        
 
         const recommendedProducts = await Product.find()
-            .limit(5)
+            .limit(3)
             .sort({ createdAt: -1 })
             .select("_id name description price img")
 
            //Store in redis cache
         await updateCachedRecommendedProducts(recommendedProducts);
+        const cachedProduct = await getCachedRecommendedProducts();
+        if(cachedProduct){
+            return res.json(cachedProduct);
+        }
         res.json({recommendedProducts});
 
     } catch (error) {

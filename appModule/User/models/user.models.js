@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
                 type: Number,
                 default: 1,
             },
+            totalPrice: {
+                type: Number,
+                default: 1000,
+            },
             size: {
                 type: String,
                 default: "S"

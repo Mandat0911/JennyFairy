@@ -20,6 +20,7 @@ export const getCartProducts = async (req, res) => {
                 price: product.price,
                 size: cartItem.size, // Ensure different sizes appear separately
                 quantity: cartItem.quantity, // Keep track of quantity
+                totalPrice: cartItem.totalPrice, // Include total price
             };
         });
 
@@ -31,9 +32,6 @@ export const getCartProducts = async (req, res) => {
 };
 
 
-
-
-
 export const addToCart = async (req, res) => {
     try {
         const { productId, quantity = 1, size } = req.body;
@@ -43,14 +41,22 @@ export const addToCart = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-
+        if (!size) {
+                    return res.status(400).json({ error: "Size is required!" });
+                }
+                
         if (!productId) {
             return res.status(400).json({ error: "Product ID is required!" });
         }
 
-        if (!size) {
-            return res.status(400).json({ error: "Size is required!" });
+        // Store total Price
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(400).json({ error: "Product not found!" });
         }
+
+        const productPrice = product.price;
+        const totalPrice = productPrice * quantity;
 
         const existingItem = user.cartItems.find(
             (item) => item.product._id.toString() === String(productId) && item.size === size
@@ -63,6 +69,7 @@ export const addToCart = async (req, res) => {
                 product: productId,
                 size: size,
                 quantity,
+                totalPrice,
             });
         }
 
@@ -118,9 +125,6 @@ export const removeCartItem = async (req, res) => {
 };
 
 
-
-
-
 export const removeAllItem = async (req, res) => {
     try {
         const user = req.user;
@@ -155,13 +159,27 @@ export const updateQuantity = async (req, res) => {
             return res.status(404).json({error: "Quantity must be at least 0."});
         }
 
+        if (!productId) {
+            return res.status(400).json({ error: "Product ID is required!" });
+        }
+
+        // Store total Price
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(400).json({ error: "Product not found!" });
+        }
+
+        const productPrice = product.price;
+
         const itemIndex = user.cartItems.findIndex((item) => item.product.toString() === String(productId));
         if (itemIndex !== -1) {
             if (quantity === 0) {
                 user.cartItems.splice(itemIndex, 1);
             }else{
                 user.cartItems[itemIndex].quantity = quantity;
+                user.cartItems[itemIndex].totalPrice = productPrice * quantity;
             }
+
             await user.save();
             return res.json(user.cartItems);
         }

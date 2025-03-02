@@ -38,8 +38,10 @@ const useCartStore = create(
                 set((state) => {
                     const updatedCart = state.cart.filter((item) => !(item.productId === productId && item.size === size));
                     const isCartEmpty = updatedCart.length === 0;
+                    
                     if (isCartEmpty) {
                         useCouponStore.getState().resetCoupon(); // Reset coupon if cart is empty
+                        set({isCouponApplied:false});
                     }
                     return { cart: updatedCart };
                 });

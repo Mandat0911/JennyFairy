@@ -43,6 +43,7 @@ const CartPage = () => {
                     >
 						
                         {cart?.length === 0 ? (
+                            
                             <EmptyCartUI />
                         ) : (
                             <div className='divide-y divide-gray-200'>
