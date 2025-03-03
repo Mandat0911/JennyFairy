@@ -10,7 +10,7 @@ dotenv.config();
 
 export const createCheckoutSession = async (req, res) => {
     try {
-        const { products, couponCode } = req.body;
+        const { products, couponCode, shippingDetails } = req.body;
         const userId = req.user.id;
         let totalAmount = 0;
         let coupon = null;
@@ -19,6 +19,11 @@ export const createCheckoutSession = async (req, res) => {
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid or empty products array" });
         }
+
+        if (!shippingDetails || !shippingDetails.fullName || !shippingDetails.address || !shippingDetails.phone) {
+            return res.status(400).json({ error: "Shipping details are required" });
+        }
+
 
         // Fetch full product details
         const productDetails = await Promise.all(
@@ -93,6 +98,7 @@ export const createCheckoutSession = async (req, res) => {
             metadata: {
                 userId: userId,
                 couponCode: couponCode || "",
+                shippingDetails: JSON.stringify(shippingDetails),
                 products: JSON.stringify(
                     productDetails.map((product) => ({
                         id: product.id,
@@ -147,6 +153,7 @@ export const checkoutSuccess = async (req, res) => {
 
         // Retrieve Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const shippingDetails = JSON.parse(session.metadata.shippingDetails);
     
         const sessionCouponCode = session.metadata.couponCode;
         // Check if coupon is already used by the user
@@ -187,6 +194,7 @@ export const checkoutSuccess = async (req, res) => {
                 })),
                 totalAmount: session.amount_total + " VND",
                 stripeSessionId: sessionId,
+                shippingDetails: shippingDetails,
             });
 
             await newOrder.save(); // Save order after creation

@@ -44,7 +44,7 @@ const QRCode = () => {
     };
 
     return (
-        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 text-center">
+        <div className="bg-white p-6 rounded-lg shadow-md text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 tracking-wide uppercase">Scan to Pay</h3>
             
             <p className="text-gray-600 text-sm mb-4">
@@ -93,11 +93,11 @@ const QRCode = () => {
                     />
                     <button 
                         className={`absolute right-3 top-2 text-sm font-medium transition ${
-                            copied ? "text-green-600" : "text-gray-500 hover:text-black"
+                            copied ? "text-black-600" : "text-gray-500 hover:text-black"
                         }`}
                         onClick={handleCopy}
                     >
-                        {copied ? "✅ Copied!" : "📋 Copy"}
+                        {copied ? "Copied!" : "Copy"}
                     </button>
                 </div>
                 <p className="text-xs text-gray-500">Use this code in your bank transaction description for confirmation.</p>

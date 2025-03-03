@@ -27,7 +27,7 @@ const CheckoutPage = () => {
           <h3 className="text-lg font-medium text-gray-800 mb-4 tracking-wider">Payment Method</h3>
           <PaymentMethod onChange={setPaymentMethod} selected={paymentMethod} />
 
-          <div className="mt-6 p-6 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+          <div className="mt-6  border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
             {paymentMethod === "stripe" && <Stripe />}
             {paymentMethod === "qrcode" && <QRCode />}
             {paymentMethod === "cod" && <COD />}

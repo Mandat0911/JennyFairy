@@ -31,13 +31,13 @@ const orderSchema = new mongoose.Schema({
         min: 1000,
     },
 
-    shipping :{
+    shippingDetails :{
         fullName: {type:String, required: true},
         phone: {type: String, required: true},
         address: {type:String, require: true},
-        city: {type:String, required: true},
-        postalCode: {type:String, require: true},
-        country: {type:String, require: true},
+        city: {type:String, default: ""},
+        postalCode: {type:String, default: ""},
+        country: {type:String, default: ""},
         deliveryStatus: { 
             type: String, 
             enum: ["pending", "shipped", "delivered", "canceled"], 
