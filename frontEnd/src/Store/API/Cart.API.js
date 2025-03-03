@@ -75,10 +75,8 @@ export const useAddItemToCart = () => {
                 size: newItem.size,
                 quantity: newItem.quantity,
             };
-
             // Update Zustand Store & LocalStorage
             addToCart(detailedItem);
-            console.log("Adding item to cart:", detailedItem);
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['cart']);

@@ -31,6 +31,20 @@ const orderSchema = new mongoose.Schema({
         min: 1000,
     },
 
+    shipping :{
+        fullName: {type:String, required: true},
+        phone: {type: String, required: true},
+        address: {type:String, require: true},
+        city: {type:String, required: true},
+        postalCode: {type:String, require: true},
+        country: {type:String, require: true},
+        deliveryStatus: { 
+            type: String, 
+            enum: ["pending", "shipped", "delivered", "canceled"], 
+            default: "pending" 
+        }, 
+    },
+
     stripeSessionId: {
         type: String,
         unique: true,

@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
 
 import { Link, useLocation } from "react-router-dom";
-import { MoveRight } from "lucide-react";
+import { MoveRight, X } from "lucide-react";
 
 import { useEffect } from "react";
-import useCouponStore from "../../Store/Zustand/coupon";
-import useCartStore from "../../Store/Zustand/cartStore";
+import useCouponStore from "../../Store/Zustand/coupon.js";
+import useCartStore from "../../Store/Zustand/cartStore.js";
 import { useGetCartItems } from "../../Store/API/Cart.API";
 
 const OrderSummary = () => {
-	const { total, subtotal,  isCouponApplied, calculateTotals  } = useCartStore();
+	const { total, subtotal,  isCouponApplied, calculateTotals, setIsCouponApplied  } = useCartStore();
 
 	const { data: cart} = useGetCartItems();
+
+	const {resetCoupon} = useCouponStore();
 
 	const location = useLocation(); // Get current page URL
 	const isCheckoutPage = location.pathname === "/checkout"; // Check if on checkout page
@@ -32,6 +34,13 @@ const OrderSummary = () => {
       useEffect(() => {
         calculateTotals();
     }, [cart, coupon]);
+
+	const handleRemoveCoupon = (e) => {
+		e.preventDefault();
+
+		resetCoupon();
+		setIsCouponApplied(false)
+	}
 	
 	
 		return (
@@ -61,11 +70,23 @@ const OrderSummary = () => {
 	
 					{/* Coupon Discount */}
 					{coupon && isCouponApplied && (
-						<dl className="flex items-center justify-between">
-							<dt className="text-sm text-gray-500">Coupon ({coupon.code})</dt>
-							<dd className="text-base font-medium text-emerald-500">-{coupon.discountPercentage}%</dd>
-						</dl>
-					)}
+  <div className="flex items-center justify-between">
+    {/* Coupon Label */}
+    <dt className="text-sm text-gray-500">Coupon (<span className="font-bold">{coupon.code}</span>)</dt>
+
+    {/* Discount and Remove Button Wrapper */}
+    <div className="flex items-center gap-2">
+      <dd className="text-base font-medium text-emerald-500">-{coupon.discountPercentage}%</dd>
+      <button 
+        onClick={handleRemoveCoupon} 
+        className="text-black-500 hover:text-red-700 transition-all"
+      >
+        <X size={16} />
+      </button>
+    </div>
+  </div>
+)}
+
 	
 					{/* Divider */}
 					<div className="border-t border-gray-300 pt-3"></div>
@@ -90,7 +111,6 @@ const OrderSummary = () => {
                 className="inline-flex items-center gap-1 text-white hover:text-gray-300 transition-all"
               >
                 Proceed to Checkout
-                <MoveRight size={16} />
               </Link>
             </motion.button>
 

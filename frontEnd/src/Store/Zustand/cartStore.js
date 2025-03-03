@@ -50,7 +50,6 @@ const useCartStore = create(
             },
 
             updateQuantity: (productId, size, quantity) => {
-                console.log("cart store: ",productId)
                 set((state) => {
                     const updatedCart = state.cart.map((item) =>
                         item.productId === productId && item.size === size
