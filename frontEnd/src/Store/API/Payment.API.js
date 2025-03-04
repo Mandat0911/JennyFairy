@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // createCheckoutSession
 import { useMutation} from "@tanstack/react-query";
 import { PAYMENT_API_ENDPOINTS } from "../../Utils/config";
@@ -63,6 +64,34 @@ export const useCheckSuccessStripe = () => {
             return data;
         },
         onSuccess: () => {
+            clearAllItems();
+        },
+        onError: (error) => {
+            toast.error(error.message || "Something went wrong!");
+        }
+    });
+};
+
+export const useCreateSessionCheckoutCod = () => {
+    const { mutate: clearAllItems } = useDeleteAllCartItem();
+    return useMutation({
+        mutationFn: async (checkoutData) => {
+            const response = await fetch(PAYMENT_API_ENDPOINTS.COD_CHECKOUT_SESSION, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(checkoutData),
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data?.error||'Failed to create checkout COD');
+            }
+        
+            return data;
+        },
+        onSuccess: (data) => {
+            toast.success("Order placed successfully!");  
             clearAllItems();
         },
         onError: (error) => {

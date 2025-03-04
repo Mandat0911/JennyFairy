@@ -58,8 +58,8 @@ const paymentSchema = new mongoose.Schema(
 			default: 0
 		},
 		paymentDetails: {
-			transactionId: { type: String, unique: true }, // Stores Stripe Payment Intent ID or PayPal Transaction ID
-			stripeSessionId: { type: String, unique: true }, // Only for Stripe
+			transactionId: { type: String, unique: true || null }, // Stores Stripe Payment Intent ID or PayPal Transaction ID
+			stripeSessionId: { type: String, unique: true || null }, // Only for Stripe
 			paymentError: { type: String }, // Stores any payment failure messages
 		},
 	},

@@ -9,7 +9,8 @@ const stripePromise = loadStripe ("pk_test_51Qt5G8RwMpBGl8YKTW579QWkTxTSkX1P89HW
 
 const Stripe = () => {
   const [loading, setLoading] = useState(false);
-  const {cart , isCouponApplied } = useCartStore();
+  const {cart, isCouponApplied } = useCartStore();
+
   const {coupon, setCoupon} = useCouponStore();
   const {mutate: createCheckoutSession} = useCreateSessionCheckoutStripe();
   const [shippingDetails, setShippingDetails] = useState({
@@ -168,7 +169,7 @@ const Stripe = () => {
       </div>
 
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">📢 Notice:</span> If you are outside of Vietnam, please ensure all required
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required
         fields are correctly filled.
       </p>
 
