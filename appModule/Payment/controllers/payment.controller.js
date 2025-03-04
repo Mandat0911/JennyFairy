@@ -152,15 +152,20 @@ export const checkoutSuccess = async (req, res) => {
     try {
         const { sessionId } = req.body;
         const userId = req.user.id;
-
+        let existingPayment = null;
         // Retrieve Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         const shippingDetails = JSON.parse(session.metadata.shippingDetails);
+
+        const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+        if (existingOrder) {
+            return res.status(400).json({ error: "Order already exists for this session." });
+        }
     
         const sessionCouponCode = session.metadata.couponCode;
         // Check if coupon is already used by the user
         if (sessionCouponCode) {
-            const existingPayment = await Payment.findOne({
+            existingPayment = await Payment.findOne({
                 user: userId,
                 couponCode: sessionCouponCode,
             });
@@ -169,6 +174,7 @@ export const checkoutSuccess = async (req, res) => {
                 return res.status(400).json({ error: "You already used this coupon" });
             }
         }
+
         // Proceed only if payment is successful
         if (session.payment_status === "paid") {
             // Update the Payment record with the coupon code
@@ -185,10 +191,13 @@ export const checkoutSuccess = async (req, res) => {
                 return res.status(404).json({ error: "Payment record not found!" });
             }
 
+            console.log (updatedPayment)
+
             // Create order after successful payment
             const products = JSON.parse(session.metadata.products);
             const newOrder = new Order({
                 user: session.metadata.userId,
+                paymentId: updatedPayment._id,
                 products: products.map((product) => ({
                     product: product.id,
                     quantity: product.quantity,
@@ -282,7 +291,7 @@ export const createCheckoutCOD = async (req, res) => {
             user: userId,
             products: formattedProducts,
             totalAmount,
-            payment: payment._id,
+            paymentId: payment._id,
             shippingDetails: {
                 fullName,
                 phone,

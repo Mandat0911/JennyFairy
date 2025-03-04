@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {loadStripe} from "@stripe/stripe-js"
 import useCartStore from "../../Store/Zustand/cartStore.js";
 import toast from "react-hot-toast";
@@ -22,8 +22,14 @@ const Stripe = () => {
     country: "",
   });
 
+  const checkoutRequestSent = useRef(false);
+
 
   const handleConfirmPayment = async () => {
+
+    if (checkoutRequestSent.current) return; // Prevent duplicate requests
+
+    checkoutRequestSent.current = true;
        
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
@@ -35,39 +41,46 @@ const Stripe = () => {
     }
     setLoading(true);
 
-  
-    createCheckoutSession(
-      { products: cart, couponCode: coupon?.code || null, shippingDetails },
-      {
-        onSuccess: async (data) => {
-          if (!data.sessionId) {
-            toast.error("Failed to get Stripe session ID");
-            setLoading(false);
-            return;
-          }
-          // Ensure Stripe is loaded before proceeding
-          const stripe = await stripePromise;
-          if (!stripe) {
-            toast.error("Stripe failed to load");
-            setLoading(false);
-            return;
-          }
-          // Redirect to Stripe Checkout
-          const result = await stripe.redirectToCheckout({
-            sessionId: data.sessionId,
+    try {
+      createCheckoutSession(
+        { products: cart, couponCode: coupon?.code || null, shippingDetails },
+        {
+          onSuccess: async (data) => {
+            if (!data.sessionId) {
+              toast.error("Failed to get Stripe session ID");
+              setLoading(false);
+              return;
+            }
+            // Ensure Stripe is loaded before proceeding
+            const stripe = await stripePromise;
+            if (!stripe) {
+              toast.error("Stripe failed to load");
+              setLoading(false);
+              return;
+            }
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({
+              sessionId: data.sessionId,
+              
+            });
             
-          });
-          
-          if (result.error) {
-            toast.error(`Error: ${result.error.message}`);
+            if (result.error) {
+              toast.error(`Error: ${result.error.message}`);
+            }
+            
+          },
+          onError: () => {
+            setLoading(false);
           }
-          
-        },
-        onError: () => {
-          setLoading(false);
         }
-      }
-    );
+      );
+    } catch (error) {
+      console.error("Checkout error:", error);
+    } finally {
+      checkoutRequestSent.current = false; // Reset for future use if needed
+  }
+  
+    
   };
   
 
