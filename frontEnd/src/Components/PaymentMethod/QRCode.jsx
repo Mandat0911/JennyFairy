@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useCartStore from "../../Store/Zustand/cartStore.js";
 import useCouponStore from "../../Store/Zustand/coupon.js";
-import { useCreateCheckoutQrcode } from "../../Store/API/Payment.API.js";
+// import { useCreateCheckoutQrcode } from "../../Store/API/Payment.API.js";
 import { useNavigate } from "react-router-dom";
 
 const QRCode = () => {
@@ -11,7 +11,7 @@ const QRCode = () => {
     const { coupon, setCoupon } = useCouponStore();
     const [subjectCode, setSubjectCode] = useState("");
     const [copied, setCopied] = useState(false); // Track copy status
-    const { mutate: createCheckoutQrcode } = useCreateCheckoutQrcode();
+    // const { mutate: createCheckoutQrcode } = useCreateCheckoutQrcode();
     
     const [shippingDetails, setShippingDetails] = useState({
         fullName: "",
@@ -24,29 +24,29 @@ const QRCode = () => {
 
     const handleConfirmPayment = () => {
         if (cart.length === 0) {
-            toast.error("Your cart is empty!");
+            // toast.error("Your cart is empty!");
             return;
         }
         if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
-            toast.error("Please fill in all required shipping details!");
+            // toast.error("Please fill in all required shipping details!");
             return;
         }
 
         setLoading(true);
 
-        createCheckoutQrcode(
-            { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total },
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                    navigate("/products");
-                },
-                onError: (error) => {
-                    setLoading(false);
-                    toast.error(error.message || "Something went wrong!");
-                },
-            }
-        );
+        // createCheckoutQrcode(
+        //     { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total },
+        //     {
+        //         onSuccess: () => {
+        //             setLoading(false);
+        //             navigate("/products");
+        //         },
+        //         onError: (error) => {
+        //             setLoading(false);
+        //             toast.error(error.message || "Something went wrong!");
+        //         },
+        //     }
+        // );
     };
 
     const qrCodeImage = "https://img.vietqr.io/image/vietinbank-113366668888-compact.jpg"; // Replace with your actual QR code image URL
@@ -205,7 +205,7 @@ return (
       </div>
   
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">📢 Notice:</span> If you are outside of Vietnam, please ensure all required fields are correctly filled.
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required fields are correctly filled.
       </p>
   
       <button

@@ -142,11 +142,6 @@ export const checkoutSuccess = async (req, res) => {
         // Retrieve Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         const shippingDetails = JSON.parse(session.metadata.shippingDetails);
-
-        const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
-        if (existingOrder) {
-            return res.status(400).json({ error: "Order already exists for this session." });
-        }
     
         const sessionCouponCode = session.metadata.couponCode;
         // Check if coupon is already used by the user
@@ -201,6 +196,7 @@ export const checkoutSuccess = async (req, res) => {
                 message: "Payment successful, order created, and coupon deactivated if used.",
                 orderId: newOrder._id,
             });
+            
         } else {
             return res.status(400).json({ error: "Payment not completed!" });
         }

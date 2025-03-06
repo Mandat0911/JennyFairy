@@ -64,7 +64,9 @@ export const useEditProduct = () => {
         },
         onSettled: () => {
             setLoading(false); // Ensure loading state is reset
-        }
+        },
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     });
 };
 
@@ -86,6 +88,8 @@ export const useGetAllProduct = () => {
             // Ensure it's an array
             return Array.isArray(data) ? data : data.products || [];
         },
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     });
 };
 
@@ -106,6 +110,8 @@ export const useGetRecommendedProduct = () => {
             // Ensure it's an array
             return Array.isArray(data) ? data : data.products || [];
         },
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     });
 };
 
@@ -126,6 +132,8 @@ export const useGetProductDetail = () => {
             return response.json();
         },
         enabled: !!productId, // Only run query when productId exists
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     });
 };
 export const useDeleteProduct = () => {
@@ -160,6 +168,8 @@ export const useToggleFeatureProduct = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['products']); // Refresh the list after deletion
         },
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     })
 }
 
@@ -178,5 +188,7 @@ export const useGetProductByCategory = (category) => {
             return response.json(); // Return JSON data
         },
         enabled: !!category,  // Ensure query runs only if category is provided
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
     });
 }

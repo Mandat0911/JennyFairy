@@ -9,22 +9,33 @@ const SuccessPage = () => {
   const {mutate: handleCheckoutSuccess} = useCheckSuccessStripe();
   const navigate = useNavigate();
   
-  useEffect(() => {
-    const sessionId = localStorage.getItem("sessionId");
+      useEffect(() => {
+        const sessionId = localStorage.getItem("sessionId");
+    
+        if (sessionId) {
+            console.log("Triggering handleCheckoutSuccess with sessionId:", sessionId);
+    
+            handleCheckoutSuccess(sessionId, {
+                onSuccess: () => {
+                    toast.success("Payment successful! Your cart has been cleared.");
 
-    if (sessionId) {
-        handleCheckoutSuccess(sessionId, {  
-            onSuccess: () => {
+                    localStorage.removeItem("sessionId"); // Prevent multiple calls
+                },
+            });
+    
+            localStorage.removeItem("sessionId"); // Clear sessionId after first call
+        }
+    
+        const timeout = setTimeout(() => {
+            navigate('/products');
+        }, 5000);
+    
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [navigate, handleCheckoutSuccess]);
+    
 
-                toast.success("Payment successful! Your cart has been cleared.");
-            },
-        });
-    }
-
-    setTimeout(() => {
-        navigate('/products');
-    }, 5000);
-}, [navigate, handleCheckoutSuccess]);
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
       <div className="max-w-md bg-white p-8 shadow-lg rounded-lg text-center border border-gray-200">

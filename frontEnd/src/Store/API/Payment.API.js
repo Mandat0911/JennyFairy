@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// createCheckoutSession
 import { useMutation} from "@tanstack/react-query";
 import { PAYMENT_API_ENDPOINTS } from "../../Utils/config";
 import toast from "react-hot-toast";
@@ -43,6 +41,8 @@ export const useCheckSuccessStripe = () => {
     
     return useMutation({
         mutationFn: async (sessionId) => {
+            console.log("Calling API with sessionId:", sessionId); // Debugging
+
             const response = await fetch(PAYMENT_API_ENDPOINTS.SUCCESS_CHECKOUT_SESSION, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -52,8 +52,11 @@ export const useCheckSuccessStripe = () => {
 
             let data;
             try {
-                data = await response.json(); // Ensure data is always initialized
+
+                const data = await response.json();
+                console.log("API Response:", data); // Debugging
             } catch (error) {
+                console.error("Error parsing JSON:", error);
                 throw new Error("Invalid response from server");
             }
 
@@ -62,11 +65,14 @@ export const useCheckSuccessStripe = () => {
             }
             
             return data;
+            
         },
         onSuccess: () => {
+            toast.success("Payment successful! Your cart has been cleared.");
             clearAllItems();
         },
         onError: (error) => {
+            console.log("onError called:", error.message); // Debugging
             toast.error(error.message || "Something went wrong!");
         }
     });
@@ -90,7 +96,7 @@ export const useCreateSessionCheckoutCod = () => {
         
             return data;
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success("Order placed successfully!");  
             clearAllItems();
         },

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useState } from "react";
 import {loadStripe} from "@stripe/stripe-js"
 import useCartStore from "../../Store/Zustand/cartStore.js";
 import toast from "react-hot-toast";
@@ -22,14 +22,11 @@ const Stripe = () => {
     country: "",
   });
 
-  const checkoutRequestSent = useRef(false);
+
 
 
   const handleConfirmPayment = async () => {
 
-    if (checkoutRequestSent.current) return; // Prevent duplicate requests
-
-    checkoutRequestSent.current = true;
        
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
@@ -76,8 +73,6 @@ const Stripe = () => {
       );
     } catch (error) {
       console.error("Checkout error:", error);
-    } finally {
-      checkoutRequestSent.current = false; // Reset for future use if needed
   }
   
     

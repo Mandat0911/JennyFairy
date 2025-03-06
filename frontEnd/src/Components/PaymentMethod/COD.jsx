@@ -33,9 +33,6 @@ const COD = () => {
     }
     setLoading(true);
 
-  
-
-
       createCheckoutSession(
         { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total, couponDiscountPercentage: coupon?.discountPercentage },
         {
@@ -51,8 +48,6 @@ const COD = () => {
       );
     };
     
-  
-
     return (
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
             <h3 className="text-xl font-semibold text-gray-900 mb-6 uppercase tracking-wider text-center">
