@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {loadStripe} from "@stripe/stripe-js"
 import useCartStore from "../../Store/Zustand/cartStore.js";
 import toast from "react-hot-toast";
@@ -9,7 +9,8 @@ const stripePromise = loadStripe ("pk_test_51Qt5G8RwMpBGl8YKTW579QWkTxTSkX1P89HW
 
 const Stripe = () => {
   const [loading, setLoading] = useState(false);
-  const {cart , isCouponApplied } = useCartStore();
+  const {cart, isCouponApplied } = useCartStore();
+
   const {coupon, setCoupon} = useCouponStore();
   const {mutate: createCheckoutSession} = useCreateSessionCheckoutStripe();
   const [shippingDetails, setShippingDetails] = useState({
@@ -21,8 +22,14 @@ const Stripe = () => {
     country: "",
   });
 
+  const checkoutRequestSent = useRef(false);
+
 
   const handleConfirmPayment = async () => {
+
+    if (checkoutRequestSent.current) return; // Prevent duplicate requests
+
+    checkoutRequestSent.current = true;
        
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
@@ -34,34 +41,46 @@ const Stripe = () => {
     }
     setLoading(true);
 
-  
-    createCheckoutSession(
-      { products: cart, couponCode: coupon?.code || null, shippingDetails },
-      {
-        onSuccess: async (data) => {
-          // Ensure Stripe is loaded before proceeding
-          const stripe = await stripePromise;
-          if (!stripe) {
-            toast.error("Stripe failed to load");
-            setLoading(false);
-            return;
-          }
-          // Redirect to Stripe Checkout
-          const result = await stripe.redirectToCheckout({
-            sessionId: data.sessionId,
+    try {
+      createCheckoutSession(
+        { products: cart, couponCode: coupon?.code || null, shippingDetails },
+        {
+          onSuccess: async (data) => {
+            if (!data.sessionId) {
+              toast.error("Failed to get Stripe session ID");
+              setLoading(false);
+              return;
+            }
+            // Ensure Stripe is loaded before proceeding
+            const stripe = await stripePromise;
+            if (!stripe) {
+              toast.error("Stripe failed to load");
+              setLoading(false);
+              return;
+            }
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({
+              sessionId: data.sessionId,
+              
+            });
             
-          });
-          
-          if (result.error) {
-            toast.error(`Error: ${result.error.message}`);
+            if (result.error) {
+              toast.error(`Error: ${result.error.message}`);
+            }
+            
+          },
+          onError: () => {
+            setLoading(false);
           }
-          
-        },
-        onError: () => {
-          setLoading(false);
         }
-      }
-    );
+      );
+    } catch (error) {
+      console.error("Checkout error:", error);
+    } finally {
+      checkoutRequestSent.current = false; // Reset for future use if needed
+  }
+  
+    
   };
   
 
@@ -163,7 +182,7 @@ const Stripe = () => {
       </div>
 
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">📢 Notice:</span> If you are outside of Vietnam, please ensure all required
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required
         fields are correctly filled.
       </p>
 

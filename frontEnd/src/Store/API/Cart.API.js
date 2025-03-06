@@ -135,7 +135,6 @@ export const useDeleteAllCartItem = () => {
         onSuccess: () => {
             clearCart();
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
-            toast.success("Cart item deleted successfully!");
         },
     });
 };

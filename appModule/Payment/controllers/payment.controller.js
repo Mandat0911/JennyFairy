@@ -138,15 +138,20 @@ export const checkoutSuccess = async (req, res) => {
     try {
         const { sessionId } = req.body;
         const userId = req.user.id;
-
+        let existingPayment = null;
         // Retrieve Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         const shippingDetails = JSON.parse(session.metadata.shippingDetails);
+
+        const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+        if (existingOrder) {
+            return res.status(400).json({ error: "Order already exists for this session." });
+        }
     
         const sessionCouponCode = session.metadata.couponCode;
         // Check if coupon is already used by the user
         if (sessionCouponCode) {
-            const existingPayment = await Payment.findOne({
+            existingPayment = await Payment.findOne({
                 user: userId,
                 couponCode: sessionCouponCode,
             });
@@ -155,6 +160,7 @@ export const checkoutSuccess = async (req, res) => {
                 return res.status(400).json({ error: "You already used this coupon" });
             }
         }
+
         // Proceed only if payment is successful
         if (session.payment_status === "paid") {
             // Update the Payment record with the coupon code
@@ -171,10 +177,13 @@ export const checkoutSuccess = async (req, res) => {
                 return res.status(404).json({ error: "Payment record not found!" });
             }
 
+            console.log (updatedPayment)
+
             // Create order after successful payment
             const products = JSON.parse(session.metadata.products);
             const newOrder = new Order({
                 user: session.metadata.userId,
+                paymentId: updatedPayment._id,
                 products: products.map((product) => ({
                     product: product.id,
                     quantity: product.quantity,
@@ -288,4 +297,92 @@ export const createCheckoutQrcode = async (req, res) => {
 
 
 
+export const createCheckoutCOD = async (req, res) => {
+    try {
+        const { 
+             
+            products, 
+            totalAmount, 
+            couponCode, 
+            couponDiscountPercentage, 
+            shippingDetails 
+        } = req.body;
 
+        const userId = req.user.id;
+        // console.log(req.body)
+        
+
+        // Validate required fields
+        if (!userId || !products || products.length === 0 || !totalAmount) {
+            return res.status(400).json({ error: "All fields are required." });
+        }
+
+        // Validate shipping details
+        const { fullName, phone, address } = shippingDetails;
+        if (!fullName || !phone || !address) {
+            return res.status(400).json({ error: "Full Name, Phone, and Address are required." });
+        }
+
+        // Ensure user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        const formattedProducts = products.map((product, index) => ({
+            product: products[index].productId, 
+            quantity: products[index].quantity,
+            price: product.price, 
+        }));
+
+        const randomTransactionId = generateVerificationToken(20)
+        const randomStripeSessionId = generateVerificationToken(12)
+
+        // Create a new COD payment
+        const payment = new Payment({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            paymentMethod: "Cash on Delivery",
+            paymentStatus: "pending",
+            isPaid: false,
+            couponCode: couponCode || "",
+            couponDiscountPercentage: couponDiscountPercentage || 0,
+            paymentDetails: {
+                transactionId: randomTransactionId,
+                stripeSessionId: randomStripeSessionId,
+                paymentError: null,
+            },
+        });
+        
+
+        await payment.save();
+
+        // Create an order record with shipping details
+        const order = new Order({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            paymentId: payment._id,
+            shippingDetails: {
+                fullName,
+                phone,
+                address,
+                city: shippingDetails.city || "",
+                postalCode: shippingDetails.postalCode || "",
+                country: shippingDetails.country || "",
+                deliveryStatus: "pending", 
+            },
+        });
+
+        await order.save();
+
+        res.status(201).json({
+            message: "COD Checkout Successful. Pay on delivery.",
+            paymentId: payment._id,
+            orderId: order._id,
+        });
+    } catch (error) {
+        console.error("COD Checkout Error:", error);
+        res.status(500).json({ error: "Server error. Please try again." });
+    }
+};

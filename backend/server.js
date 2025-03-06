@@ -11,6 +11,7 @@ import cartCoupons from "../appModule/Coupons/routes/coupon.routes.js"
 import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
 import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
 import collectionRoute from "../appModule/Collections/routes/collections.routes.js"
+import orderRoute from "../appModule/Order/routes/order.routes.js"
 
 
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // API auth
 app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
+app.use("/api/order/", orderRoute);
 app.use("/api/collection/", collectionRoute);
 app.use("/api/cart/", cartRoute);
 app.use("/api/coupon/", cartCoupons);
