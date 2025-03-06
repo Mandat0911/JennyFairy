@@ -26,15 +26,12 @@ export const createCheckoutSession = async (req, res) => {
             return res.status(400).json({ error: "Shipping details are required" });
         }
 
-
         // Fetch full product details
         const productDetails = await Promise.all(
             products.map(async (p) => {
                 const product = await Product.findById(p.productId);
                 if (!product) throw new Error(`Product with ID ${p.productId} not found`);
-
                 if (!product.price) throw new Error(`Product ${product.name} does not have a valid price`);
-
                 return {
                     id: p.productId,
                     name: product.name,
@@ -44,12 +41,10 @@ export const createCheckoutSession = async (req, res) => {
                 };
             })
         );
-        
 
         const lineItems = productDetails.map((product) => {
             const amount = Math.round(product.price);
             totalAmount += amount * product.quantity;
-
             return {
                 price_data: {
                     currency: "vnd",
@@ -63,15 +58,10 @@ export const createCheckoutSession = async (req, res) => {
             };
         });
 
-        
-            const usedCoupon = await Payment.findOne({
-                couponCode: couponCode,
-            });
-
-            if (usedCoupon) {
-                return res.status(400).json({ error: "You already used this coupon" });
-            }
-        
+        const usedCoupon = await Payment.findOne({ couponCode: couponCode });
+        if (usedCoupon) {
+            return res.status(400).json({ error: "You already used this coupon" });
+        }
 
         if (couponCode) {
             coupon = await Coupon.findOne({
@@ -79,17 +69,16 @@ export const createCheckoutSession = async (req, res) => {
                 isActive: true,
                 expirationDate: { $gte: currentDate },
             });
-
             if (coupon) {
                 const discount = Math.round(totalAmount * (coupon.discountPercentage / 100));
                 totalAmount -= discount;
-            }else {
+            } else {
                 return res.status(400).json({ error: "Invalid or expired coupon code" });
             }
         }
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
-       
+        
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: lineItems,
@@ -111,11 +100,10 @@ export const createCheckoutSession = async (req, res) => {
             },
         });
 
-        console.log("session:", session)
-
+        console.log("session:", session);
 
         const formattedProducts = productDetails.map((product, index) => ({
-            product: products[index].productId, 
+            product: products[index].productId,
             quantity: products[index].quantity,
             price: product.price, 
         }));
@@ -130,8 +118,8 @@ export const createCheckoutSession = async (req, res) => {
             isPaid: false,
             paymentDetails: {
                 stripeSessionId: session.id,
-                transactionId: session.payment_intent || session.id,  // Using payment_intent for the transaction ID
-            paymentError: null,
+                transactionId: session.payment_intent || session.id,
+                paymentError: null,
             },
             couponCode: null,
             couponDiscountPercentage: coupon ? coupon.discountPercentage : 0
@@ -139,14 +127,12 @@ export const createCheckoutSession = async (req, res) => {
 
         await payment.save();
 
-        // Further function: If the totalAmount > xxx auto generate coupons
-        res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount + " VND"});
+        res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount + " VND" });
     } catch (error) {
         console.error("Error in createCheckoutSession controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
-
 
 export const checkoutSuccess = async (req, res) => {
     try {
@@ -223,6 +209,91 @@ export const checkoutSuccess = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error!" });
     }
 };
+
+
+export const createCheckoutQrcode = async (req, res) => {
+    try {
+        const {        
+            products, 
+            totalAmount, 
+            couponCode, 
+            couponDiscountPercentage, 
+            shippingDetails} = req.body;
+
+            console.log(req.body)
+
+        const userId = req.user.id;
+
+        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {
+            return res.status(400).json({ error: "Products, totalAmount, and shipping details are required." });
+        }
+
+        const { fullName, phone, address } = shippingDetails;
+        if (!fullName || !phone || !address) {
+            return res.status(400).json({ error: "Full Name, Phone, and Address are required." });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        const formattedProducts = products.map((product, index) => ({
+            product: products[index].productId, 
+            quantity: products[index].quantity,
+            price: product.price, 
+        }));
+
+        const randomTransactionId = generateVerificationToken(12);
+        const randomStripeSessionId = generateVerificationToken(12)
+        const payment = new Payment({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            paymentMethod: "QR code",
+            paymentStatus: "pending",
+            isPaid: false,
+            couponCode: couponCode || "",
+            couponDiscountPercentage: couponDiscountPercentage || 0,
+            paymentDetails: {
+                transactionId: randomTransactionId, 
+                stripeSessionId: randomStripeSessionId,
+                paymentError: null,
+            },
+        });
+
+        await payment.save();
+
+
+        // Create an order record with shipping details
+        const order = new Order({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            payment: payment._id,
+            shippingDetails: {
+                fullName,
+                phone,
+                address,
+                city: shippingDetails.city || "",
+                postalCode: shippingDetails.postalCode || "",
+                country: shippingDetails.country || "",
+                deliveryStatus: "pending", 
+            },
+        });
+
+        await order.save();
+
+        res.status(201).json({
+            message: "Qrcode Checkout Successful. Pay on delivery.",
+            paymentId: payment._id,
+            orderId: order._id,
+        });
+    } catch (error) {
+        console.error("Error in createCheckoutQrcode controller:", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+}
 
 
 

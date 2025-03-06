@@ -1,4 +1,4 @@
-export const generateVerificationToken = (length = 6) => {
+export const generateVerificationToken = (length) => {
     const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     let verificationCode = '';
     for (let i = 0; i < length; i++) {
