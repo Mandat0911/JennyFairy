@@ -42,4 +42,5 @@ export const COUPON_API_ENDPOINTS = {
 export const PAYMENT_API_ENDPOINTS = {
   CREATE_CHECKOUT_SESSION: `${API_BE_URL}/payment/create-checkout-session`,
   SUCCESS_CHECKOUT_SESSION: `${API_BE_URL}/payment/checkout-success`,
+  CREATE_CHECKOUT_QRCODE: `${API_BE_URL}/payment/create-checkout-qrcode`,
 }

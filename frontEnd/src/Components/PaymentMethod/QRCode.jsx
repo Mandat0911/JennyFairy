@@ -1,18 +1,55 @@
 import React, { useState, useEffect } from "react";
-import useCartStore from "../../Store/Zustand/cartStore";
-import { useAuthStore } from "../../Store/Zustand/authStore";
+import useCartStore from "../../Store/Zustand/cartStore.js";
+import useCouponStore from "../../Store/Zustand/coupon.js";
+import { useCreateCheckoutQrcode } from "../../Store/API/Payment.API.js";
+import { useNavigate } from "react-router-dom";
 
 const QRCode = () => {
-    
-    const [amount] = useState("");
-    const [reference, setReference] = useState("");
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const { cart, total, isCouponApplied } = useCartStore();
+    const { coupon, setCoupon } = useCouponStore();
     const [subjectCode, setSubjectCode] = useState("");
     const [copied, setCopied] = useState(false); // Track copy status
-    const {total} = useCartStore();
-    const {user} = useAuthStore();
-    const [name, setName] = useState(user.name);
+    const { mutate: createCheckoutQrcode } = useCreateCheckoutQrcode();
+    
+    const [shippingDetails, setShippingDetails] = useState({
+        fullName: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+        country: "",
+    });
 
-    const qrCodeImage = "/path-to-your-bank-qrcode.png"; // Replace with your actual QR code image URL
+    const handleConfirmPayment = () => {
+        if (cart.length === 0) {
+            toast.error("Your cart is empty!");
+            return;
+        }
+        if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
+            toast.error("Please fill in all required shipping details!");
+            return;
+        }
+
+        setLoading(true);
+
+        createCheckoutQrcode(
+            { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total },
+            {
+                onSuccess: () => {
+                    setLoading(false);
+                    navigate("/products");
+                },
+                onError: (error) => {
+                    setLoading(false);
+                    toast.error(error.message || "Something went wrong!");
+                },
+            }
+        );
+    };
+
+    const qrCodeImage = "https://img.vietqr.io/image/vietinbank-113366668888-compact.jpg"; // Replace with your actual QR code image URL
 
     // Function to generate a random 6-character alphanumeric code
     const generateSubjectCode = () => {
@@ -35,83 +72,152 @@ const QRCode = () => {
         setTimeout(() => setCopied(false), 2000); // Revert to "Copy" after 2 seconds
     };
 
-    const handleConfirmPayment = () => {
-        if (!name) {
-            alert("Please fill in all required fields.");
-            return;
-        }
-        alert(`Payment Details:\n\nName: ${name}\nAmount: ${amount}\nReference: ${reference}\nSubject Code: ${subjectCode}\n\nScan the QR code and enter the Subject Code in your banking transaction for confirmation.`);
-    };
-
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 tracking-wide uppercase">Scan to Pay</h3>
-            
-            <p className="text-gray-600 text-sm mb-4">
-                Scan the QR code with your banking app to complete your payment.
-            </p>
-
-            {/* QR Code Image */}
-            <div className="flex justify-center mb-6">
-                <img src={qrCodeImage} alt="QR Code" className="w-40 h-40 border rounded-lg shadow-md" />
-            </div>
-
-            {/* Input Fields */}
-            <div className="space-y-4 text-left">
-                <input 
-                    type="text"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-                />
-
-                <input 
-                    type="number"
-                    placeholder="Payment Amount"
-                    value={total}
-                    readOnly  // Prevents user input
-                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-gray-800 cursor-not-allowed focus:outline-none"
-                />
 
 
-                <input 
-                    type="text"
-                    placeholder="Reference Note (Optional)"
-                    value={reference}
-                    onChange={(e) => setReference(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-                />
-
-                {/* Subject Code Field */}
-                <div className="relative">
-                    <input 
-                        type="text"
-                        value={subjectCode}
-                        readOnly
-                        className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-gray-800 cursor-default"
-                    />
-                    <button 
-                        className={`absolute right-3 top-2 text-sm font-medium transition ${
-                            copied ? "text-black-600" : "text-gray-500 hover:text-black"
-                        }`}
-                        onClick={handleCopy}
-                    >
-                        {copied ? "Copied!" : "Copy"}
-                    </button>
-                </div>
-                <p className="text-xs text-gray-500">Use this code in your bank transaction description for confirmation.</p>
-            </div>
-
-            {/* Confirm Payment Button */}
-            <button 
-                onClick={handleConfirmPayment}
-                className="mt-6 w-full bg-black text-white py-3 rounded-md text-sm font-medium uppercase tracking-wider transition duration-300 hover:bg-gray-900"
-            >
-                Confirm Payment
-            </button>
+return (
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
+      <h3 className="text-xl font-semibold text-gray-900 mb-6 uppercase tracking-wider text-center">
+        Scan to Pay
+      </h3>
+  
+      <p className="text-gray-600 text-sm mb-4">
+        Scan the QR code with your banking app to complete your payment.
+      </p>
+  
+      {/* QR Code Image */}
+      <div className="flex justify-center mb-6">
+        <img src={qrCodeImage} alt="QR Code" className="w-40 h-40 border rounded-lg shadow-md" />
+      </div>
+  
+      {/* Input Fields */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Full Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="Enter your full name"
+            value={shippingDetails.fullName}
+            onChange={(e) => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+          />
         </div>
-    );
+  
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Phone <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            required
+            placeholder="Enter your phone number"
+            value={shippingDetails.phone}
+            onChange={(e) => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+          />
+        </div>
+  
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Address <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="Street address"
+            value={shippingDetails.address}
+            onChange={(e) => setShippingDetails({ ...shippingDetails, address: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+          />
+        </div>
+  
+        <div className="flex space-x-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700">City</label>
+            <input
+              type="text"
+              placeholder="City"
+              value={shippingDetails.city}
+              onChange={(e) => setShippingDetails({ ...shippingDetails, city: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+            <input
+              type="text"
+              placeholder="Postal Code"
+              value={shippingDetails.postalCode}
+              onChange={(e) => setShippingDetails({ ...shippingDetails, postalCode: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+            />
+          </div>
+        </div>
+  
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Country</label>
+          <input
+            type="text"
+            placeholder="Country"
+            value={shippingDetails.country}
+            onChange={(e) => setShippingDetails({ ...shippingDetails, country: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+          />
+        </div>
+  
+        {/* Subject Code Field */}
+        <div className="relative">
+          <label className="block text-sm font-medium text-gray-700 flex items-center">
+            Code <span className="text-red-500 ml-1">*</span>
+            <span className="ml-2 text-xs text-gray-500">(Please paste this code into bank description)</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={subjectCode}
+              readOnly
+              className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-gray-800 cursor-default"
+            />
+            <button
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-sm font-medium transition ${
+                copied ? "text-black-600" : "text-gray-500 hover:text-black"
+              }`}
+              onClick={handleCopy}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
+  
+        {isCouponApplied ? (
+          <p className="text-green-600 text-sm font-medium text-center">✅ Coupon Applied Successfully!</p>
+        ) : (
+          <input
+            type="text"
+            placeholder="Enter Coupon Code (Optional)"
+            value={coupon.code}
+            onChange={(e) => setCoupon({ code: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+          />
+        )}
+      </div>
+  
+      <p className="mt-4 text-sm text-gray-600 text-center">
+        <span className="font-semibold">📢 Notice:</span> If you are outside of Vietnam, please ensure all required fields are correctly filled.
+      </p>
+  
+      <button
+        onClick={handleConfirmPayment}
+        className="mt-6 w-full bg-black text-white py-3 rounded-md text-sm font-medium uppercase tracking-wider transition duration-300 hover:bg-gray-900 disabled:bg-gray-400"
+        disabled={loading}
+      >
+        {loading ? "Processing..." : "Pay Now"}
+      </button>
+    </div>
+  );
 };
-
-export default QRCode;
+  
+  export default QRCode;
+  

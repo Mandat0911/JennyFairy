@@ -15,7 +15,7 @@ const SuccessPage = () => {
     if (sessionId) {
         handleCheckoutSuccess(sessionId, {  
             onSuccess: () => {
-                localStorage.removeItem("sessionId");
+
                 toast.success("Payment successful! Your cart has been cleared.");
             },
         });

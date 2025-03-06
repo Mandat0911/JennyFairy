@@ -70,3 +70,36 @@ export const useCheckSuccessStripe = () => {
         }
     });
 };
+
+
+
+export const useCreateCheckoutQrcode = () => {
+    
+    const { mutate: clearAllItems } = useDeleteAllCartItem();
+    return useMutation({
+        mutationFn: async (checkoutData) => {
+            const response = await fetch(PAYMENT_API_ENDPOINTS.CREATE_CHECKOUT_QRCODE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(checkoutData),
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data?.error||'Failed to create checkout qrcode');
+            }
+        
+            return data;
+        },
+        onSuccess: () => {
+            toast.success("Order placed successfully!");  
+            localStorage.removeItem("sessionId");
+            clearAllItems();
+        
+        },
+        onError: (error) => {
+            toast.error(error.message || "Something went wrong!");
+        }
+    });
+};

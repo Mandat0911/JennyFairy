@@ -59,7 +59,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
     .button {
       display: inline-block;
       background-color: #000;
-      color: #fff;
+      color: #ffffff;
       text-decoration: none;
       padding: 12px 24px;
       font-size: 16px;

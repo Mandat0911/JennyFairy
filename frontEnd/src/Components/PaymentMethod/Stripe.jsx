@@ -39,11 +39,6 @@ const Stripe = () => {
       { products: cart, couponCode: coupon?.code || null, shippingDetails },
       {
         onSuccess: async (data) => {
-          if (!data.sessionId) {
-            toast.error("Failed to get Stripe session ID");
-            setLoading(false);
-            return;
-          }
           // Ensure Stripe is loaded before proceeding
           const stripe = await stripePromise;
           if (!stripe) {
