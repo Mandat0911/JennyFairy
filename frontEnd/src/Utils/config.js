@@ -12,6 +12,14 @@ export const PRODUCT_API_ENDPOINTS = {
   GET_PRODUCT_BY_CATEGORY: (category) => `${API_BE_URL}/product/category/${category}`,
 }
 
+// Order API Endpoints
+export const ORDER_API_ENDPOINTS = {
+  GET_PRODUCT: `${API_BE_URL}/order`,
+  EDIT_PRODUCT: (orderId) => `${API_BE_URL}/order/edit-order/${orderId}`,
+  DELETE_PRODUCT: (orderId) => `${API_BE_URL}/order/delete/${orderId}`,
+}
+
+
 // Collection API Endpoints
 export const COLLECTION_API_ENDPOINTS = {
   GET_COLLECTION: `${API_BE_URL}/collection`,

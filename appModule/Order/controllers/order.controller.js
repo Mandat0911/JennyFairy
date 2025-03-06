@@ -1,4 +1,3 @@
-import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
 import Order from "../model/order.model.js"
 export const getAllOrder = async(req, res) => {
     try {
