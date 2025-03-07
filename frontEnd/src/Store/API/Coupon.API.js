@@ -65,6 +65,36 @@ export const useValidateCoupon = () => {
     })
 };
 
+export const useAppliedCoupon = () => {
+    const queryClient = useQueryClient();
+    const { setLoading } = useCouponStore();
+    return useMutation({
+        mutationFn: async (code) => {
+            const response = await fetch(COUPON_API_ENDPOINTS.APPLIED_COUPON, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                 },
+                credentials: 'include',
+                body: JSON.stringify(code)
+                
+            });
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Failed to applied Coupon');
+            return data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries(['coupons']);
+            setLoading(false)
+        },
+        onError: (error) => {
+            setLoading(false);
+            toast.error(error.message);
+        }
+    })
+};
+
 
 export const useGetAllCoupon = () => {
     return useQuery({

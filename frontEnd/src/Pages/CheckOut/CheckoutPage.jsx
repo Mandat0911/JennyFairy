@@ -4,6 +4,7 @@ import Stripe from "../../Components/PaymentMethod/Stripe";
 import QRCode from "../../Components/PaymentMethod/QRCode";
 import COD from "../../Components/PaymentMethod/COD";
 import PaymentMethod from "../../Components/PaymentMethod/PaymentMethod";
+import GiftCouponCard from "../../Components/Coupon/GiftCouponCard";
 
 const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
@@ -17,10 +18,13 @@ const CheckoutPage = () => {
 
       <div className="grid md:grid-cols-2 gap-10">
         {/* Left: Order Summary */}
-        <div className="border-r border-gray-300 pr-8">
+        <div className=" items-center border-gray-300 pr-8">
           <h3 className="text-lg font-medium text-gray-800 mb-4 tracking-wider">Order Summary</h3>
           <OrderSummary />
+          <GiftCouponCard />
         </div>
+        
+        
 
         {/* Right: Payment Section */}
         <div>

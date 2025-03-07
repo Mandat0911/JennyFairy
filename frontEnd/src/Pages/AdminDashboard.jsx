@@ -1,4 +1,4 @@
-import { BarChart, PlusCircle, ShoppingBasket, Image, Ticket } from 'lucide-react';
+import { BarChart, PlusCircle, ShoppingBasket, Image, Ticket, Box } from 'lucide-react';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import CreateProductForm from '../Components/Product/CreateProductForm.jsx';
@@ -6,13 +6,14 @@ import ProductList from '../Components/Product/ProductList.jsx';
 import AnalyticsView from '../Components/Analytic/AnalyticsView.jsx';
 import CreateCollectionForm from '../Components/Collection/CreateCollectionForm.jsx';
 import CollectionList from '../Components/Collection/CollectionList.jsx';
-import CouponList from '../Components/Coupon/CouponList.jsx';
 import CreateCouponForm from '../Components/Coupon/CreateCouponForm.jsx';
+import OrderList from '../Components/Order/OrderList.jsx';
 
 
 const tabs = [
     {id: "create", label: "Create Product", icon: PlusCircle},
     {id: "products", label: "View Products", icon: ShoppingBasket},
+    {id: "Orders", label: "Orders", icon: Box},
     {id: "collections", label: "Create Collection", icon: PlusCircle},
     {id: "View collections", label: "View Collection", icon: Image},
     {id: "Coupon", label: "Coupon", icon: Ticket},
@@ -72,6 +73,17 @@ const AdminDashboard = () => {
                             transition={{ duration: 0.3 }}
                         >
                             <ProductList />
+                        </motion.div>
+                    )}
+                    {activeTab === "Orders" && (
+                        <motion.div
+                            key="Orders"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <OrderList />
                         </motion.div>
                     )}
                     {activeTab === "collections" && (

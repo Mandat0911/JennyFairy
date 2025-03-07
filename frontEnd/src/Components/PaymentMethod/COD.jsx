@@ -4,6 +4,7 @@ import useCartStore from "../../Store/Zustand/cartStore.js";
 import useCouponStore from "../../Store/Zustand/coupon.js";
 import { useCreateSessionCheckoutCod } from "../../Store/API/Payment.API.js";
 import { useNavigate } from "react-router-dom";
+import { useAppliedCoupon } from "../../Store/API/Coupon.API.js";
 
 const COD = () => {
     const navigate = useNavigate();
@@ -19,7 +20,9 @@ const COD = () => {
     country: "",
   });
 
-  const { mutate: createCheckoutSession } = useCreateSessionCheckoutCod();
+    const { mutate: createCheckoutSession } = useCreateSessionCheckoutCod();
+    const { mutateAsync: appliedCoupon } = useAppliedCoupon();
+  
 
   const handleConfirmPayment = async () => {
        
@@ -32,7 +35,10 @@ const COD = () => {
       return;
     }
     setLoading(true);
-
+    try {
+      if (coupon?.code) {
+        await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
+    }
       createCheckoutSession(
         { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total, couponDiscountPercentage: coupon?.discountPercentage },
         {
@@ -46,6 +52,12 @@ const COD = () => {
           }
         }
       );
+    } catch (error) {
+      setLoading(false);
+        console.error("Error in handleConfirmPayment:", error.message);
+    }
+
+      
     };
     
     return (
@@ -139,17 +151,17 @@ const COD = () => {
           <p className="text-green-600 text-sm font-medium text-center">✅ Coupon Applied Successfully!</p>
         ) : (
           <input
-            type="text"
-            placeholder="Enter Coupon Code (Optional)"
+            readOnly
+            placeholder="Coupon Code (Optional)"
             value={coupon.code}
             onChange={(e) => setCoupon({ code: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+            className="w-full px-4 py-3 border bg-gray-100 border-gray-300 text-gray-800 cursor-default rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
           />
         )}
       </div>
 
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all
         fields are correctly filled.
       </p>
 

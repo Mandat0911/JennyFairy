@@ -4,6 +4,7 @@ import useCartStore from "../../Store/Zustand/cartStore.js";
 import toast from "react-hot-toast";
 import { useCreateSessionCheckoutStripe } from "../../Store/API/Payment.API";
 import useCouponStore from "../../Store/Zustand/coupon.js";
+import { useAppliedCoupon } from "../../Store/API/Coupon.API.js";
 
 const stripePromise = loadStripe ("pk_test_51Qt5G8RwMpBGl8YKTW579QWkTxTSkX1P89HWG4EokOnsdp4Qine0kT6ynH2PQ3MsiL6e8cmsSgTWfdjeHS8vAyGf00RPGVFO05")
 
@@ -21,6 +22,7 @@ const Stripe = () => {
     postalCode: "",
     country: "",
   });
+  const { mutateAsync: appliedCoupon } = useAppliedCoupon();
 
 
 
@@ -39,6 +41,9 @@ const Stripe = () => {
     setLoading(true);
 
     try {
+      if (coupon?.code) {
+        await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
+      }
       createCheckoutSession(
         { products: cart, couponCode: coupon?.code || null, shippingDetails },
         {
@@ -72,14 +77,10 @@ const Stripe = () => {
         }
       );
     } catch (error) {
+      setLoading(false);
       console.error("Checkout error:", error);
   }
-  
-    
-  };
-  
-
-
+};
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
       <h3 className="text-xl font-semibold text-gray-900 mb-6 uppercase tracking-wider text-center">
@@ -167,18 +168,17 @@ const Stripe = () => {
           <p className="text-green-600 text-sm font-medium text-center">✅ Coupon Applied Successfully!</p>
         ) : (
           <input
-            type="text"
-            placeholder="Enter Coupon Code (Optional)"
+            readOnly
+            placeholder="Coupon Code (Optional)"
             value={coupon.code}
             onChange={(e) => setCoupon({ code: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+            className="w-full px-4 py-3 border bg-gray-100 border-gray-300 text-gray-800 cursor-default rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
           />
         )}
       </div>
 
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required
-        fields are correctly filled.
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all fields are correctly filled.
       </p>
 
       <button

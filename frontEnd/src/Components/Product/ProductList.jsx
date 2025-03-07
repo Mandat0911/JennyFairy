@@ -6,7 +6,7 @@ import CreateProductForm from './CreateProductForm.jsx';
 
 const ProductList = () => {
     const { data: products } = useGetAllProduct();
-    const { mutate: deleteMutation, isPending: isDeleting } = useDeleteProduct();
+    const { mutate: deleteMutation } = useDeleteProduct();
     const [deletingProductId, setDeletingProductId] = useState(null);
     const [editProductData, setEditProductData] = useState(null);
     const toggleFeaturedProduct = useToggleFeatureProduct();

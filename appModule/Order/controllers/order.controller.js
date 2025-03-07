@@ -1,8 +1,26 @@
 import Order from "../model/order.model.js"
 export const getAllOrder = async(req, res) => {
     try {
-        const orders = await Order.find({});
-        res.json({orders})
+        const { page = 1, limit = 10 } = req.query;
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const orders = await Order.find({}).populate(
+            {
+                path: "paymentId",
+                select: "paymentMethod paymentStatus"
+            })
+            .populate({
+                path: "user",
+                select: "name email"
+            })
+            .skip((pageNumber - 1) * limitNumber)
+            .limit(limitNumber);
+            const totalOrders = await Order.countDocuments();
+        res.json({orders,
+            totalPages: Math.ceil(totalOrders / limitNumber),
+            currentPage: pageNumber,
+            totalOrders
+        })
     } catch (error) {
         console.error("Error in getAllOrder controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

@@ -3,6 +3,8 @@ import useCartStore from "../../Store/Zustand/cartStore.js";
 import useCouponStore from "../../Store/Zustand/coupon.js";
 import { useNavigate } from "react-router-dom";
 import { useCreateSessionCheckoutQrCode } from "../../Store/API/Payment.API.js";
+import toast from "react-hot-toast";
+import { useAppliedCoupon } from "../../Store/API/Coupon.API.js";
 
 const QRCode = () => {
     const navigate = useNavigate();
@@ -12,6 +14,7 @@ const QRCode = () => {
     const [subjectCode, setSubjectCode] = useState("");
     const [copied, setCopied] = useState(false); // Track copy status
     const { mutate: createCheckoutQrcode } = useCreateSessionCheckoutQrCode();
+    const { mutateAsync: appliedCoupon } = useAppliedCoupon();
     
     const [shippingDetails, setShippingDetails] = useState({
         fullName: "",
@@ -22,32 +25,49 @@ const QRCode = () => {
         country: "",
     });
 
-    const handleConfirmPayment = () => {
-        if (cart.length === 0) {
-            // toast.error("Your cart is empty!");
-            return;
-        }
-        if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
-            // toast.error("Please fill in all required shipping details!");
-            return;
-        }
-
-        setLoading(true);
-
-        createCheckoutQrcode(
-            { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total, Code: subjectCode},
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                    navigate("/products");
-                },
-                onError: (error) => {
-                    setLoading(false);
-                    toast.error(error.message || "Something went wrong!");
-                },
-            }
-        );
-    };
+    const handleConfirmPayment = async () => {
+      if (cart.length === 0) {
+          toast.error("Your cart is empty!");
+          return;
+      }
+      if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
+          toast.error("Please fill in all required shipping details!");
+          return;
+      }
+  
+      setLoading(true);
+  
+      try {
+          if (coupon?.code) {
+              await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
+          }
+  
+          createCheckoutQrcode(
+              { 
+                  products: cart, 
+                  couponCode: coupon?.code || null, 
+                  shippingDetails, 
+                  totalAmount: total, 
+                  Code: subjectCode
+              },
+              {
+                  onSuccess: () => {
+                      setLoading(false);
+                      navigate("/products");
+                  },
+                  onError: (error) => {
+                      setLoading(false);
+                      toast.error(error.message || "Something went wrong!");
+                  },
+              }
+          );
+      } catch (error) {
+          setLoading(false);
+          console.error("Error in handleConfirmPayment:", error.message);
+      }
+  };
+  
+  
 
     // VietQR details
     const bankCode = "acb"; // Change this to your bank
@@ -75,7 +95,7 @@ const QRCode = () => {
         setTimeout(() => setCopied(false), 2000); // Revert to "Copy" after 2 seconds
     };
 
-    const qrCodeImage = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${total}&addInfo=${subjectCode}`;
+    const qrCodeImage = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact.jpg?amount=${total}&addInfo=${subjectCode}`;
 
 
 
@@ -201,17 +221,17 @@ return (
           <p className="text-green-600 text-sm font-medium text-center">✅ Coupon Applied Successfully!</p>
         ) : (
           <input
-            type="text"
-            placeholder="Enter Coupon Code (Optional)"
+            readOnly
+            placeholder="Coupon Code (Optional)"
             value={coupon.code}
             onChange={(e) => setCoupon({ code: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
+            className="w-full px-4 py-3 border bg-gray-100 border-gray-300 text-gray-800 cursor-default rounded-md focus:outline-none focus:ring-1 focus:ring-black transition"
           />
         )}
       </div>
   
       <p className="mt-4 text-sm text-gray-600 text-center">
-        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all required fields are correctly filled.
+        <span className="font-semibold">Notice:</span> If you are outside of Vietnam, please ensure all fields are correctly filled.
       </p>
   
       <button

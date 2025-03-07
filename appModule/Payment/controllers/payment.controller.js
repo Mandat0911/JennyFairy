@@ -57,16 +57,6 @@ export const createCheckoutSession = async (req, res) => {
                 quantity: product.quantity || 1,
             };
         });
-
-        if(couponCode) {
-            const usedCoupon = await Payment.findOne({ couponCode: couponCode });
-            if (usedCoupon) {
-                return res.status(400).json({ error: "You already used this coupon" });
-            }
-        }
-        
-
-
         if (couponCode) {
             coupon = await Coupon.findOne({
                 code: couponCode,
@@ -104,8 +94,6 @@ export const createCheckoutSession = async (req, res) => {
                 )
             },
         });
-
-        console.log("session:", session);
 
         res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount + " VND" });
     } catch (error) {
@@ -150,7 +138,7 @@ export const checkoutSuccess = async (req, res) => {
                 quantity: product.quantity,
                 price: product.price,
             })),
-            totalAmount: session.amount_total + "VND",
+            totalAmount: session.amount_total,
             paymentMethod: "Stripe",
             paymentStatus: "completed",
             isPaid: true,

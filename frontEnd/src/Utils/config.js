@@ -14,9 +14,9 @@ export const PRODUCT_API_ENDPOINTS = {
 
 // Order API Endpoints
 export const ORDER_API_ENDPOINTS = {
-  GET_PRODUCT: `${API_BE_URL}/order`,
-  EDIT_PRODUCT: (orderId) => `${API_BE_URL}/order/edit-order/${orderId}`,
-  DELETE_PRODUCT: (orderId) => `${API_BE_URL}/order/delete/${orderId}`,
+  GET_ORDER: `${API_BE_URL}/order`,
+  EDIT_ORDER: (orderId) => `${API_BE_URL}/order/edit-order/${orderId}`,
+  DELETE_ORDER: (orderId) => `${API_BE_URL}/order/delete/${orderId}`,
 }
 
 
@@ -44,6 +44,7 @@ export const COUPON_API_ENDPOINTS = {
   CREATE_COUPON: `${API_BE_URL}/coupon/create`,
   DELETE_COUPON: (couponId) => `${API_BE_URL}/coupon/delete/${couponId}`,
   VALIDATE_COUPON: `${API_BE_URL}/coupon/validate/`,
+  APPLIED_COUPON: `${API_BE_URL}/coupon/appliedCoupon/`,
 }
 
 // Payment API Endpoints

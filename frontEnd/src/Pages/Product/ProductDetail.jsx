@@ -74,7 +74,7 @@ const ProductDetail = () => {
     return (
         <div className="max-w-screen-xl mx-auto px-6 py-12 md:py-16 pt-20 grid grid-cols-1 md:grid-cols-2 gap-12 relative">
             <div>
-                <div {...handlers} className="w-full h-96 md:h-[550px] bg-gray-100 rounded-lg overflow-hidden shadow-lg relative">
+                <div {...handlers} className="w-full mt-4 h-96 md:h-[550px] bg-gray-100 rounded-lg overflow-hidden shadow-lg relative">
                     <AnimatePresence mode="wait" custom={swipeDirection}>
                         <motion.img
                             key={selectedImage}
