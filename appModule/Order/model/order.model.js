@@ -11,6 +11,11 @@ const orderSchema = new mongoose.Schema({
         ref: "Payment",
         required: true
     },
+    Code: {
+        type: String,
+        default: null,
+    },
+    
     products: [
         {
             product: {

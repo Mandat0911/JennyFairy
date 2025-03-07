@@ -4,6 +4,7 @@ const couponSchema = new mongoose.Schema(
 		code: {
 			type: String,
 			required: true,
+			default: null,
 			unique: true,
 		},
 		discountPercentage: {

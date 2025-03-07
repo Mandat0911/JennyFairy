@@ -6,7 +6,7 @@ export const generateTokens = async (accountId, email, res) => {
         throw new Error("ACCESS_TOKEN_SECRET is not defined in the environment variables");
     }
     const accessToken = jwt.sign({accountId, email}, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "15m",
+        expiresIn: "1d",
     })
 
     const refreshToken = jwt.sign({accountId, email}, process.env.REFRESH_TOKEN_SECRET, {

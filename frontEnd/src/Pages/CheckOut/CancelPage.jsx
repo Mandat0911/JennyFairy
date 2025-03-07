@@ -7,8 +7,11 @@ const CancelPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const sessionId = localStorage.getItem("sessionId");
     toast.error("Payment was not completed. Please try again.");
-    
+    if (sessionId) {    
+      localStorage.removeItem("sessionId"); // Clear sessionId after first call
+  }
     // Auto-redirect to homepage after 5 seconds
     const timer = setTimeout(() => {
       navigate("/");

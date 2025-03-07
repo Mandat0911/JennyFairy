@@ -12,9 +12,7 @@ const SuccessPage = () => {
       useEffect(() => {
         const sessionId = localStorage.getItem("sessionId");
     
-        if (sessionId) {
-            console.log("Triggering handleCheckoutSuccess with sessionId:", sessionId);
-    
+        if (sessionId) {    
             handleCheckoutSuccess(sessionId, {
                 onSuccess: () => {
                     toast.success("Payment successful! Your cart has been cleared.");

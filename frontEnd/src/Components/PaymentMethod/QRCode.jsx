@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import useCartStore from "../../Store/Zustand/cartStore.js";
 import useCouponStore from "../../Store/Zustand/coupon.js";
-// import { useCreateCheckoutQrcode } from "../../Store/API/Payment.API.js";
 import { useNavigate } from "react-router-dom";
+import { useCreateSessionCheckoutQrCode } from "../../Store/API/Payment.API.js";
 
 const QRCode = () => {
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ const QRCode = () => {
     const { coupon, setCoupon } = useCouponStore();
     const [subjectCode, setSubjectCode] = useState("");
     const [copied, setCopied] = useState(false); // Track copy status
-    // const { mutate: createCheckoutQrcode } = useCreateCheckoutQrcode();
+    const { mutate: createCheckoutQrcode } = useCreateSessionCheckoutQrCode();
     
     const [shippingDetails, setShippingDetails] = useState({
         fullName: "",
@@ -34,22 +34,25 @@ const QRCode = () => {
 
         setLoading(true);
 
-        // createCheckoutQrcode(
-        //     { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total },
-        //     {
-        //         onSuccess: () => {
-        //             setLoading(false);
-        //             navigate("/products");
-        //         },
-        //         onError: (error) => {
-        //             setLoading(false);
-        //             toast.error(error.message || "Something went wrong!");
-        //         },
-        //     }
-        // );
+        createCheckoutQrcode(
+            { products: cart, couponCode: coupon?.code || null, shippingDetails, totalAmount: total, Code: subjectCode},
+            {
+                onSuccess: () => {
+                    setLoading(false);
+                    navigate("/products");
+                },
+                onError: (error) => {
+                    setLoading(false);
+                    toast.error(error.message || "Something went wrong!");
+                },
+            }
+        );
     };
 
-    const qrCodeImage = "https://img.vietqr.io/image/vietinbank-113366668888-compact.jpg"; // Replace with your actual QR code image URL
+    // VietQR details
+    const bankCode = "acb"; // Change this to your bank
+    const accountNumber = "21700667"; // Your bank account number
+
 
     // Function to generate a random 6-character alphanumeric code
     const generateSubjectCode = () => {
@@ -72,6 +75,9 @@ const QRCode = () => {
         setTimeout(() => setCopied(false), 2000); // Revert to "Copy" after 2 seconds
     };
 
+    const qrCodeImage = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.jpg?amount=${total}&addInfo=${subjectCode}`;
+
+
 
 
 return (
@@ -86,7 +92,7 @@ return (
   
       {/* QR Code Image */}
       <div className="flex justify-center mb-6">
-        <img src={qrCodeImage} alt="QR Code" className="w-40 h-40 border rounded-lg shadow-md" />
+        <img src={qrCodeImage} alt="VietQR Code" className="w-40 h-40 border rounded-lg shadow-md" />
       </div>
   
       {/* Input Fields */}
