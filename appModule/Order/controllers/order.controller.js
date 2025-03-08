@@ -15,8 +15,10 @@ export const getAllOrder = async(req, res) => {
             })
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber);
+
             const totalOrders = await Order.countDocuments();
-        res.json({orders,
+
+        res.status(200).json({orders,
             totalPages: Math.ceil(totalOrders / limitNumber),
             currentPage: pageNumber,
             totalOrders
@@ -32,13 +34,13 @@ export const editOrder = async(req, res) => {
     try {
         const { id: orderId } = req.params;
         
-        const { shippingDetails } = req.body;
+        const { order } = req.body;
 
-        if (!shippingDetails) {
+        if (!order.shippingDetails) {
             return res.status(400).json({ error: "Shipping details are required." });
         }
 
-        const { fullName, phone, address, city, postalCode, country, deliveryStatus } = shippingDetails;
+        const { fullName, phone, address, city, postalCode, country, deliveryStatus } = order.shippingDetails;
 
         if (!fullName && !phone && !address && !city && !postalCode && !country && !deliveryStatus) {
             return res.status(400).json({ error: "At least one field must be updated." });
