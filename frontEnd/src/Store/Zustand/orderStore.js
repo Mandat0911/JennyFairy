@@ -5,6 +5,8 @@ const useOrderStore = create((set) => ({
         user:'',
         paymentId:'',
         Code: '',
+        name: '',
+        email: '',
         products: [],
         totalAmount: '',
         shippingDetails: {

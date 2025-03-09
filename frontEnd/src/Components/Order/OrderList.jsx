@@ -1,23 +1,33 @@
 import React, { useState } from 'react'
 import { useDeleteOrder, useGetAllOrder } from '../../Store/API/Order.API.js';
 import { motion } from 'framer-motion';
-import { Trash, Star, Edit, Loader, X } from "lucide-react";
+import { Trash, Edit, Loader, X } from "lucide-react";
 import EditOrderForm from './EditOrderForm.jsx';
 
 const OrderList = () => {
     
     const [currentPage, setCurrentPage] = useState(1);
     const [editOrderData, setEditOrderData] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
     
  
     const [limit, setLimit] = useState(10);
     const { data } = useGetAllOrder(currentPage, limit);
     const orders = data?.orders || [];
     const totalPages = data?.totalPages || 1;
-
+    console.log(orders);
     const { mutate: deleteOrder } = useDeleteOrder();
     const [deletingOrderId, setDeletingOrderId] = useState(null);
-    console.log(data)
+    
+    
+    const filteredOrders = orders.filter(order => 
+        order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.totalAmount.toString().includes(searchTerm) ||
+        order.paymentId.paymentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.shippingDetails.deliveryStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.paymentId.paymentMethod.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
   return (
   <motion.div
             className="bg-white shadow-xl rounded-lg overflow-hidden max-w-5xl mx-auto p-4 md:p-6"
@@ -25,7 +35,18 @@ const OrderList = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
-            <div className="overflow-x-auto">
+            <div className="justify-between items-center mb-4 ">
+            <input
+                        type="text"
+                        placeholder="Search product name..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="border px-2 py-1 rounded-md text-sm w-1/3"
+                        />
+
             <select
                     value={limit}
                     onChange={(e) => { setLimit(Number(e.target.value)); setCurrentPage(1); }}
@@ -48,10 +69,10 @@ const OrderList = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {orders?.map((order) => (
+                        {filteredOrders.length > 0 ? (
+                        filteredOrders?.map((order) => (
                             <tr key={order._id} className="hover:bg-gray-50 transition duration-200">
                                 <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
-                                    {/* <img className="h-12 w-12 rounded-lg object-cover" src={order.img[0]} alt={order.name} /> */}
                                     <span className="text-sm font-medium text-gray-900">{order._id}</span>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap">
@@ -120,7 +141,14 @@ const OrderList = () => {
                                     </button>
                                 </td>
                             </tr>
-                        ))}
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="6" className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                                No orders found
+                            </td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
             </div>

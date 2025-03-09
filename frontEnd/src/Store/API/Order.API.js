@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ORDER_API_ENDPOINTS } from "../../Utils/config";
+import toast from "react-hot-toast";
 
 export const useGetAllOrder = (page = 1, limit = 10) => {
     return useQuery({

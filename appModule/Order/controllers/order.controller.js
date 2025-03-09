@@ -1,9 +1,10 @@
 import Order from "../model/order.model.js"
 export const getAllOrder = async(req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10,  searchTerm = "" } = req.query;
         const pageNumber = parseInt(page);
         const limitNumber = parseInt(limit);
+        
         const orders = await Order.find({}).populate(
             {
                 path: "paymentId",
