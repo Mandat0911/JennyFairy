@@ -3,6 +3,7 @@ import { useDeleteOrder, useGetAllOrder } from '../../Store/API/Order.API.js';
 import { motion } from 'framer-motion';
 import { Trash, Edit, Loader, X } from "lucide-react";
 import EditOrderForm from './EditOrderForm.jsx';
+import { formatDate } from '../../Utils/Date.js';
 
 const OrderList = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +28,7 @@ const OrderList = () => {
         order.paymentId.paymentMethod.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    console.log(orders)
   return (
   <motion.div
             className="bg-white shadow-xl rounded-lg overflow-hidden max-w-5xl mx-auto p-4 md:p-6"
@@ -49,7 +51,7 @@ const OrderList = () => {
             <select
                     value={limit}
                     onChange={(e) => { setLimit(Number(e.target.value)); setCurrentPage(1); }}
-                    className="border mb-4 px-2 py-1 rounded-md text-sm"
+                    className="border mx-2 mb-4 px-2 py-1 rounded-md text-sm"
                 >
                     <option value={5}>5 per page</option>
                     <option value={10}>10 per page</option>
@@ -63,7 +65,8 @@ const OrderList = () => {
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment status</th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Delivery Status</th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment method</th>
-                            
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Create At</th>
+
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -114,6 +117,13 @@ const OrderList = () => {
                                 >
                                     {order.paymentId.paymentMethod}
                                 </span>
+                                </td>
+                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                    <div className="flex flex-wrap gap-1">
+                                        <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                            {formatDate(order.createdAt)}
+                                        </span>   
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button

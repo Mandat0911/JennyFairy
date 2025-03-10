@@ -5,11 +5,27 @@ import { useDeleteProduct, useGetAllProduct, useToggleFeatureProduct } from '../
 import CreateProductForm from './CreateProductForm.jsx';
 
 const ProductList = () => {
-    const { data: products } = useGetAllProduct();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
     const { mutate: deleteMutation } = useDeleteProduct();
     const [deletingProductId, setDeletingProductId] = useState(null);
     const [editProductData, setEditProductData] = useState(null);
     const toggleFeaturedProduct = useToggleFeatureProduct();
+    
+    const [limit, setLimit] = useState(10);
+    const { data } = useGetAllProduct(currentPage, limit);
+    const products = data?.products || [];
+    const totalPages = data?.totalPages || 1;
+
+    const filteredProducts = products.filter(product => 
+        product._id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.name?.toString().toLowerCase().includes(searchTerm) ||
+        product.price?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.size?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (Array.isArray(product.category)
+    ? product.category.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase()))
+    : false)
+    );
 
     return (
         <motion.div
@@ -18,8 +34,29 @@ const ProductList = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+            <div className="justify-between items-center mb-4 ">
+            <input
+                        type="text"
+                        placeholder="Search product name..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setLimit(20);
+                        }}
+                        className="border px-2 py-1 rounded-md text-sm w-1/3"
+                        />
+
+            <select
+                    value={limit}
+                    onChange={(e) => { setLimit(Number(e.target.value)); setCurrentPage(1); }}
+                    className="border mx-2 mb-4 px-2 py-1 rounded-md text-sm"
+                >
+                    <option value={5}>5 per page</option>
+                    <option value={10}>10 per page</option>
+                    <option value={20}>20 per page</option>
+                </select>
+
+            <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Product</th>
@@ -31,7 +68,7 @@ const ProductList = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {products?.map((product) => (
+                        {filteredProducts?.map((product) => (
                             <tr key={product._id} className="hover:bg-gray-50 transition duration-200">
                                 <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
                                     <img className="h-12 w-12 rounded-lg object-cover" src={product.img[0]} alt={product.name} />
@@ -96,6 +133,25 @@ const ProductList = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-md"
+                >
+                    Previous
+                </button>
+                <span className="text-sm font-semibold">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-md"
+                >
+                    Next
+                </button>
             </div>
             {editProductData && (
                 <div

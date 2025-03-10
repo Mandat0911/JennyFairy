@@ -71,11 +71,11 @@ export const useEditProduct = () => {
 };
 
 
-export const useGetAllProduct = () => {
+export const useGetAllProduct = (page = 1, limit = 5) => {
     return useQuery({
-        queryKey: ['products'],
+        queryKey: ['products', page, limit],
         queryFn: async () => {
-            const response = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT, {
+            const response = await fetch(`${PRODUCT_API_ENDPOINTS.GET_PRODUCT}?page=${page}&limit=${limit}`, {
                 credentials: 'include',
             });
 
@@ -84,9 +84,7 @@ export const useGetAllProduct = () => {
             }
 
             const data = await response.json();
-
-            // Ensure it's an array
-            return Array.isArray(data) ? data : data.products || [];
+            return data;
         },
         retry: 3, // Retry up to 3 times before failing
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)

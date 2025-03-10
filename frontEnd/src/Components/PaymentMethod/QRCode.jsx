@@ -46,6 +46,7 @@ const QRCode = () => {
               { 
                   products: cart, 
                   couponCode: coupon?.code || null, 
+                  couponDiscountPercentage: coupon?.discountPercentage || 0,
                   shippingDetails, 
                   totalAmount: total, 
                   Code: subjectCode

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trash, Star, Loader, X } from "lucide-react";
+import { Trash, Loader, } from "lucide-react";
 import { useDeleteCoupon, useGetAllCoupon } from '../../Store/API/Coupon.API.js';
 import { formatDate } from '../../Utils/Date.js';
 

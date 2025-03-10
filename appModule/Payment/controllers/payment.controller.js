@@ -17,6 +17,7 @@ export const createCheckoutSession = async (req, res) => {
         let totalAmount = 0;
         let coupon;
         const currentDate = new Date();
+        console.log(req.body)
 
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid or empty products array" });
@@ -36,6 +37,7 @@ export const createCheckoutSession = async (req, res) => {
                     id: p.productId,
                     name: product.name,
                     price: product.price,
+                    size: p.size,
                     quantity: p.quantity,
                     img: product.img || [],
                 };
@@ -57,12 +59,14 @@ export const createCheckoutSession = async (req, res) => {
                 quantity: product.quantity || 1,
             };
         });
+        
         if (couponCode) {
             coupon = await Coupon.findOne({
                 code: couponCode,
                 isActive: true,
                 expirationDate: { $gte: currentDate },
             });
+            console.log(coupon)
             if (coupon) {
                 const discount = Math.round(totalAmount * (coupon.discountPercentage / 100));
                 totalAmount -= discount;
@@ -70,6 +74,7 @@ export const createCheckoutSession = async (req, res) => {
                 return res.status(400).json({ error: "Invalid or expired coupon code" });
             }
         }
+       
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
         
@@ -83,18 +88,18 @@ export const createCheckoutSession = async (req, res) => {
             metadata: {
                 userId: userId,
                 couponCode: couponCode || "",
-                couponDiscountPercentage: coupon.discountPercentage,
+                couponDiscountPercentage: coupon ? coupon.discountPercentage : 0,
                 shippingDetails: JSON.stringify(shippingDetails),
                 products: JSON.stringify(
                     productDetails.map((product) => ({
-                        id: product.id,
+                        productId: product.id,
                         price: product.price,
+                        size: product.size,
                         quantity: product.quantity,
                     }))
                 )
             },
         });
-
         res.status(200).json({ id: session.id, url: session.url, totalAmount: totalAmount + " VND" });
     } catch (error) {
         console.error("Error in createCheckoutSession controller:", error.message);
@@ -130,14 +135,17 @@ export const checkoutSuccess = async (req, res) => {
                 return res.status(400).json({ error: "You already used this coupon" });
             }
         }
+
+        const formattedProducts = products.map((product, index) => ({
+            product: products[index].productId, 
+            quantity: products[index].quantity,
+            size: products[index].size,
+            price: product.price, 
+        }));
         
         const payment = new Payment ({
             user: userId,
-            products: products.map((product) => ({
-                product: product.id,
-                quantity: product.quantity,
-                price: product.price,
-            })),
+            products:formattedProducts,
             totalAmount: session.amount_total,
             paymentMethod: "Stripe",
             paymentStatus: "completed",
@@ -157,12 +165,8 @@ export const checkoutSuccess = async (req, res) => {
             const newOrder = new Order({
                 user: userId,
                 paymentId: payment._id,
-                products: products.map((product) => ({
-                    product: product.id,
-                    quantity: product.quantity,
-                    price: product.price,
-                })),
-                totalAmount: session.amount_total + " VND",
+                products: formattedProducts,
+                totalAmount: session.amount_total,
                 stripeSessionId: sessionId,
                 shippingDetails: shippingDetails,
             });
@@ -212,6 +216,7 @@ export const createCheckoutQrcode = async (req, res) => {
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 
             quantity: products[index].quantity,
+            size: products[index].size,
             price: product.price, 
         }));
 

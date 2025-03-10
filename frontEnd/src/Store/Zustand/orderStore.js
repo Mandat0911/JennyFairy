@@ -7,6 +7,7 @@ const useOrderStore = create((set) => ({
         Code: '',
         name: '',
         email: '',
+        paymentStatus: '',
         products: [],
         totalAmount: '',
         shippingDetails: {
@@ -16,7 +17,7 @@ const useOrderStore = create((set) => ({
             city: '',
             postalCode: '',
             country: '',
-            deliveryStatus: "pending",
+            deliveryStatus: '',
         },
     },
 
@@ -32,8 +33,11 @@ const useOrderStore = create((set) => ({
             user:'',
             paymentId:'',
             Code: '',
+            name: '',
+            email: '',
+            paymentStatus: '',
             products: [],
-            totalAmount: 0,
+            totalAmount: '',
             shippingDetails: {
                 fullName: '',
                 phone: '',
@@ -41,7 +45,7 @@ const useOrderStore = create((set) => ({
                 city: '',
                 postalCode: '',
                 country: '',
-                deliveryStatus: "pending",
+                deliveryStatus: '',
             },
         },
     }),

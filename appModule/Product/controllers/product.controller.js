@@ -1,16 +1,25 @@
 import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
 import { getCachedRecommendedProducts, updateCachedRecommendedProducts, updateFeaturedProductCache } from "../../../backend/lib/redis/redis.config.js";
 import { redis } from "../../../backend/lib/redis/redis.js";
-import sharp from "sharp";
-import fs from "fs"
-import path from "path";
-import {v4 as uuidv4} from "uuid"
 import Product from "../model/product.models.js";
 
 export const getAllProduct = async(req, res) => {
     try {
-        const products = await Product.find({});
-        res.json({products})
+        const {page = 1, limit = 20} = req.query;
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const products = await Product.find({})
+        .skip((pageNumber - 1) * limitNumber)
+        .limit(limitNumber);
+
+        const totalProducts = await Product.countDocuments();
+
+        res.status(200).json({
+            products,
+            totalPages: Math.ceil(totalProducts / limitNumber),
+            currentPage: pageNumber,
+            totalProducts
+        })
     } catch (error) {
         console.error("Error in getAllProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

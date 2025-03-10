@@ -1,7 +1,8 @@
+import Payment from "../../Payment/model/payment.models.js";
 import Order from "../model/order.model.js"
 export const getAllOrder = async(req, res) => {
     try {
-        const { page = 1, limit = 10,  searchTerm = "" } = req.query;
+        const { page = 1, limit = 10} = req.query;
         const pageNumber = parseInt(page);
         const limitNumber = parseInt(limit);
         
@@ -24,7 +25,8 @@ export const getAllOrder = async(req, res) => {
 
             const totalOrders = await Order.countDocuments();
 
-        res.status(200).json({orders,
+        res.status(200).json({
+            orders,
             totalPages: Math.ceil(totalOrders / limitNumber),
             currentPage: pageNumber,
             totalOrders
@@ -35,13 +37,15 @@ export const getAllOrder = async(req, res) => {
     }
 }
 
-
-export const editOrder = async(req, res) => {
+export const editOrder = async (req, res) => {
     try {
         const { id: orderId } = req.params;
-        
         const { order } = req.body;
 
+        // Ensure order exists before accessing properties
+        if (!order) {
+            return res.status(400).json({ error: "Order data is required." });
+        }
         if (!order.shippingDetails) {
             return res.status(400).json({ error: "Shipping details are required." });
         }
@@ -52,6 +56,7 @@ export const editOrder = async(req, res) => {
             return res.status(400).json({ error: "At least one field must be updated." });
         }
 
+        // Update Order shipping details
         const updatedOrder = await Order.findByIdAndUpdate(orderId, {
             $set: {
                 "shippingDetails.fullName": fullName || undefined,  
@@ -61,23 +66,45 @@ export const editOrder = async(req, res) => {
                 "shippingDetails.postalCode": postalCode || undefined, 
                 "shippingDetails.country": country || undefined, 
                 "shippingDetails.deliveryStatus": deliveryStatus || undefined, 
-                }
+            }
         }, {
             new: true,
             runValidators: true
-        })
+        });
 
         if (!updatedOrder) {
             return res.status(404).json({ error: "Order not found." });
         }
 
-        res.status(201).json(updatedOrder);
+        // Update Payment status if `paymentId` exists
+        let updatedPayment = null;
+        if (order.paymentId) {
+            updatedPayment = await Payment.findByIdAndUpdate(order.paymentId, {
+                $set: {
+                    "paymentStatus": order.paymentStatus || undefined,  
+                }
+            }, {
+                new: true,
+                runValidators: true
+            });
+
+            if (!updatedPayment) {
+                return res.status(404).json({ error: "Payment record not found." });
+            }
+        }
+
+        res.status(200).json({
+            message: "Order updated successfully",
+            updatedOrder,
+            updatedPayment,
+        });
 
     } catch (error) {
-        console.error("Error in editOrder controller: ", error.message);
+        console.error("Error in editOrder controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
-}
+};
+
 
 
 
