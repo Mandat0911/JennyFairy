@@ -3,11 +3,13 @@ import useOrderStore from '../../Store/Zustand/orderStore.js';
 import { PlusCircle, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { deliveryStatus } from '../../Utils/Category.js';
+import { useUpdateOrder } from '../../Store/API/Order.API.js';
 
 const EditOrderForm = ({ initialOrder }) => {
   const { order, setOrder, isLoading, setLoading } = useOrderStore();
   const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState(initialOrder?.shippingDetails?.deliveryStatus || 'pending');
-  
+  const { mutate: updateOrder} = useUpdateOrder();
+
   const isQrCodeMethod = initialOrder?.paymentId?.paymentMethod === "QR code";
   const isCoupon = initialOrder?.paymentId?.couponCode !== "";
   
@@ -35,11 +37,6 @@ const EditOrderForm = ({ initialOrder }) => {
         },
       });
       setSelectedDeliveryStatus(initialOrder?.shippingDetails?.deliveryStatus || []);
-
-      setOrder((prev) => ({
-        ...prev,
-        ...initialOrder, // Populate the store with initial values
-    }));
     }
   }, [initialOrder, setOrder]);
   
@@ -53,9 +50,25 @@ const EditOrderForm = ({ initialOrder }) => {
                 deliveryStatus: status, // Update delivery status
             },
         });
-        console.log(status)
 };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        
+
+        updateOrder({
+            orderId: initialOrder?._id,
+            newOrder: {order: order}
+        },{
+            onSuccess: () => {
+                setLoading(false);
+            },
+            onError: () => {
+                setLoading(false);
+            }
+        }
+    )}
 
   return (
     <motion.div
@@ -68,18 +81,18 @@ const EditOrderForm = ({ initialOrder }) => {
         Edit Order
       </h2>
       
-      <form className="space-y-5">
+      <form onSubmit={handleSubmit}  className="space-y-5">
         {/* Order Information */}
         <div className="p-4 border rounded-lg shadow-sm bg-white">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Order Information</h3>
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <label className="block text-sm font-medium text-gray-700">Order Id</label>
-              <input value={initialOrder?._id || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
+              <input value={order?._id || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Payment Id</label>
-              <input value={initialOrder.paymentId?._id || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
+              <input value={order.paymentId?._id || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
             </div>
           </div>
           <div className='grid grid-cols-2 gap-4 mt-4'>
@@ -89,7 +102,7 @@ const EditOrderForm = ({ initialOrder }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Customer Name</label>
-              <input value={initialOrder.user?.name || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
+              <input value={order.user?.name || ''} className="block w-full text-gray-800 text-[12px] focus:outline-none cursor-default" readOnly />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
@@ -168,7 +181,7 @@ const EditOrderForm = ({ initialOrder }) => {
                                       <label key={status} className="flex items-center space-x-2 p-2 bg-gray-100 rounded-md cursor-pointer transition duration-300 hover:bg-gray-200">
                                           <input
                                               type="radio"
-                                              checked={order?.shippingDetails?.deliveryStatus?.includes(status) || ''}
+                                              checked={order?.shippingDetails?.deliveryStatus === status}
                                               onChange={(e) => handleStatusChange(status)}
                                               className="w-5 h-5 text-gray-800 border-gray-300 rounded focus:ring-2 focus:ring-gray-800"
                                           />

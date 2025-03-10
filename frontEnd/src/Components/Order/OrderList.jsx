@@ -5,7 +5,6 @@ import { Trash, Edit, Loader, X } from "lucide-react";
 import EditOrderForm from './EditOrderForm.jsx';
 
 const OrderList = () => {
-    
     const [currentPage, setCurrentPage] = useState(1);
     const [editOrderData, setEditOrderData] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
