@@ -308,6 +308,7 @@ export const createCheckoutCOD = async (req, res) => {
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 
             quantity: products[index].quantity,
+            size: products[index].size,
             price: product.price, 
         }));
 

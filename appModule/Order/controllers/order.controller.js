@@ -8,11 +8,16 @@ export const getAllOrder = async(req, res) => {
         const orders = await Order.find({}).populate(
             {
                 path: "paymentId",
-                select: "paymentMethod paymentStatus"
+                select: "paymentMethod paymentStatus couponCode couponDiscountPercentage"
             })
             .populate({
                 path: "user",
                 select: "name email"
+            })
+            .populate({
+                path: "products.product",
+                select: "name"
+
             })
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber);
