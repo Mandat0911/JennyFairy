@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import { category } from "../../Utils/Category.js";
 
 const ProductPage = () => {
-    const { data: products } = useGetAllProduct();
+    const { data} = useGetAllProduct();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const products = data?.products || [];
 
     // Filter products based on search and category
     const filteredProducts = products?.filter((product) =>

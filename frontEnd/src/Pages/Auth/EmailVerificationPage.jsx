@@ -12,9 +12,8 @@ const EmailVerificationPage = () => {
 	const [isVerifying, setIsVerifying] = useState(false);
 
 	const navigate = useNavigate();
-	const { verifyEmail, checkAuth, isCheckingAuth, resendVerificationEmail, error } = useAuthStore();
-	const user = useAuthStore((state) => state.user); // ✅ Reactively updates when Zustand state changes
-
+	const { verifyEmail, checkAuth, resendVerificationEmail, error } = useAuthStore();
+	const user = useAuthStore((state) => state.user); // Reactively updates when Zustand state changes
 	const handleChange = (index, value) => {
 		const newCode = [...code];
 
@@ -70,16 +69,13 @@ const EmailVerificationPage = () => {
 	};
 
 	const handleResendCode = async () => {
-		if (!user?.email) {
+		if (!user.account?.email) {
 			toast.error("If no email found. Please reload page.");
 			return;
 		}
-
-		console.log(user.email || null)
-
 		try {
 			setIsResending(true);
-			await resendVerificationEmail(user?.email);
+			await resendVerificationEmail(user.account?.email);
 			toast.success("Verification code resent!");
 			setResendDisabled(true);
 			setTimeout(() => setResendDisabled(false), 30000);
