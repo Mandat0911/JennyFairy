@@ -7,16 +7,15 @@ import {
 } from "recharts";
 import { useGetAnalytic } from '../../Store/API/Analytic.API.js';
 
-
 const AnalyticsView = () => {
   const [analyticsData, setAnalyticsData] = useState({
-		users: 0,
-		products: 0,
-		totalSales: 0,
-		totalRevenue: 0,
-	});
+    users: 0,
+    products: 0,
+    totalSales: 0,
+    totalRevenue: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
-	const [dailySalesData, setDailySalesData] = useState([]);
+  const [dailySalesData, setDailySalesData] = useState([]);
   const { data: analyticData } = useGetAnalytic();
 
   useEffect(() => {
@@ -28,42 +27,43 @@ const AnalyticsView = () => {
   }, [analyticData]);
 
   if (isLoading) {
-		return <div>Loading...</div>;
-	}
+    return <div className="text-center text-gray-500 text-lg">Loading...</div>;
+  }
 
   return (
-    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+    <div className="max-w-6xl mx-auto px-6 py-10 bg-white">
       {/* KPI CARDS */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
-        <AnalyticsCard title='Total Users' value={analyticsData.users.toLocaleString()} icon={Users} color='from-gray-900 to-black' />
-        <AnalyticsCard title='Total Products' value={analyticsData.products.toLocaleString()} icon={Package} color='from-gray-900 to-black' />
-        <AnalyticsCard title='Total Sales' value={analyticsData.totalSales.toLocaleString()} icon={ShoppingCart} color='from-gray-900 to-black' />
-        <AnalyticsCard title='Total Revenue' value={`$${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} color='from-gray-900 to-black' />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <AnalyticsCard title="Total Users" value={analyticsData.users.toLocaleString()} icon={Users} />
+        <AnalyticsCard title="Total Products" value={analyticsData.products.toLocaleString()} icon={Package} />
+        <AnalyticsCard title="Total Sales" value={analyticsData.totalSales.toLocaleString()} icon={ShoppingCart} />
+        <AnalyticsCard title="Total Revenue" value={`$${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} />
       </div>
 
-      {/* COMBINED CHART SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+      {/* CHART SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* BAR CHART */}
-        <motion.div className='bg-gray-900 rounded-lg p-6 shadow-lg' initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h3 className="text-white text-xl font-semibold mb-4">Sales & Revenue Comparison</h3>
-          <ResponsiveContainer width='100%' height={300}>
+        <motion.div className="bg-black rounded-xl p-6 shadow-xl" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <h3 className="text-white text-2xl font-semibold mb-4">Sales & Revenue</h3>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={dailySalesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#D1D5DB" />
-              <YAxis stroke="#D1D5DB" />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+              <XAxis dataKey="name" stroke="#fff" />
+              <YAxis yAxisId="left" stroke="#fff" />
+              <YAxis yAxisId="right" orientation="right" stroke="#10B981" />
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff", borderRadius: "8px" }} />
               <Legend />
-              <Bar dataKey="sales" fill="#10B981" name="Sales" />
-              <Bar dataKey="revenue" fill="#3B82F6" name="Revenue" />
+
+              <Bar yAxisId="right" dataKey="sales" fill="#10B981" name="Sales" />
+              <Bar yAxisId="left" dataKey="revenue" fill="#fff" name="Revenue" />
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
 
         {/* AREA CHART */}
-        <motion.div className='bg-gray-900 rounded-lg p-6 shadow-lg' initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
-          <h3 className="text-white text-xl font-semibold mb-4">Sales Trend Over Time</h3>
-          <ResponsiveContainer width='100%' height={300}>
+        <motion.div className="bg-black rounded-xl p-6 shadow-xl" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
+          <h3 className="text-white text-2xl font-semibold mb-4">Sales Trend</h3>
+          <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={dailySalesData}>
               <defs>
                 <linearGradient id="salesColor" x1="0" y1="0" x2="0" y2="1">
@@ -71,46 +71,43 @@ const AnalyticsView = () => {
                   <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="revenueColor" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#D1D5DB" />
-              <YAxis stroke="#D1D5DB" />
-              <Tooltip />
+
+              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+              <XAxis dataKey="name" stroke="#fff" />
+              <YAxis yAxisId="left" stroke="#fff" />
+              <YAxis yAxisId="right" orientation="right" stroke="#10B981" />
+
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff", borderRadius: "8px" }} />
               <Legend />
-              <Area type="monotone" dataKey="sales" stroke="#10B981" fill="url(#salesColor)" name="Sales" />
-              <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fill="url(#revenueColor)" name="Revenue" />
+
+              <Area yAxisId="right" type="monotone" dataKey="sales" stroke="#10B981" fill="url(#salesColor)" name="Sales" />
+              <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#ffffff" fill="url(#revenueColor)" name="Revenue" />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
-
       </div>
-
     </div>
   );
-}
+};
 
 export default AnalyticsView;
 
-// STYLIZED ANALYTICS CARD COMPONENT
-const AnalyticsCard = ({ title, value, icon: Icon, color }) => (
-	<motion.div
-		className={`bg-gray-900 rounded-lg p-6 shadow-lg overflow-hidden relative ${color}`}
-		initial={{ opacity: 0, y: 20 }}
-		animate={{ opacity: 1, y: 0 }}
-		transition={{ duration: 0.5 }}
-	>
-		<div className='flex justify-between items-center'>
-			<div>
-				<p className='text-gray-400 text-sm mb-1 font-semibold'>{title}</p>
-				<h3 className='text-white text-3xl font-bold'>{value}</h3>
-			</div>
-		</div>
-		<div className='absolute inset-0 bg-gradient-to-br from-gray-800 to-black opacity-30' />
-		<div className='absolute -bottom-4 -right-4 text-gray-600 opacity-50'>
-			<Icon className='h-32 w-32' />
-		</div>
-	</motion.div>
+// 🖤 **ANALYTICS CARD COMPONENT**
+const AnalyticsCard = ({ title, value, icon: Icon }) => (
+  <motion.div
+    className="bg-black text-white rounded-xl p-6 shadow-lg flex items-center justify-between transition-transform duration-300 hover:scale-105"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+  >
+    <div>
+      <p className="text-gray-400 text-sm font-medium">{title}</p>
+      <h3 className="text-white text-3xl font-bold">{value}</h3>
+    </div>
+    <Icon className="text-gray-500 h-10 w-10" />
+  </motion.div>
 );
