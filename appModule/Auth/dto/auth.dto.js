@@ -1,4 +1,3 @@
-
 export const tokenDTO = ( accessToken, refreshToken) => ({
     tokens: {
         accessToken,
@@ -26,8 +25,28 @@ export const verificationDTO = (message) => ({
     message,
 });
 
-
 export const resendVerificationEmailDTO = (message) => ({
     success: true,
+    message,
+});
+
+export const forgotPasswordDTO = (message) => ({
+    success: true,
+    message,
+});
+
+export const resetPasswordDTO = (message) => ({
+    success: true,
+    message,
+});
+
+export const logoutDTO = (message) => ({
+    success: true,
+    message,
+});
+
+export const refreshTokenDTO = (accessToken, message) => ({
+    success: true,
+    accessToken,
     message,
 });

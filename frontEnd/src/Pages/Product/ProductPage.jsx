@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import ProductCard from "../../Components/Product/ProductCard.jsx";
-import { useGetAllProduct } from "../../Store/API/Product.API.js";
+import {  useGetAllProductUser } from "../../Store/API/Product.API.js";
 import { motion } from "framer-motion";
 import { category } from "../../Utils/Category.js";
 
 const ProductPage = () => {
-    const { data} = useGetAllProduct();
+    const {data: products} = useGetAllProductUser();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const products = data?.products || [];
 
     // Filter products based on search and category
     const filteredProducts = products?.filter((product) =>

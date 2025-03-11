@@ -91,6 +91,27 @@ export const useGetAllProduct = (page = 1, limit = 5) => {
     });
 };
 
+export const useGetAllProductUser = () => {
+    return useQuery({
+        queryKey: ['products'],
+        queryFn: async () => {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch products');
+            }
+
+            const data = await response.json();
+            
+            return Array.isArray(data) ? data : data.products || [];
+        },
+        retry: 3, // Retry up to 3 times before failing
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000), // Exponential backoff (1s, 2s, 4s, max 5s)
+    });
+};
+
 export const useGetRecommendedProduct = () => {
     return useQuery({
         queryKey: ['products'],
