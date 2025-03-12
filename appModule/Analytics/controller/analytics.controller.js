@@ -1,4 +1,5 @@
-import { getAnalyticData, getDailySalesData } from "../service/analytic.service.js";
+import { analyticDto, dailySalesDTO } from "../dto/analytic.dto.js";
+import { getAnalyticDataService, getDailySalesDataService } from "../service/analytic.service.js";
 
 export const viewAnalyticsData = async (req, res) => {
     try {
@@ -12,21 +13,21 @@ export const viewAnalyticsData = async (req, res) => {
         let dailySalesData = [];
 
         try {
-            analyticsData = await getAnalyticData();
+            analyticsData = await getAnalyticDataService();
         } catch (error) {
             console.error("Error fetching analytics data:", error.message);
         }
 
         try {
-            dailySalesData = await getDailySalesData(startDate, endDate);
+            dailySalesData = await getDailySalesDataService(startDate, endDate);
         } catch (error) {
             console.error("Error fetching daily sales data:", error.message);
         }
 
         res.json({
             status: "success",
-            analyticsData,
-            dailySalesData,
+            analyticsData: analyticDto(analyticsData),
+            dailySalesData: dailySalesDTO(dailySalesData),
         });
 
     } catch (error) {

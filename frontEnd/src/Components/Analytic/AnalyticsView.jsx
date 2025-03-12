@@ -17,11 +17,12 @@ const AnalyticsView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dailySalesData, setDailySalesData] = useState([]);
   const { data: analyticData } = useGetAnalytic();
+  console.log(analyticData)
 
   useEffect(() => {
     if (analyticData) {
       setAnalyticsData(analyticData.analyticsData);
-      setDailySalesData(analyticData.dailySalesData);
+      setDailySalesData(analyticData.dailySalesData.salesData);
       setIsLoading(false);
     }
   }, [analyticData]);
@@ -96,7 +97,7 @@ const AnalyticsView = () => {
 
 export default AnalyticsView;
 
-// 🖤 **ANALYTICS CARD COMPONENT**
+// **ANALYTICS CARD COMPONENT**
 const AnalyticsCard = ({ title, value, icon: Icon }) => (
   <motion.div
     className="bg-black text-white rounded-xl p-6 shadow-lg flex items-center justify-between transition-transform duration-300 hover:scale-105"

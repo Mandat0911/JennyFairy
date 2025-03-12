@@ -2,7 +2,7 @@ import Order from "../../Order/model/order.model.js";
 import Product from "../../Product/model/product.models.js";
 import User from "../../User/models/user.models.js";
 
-export const getAnalyticData = async () => {
+export const getAnalyticDataService = async () => {
     try {
         const totalUsers = await User.countDocuments();
         const totalProducts = await Product.countDocuments();
@@ -26,12 +26,12 @@ export const getAnalyticData = async () => {
             totalRevenue
         };
     } catch (error) {
-        console.error("Error in getAnalyticData:", error.message);
+        console.error("Error in getAnalyticDataService:", error.message);
         throw new Error("Internal Server Error!");
     }
 };
 
-export const getDailySalesData = async (startDate, endDate) => {
+export const getDailySalesDataService = async (startDate, endDate) => {
     try {
         const dailySalesData = await Order.aggregate([
             {
@@ -62,7 +62,7 @@ export const getDailySalesData = async (startDate, endDate) => {
             };
         });
     } catch (error) {
-        console.error("Error in getDailySalesData:", error.message);
+        console.error("Error in getDailySalesDataService:", error.message);
         throw new Error("Internal Server Error!");
     }
 };
