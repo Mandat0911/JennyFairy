@@ -13,24 +13,24 @@ import  jwt  from "jsonwebtoken";
 
 dotenv.config();
 
-export const signupService = async({name, email, password}, res) => {
+export const signupService = async(name, email, password, res) => {
     try {
         if (!name || !email || !password) {
-            return res.status(400).json({ error: "All fields are required!" });
+            throw { status: 400, message: "All fields are required!" };
         }
     
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({ error: "Invalid email format!" });
+            throw { status: 400, message: "Invalid email format!" };
         }
     
         const existingEmail = await Account.findOne({ email });
         if (existingEmail) {
-            return res.status(400).json({ error: "Email is already taken!" });
+            throw { status: 400, message: "Email is already taken!!" };
         }
     
         if (password.length < 6) {
-            return res.status(400).json({ error: "Password must be at least 6 characters!" });
+            throw { status: 400, message: "Password must be at least 6 characters!" };
         }
     
         const hashedPassword = await hashPassword(password);
@@ -65,61 +65,51 @@ export const signupService = async({name, email, password}, res) => {
         };
     } catch (error) {
         console.error("Error in signupService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error"});
+        throw error;
     }
 }
 
-export const loginService = async({email, password}, res) => {
+export const loginService = async (email, password, res) => {
     try {
-        // Find account by email
-    const account = await Account.findOne({ email });
-  
-    // Check if account exists
-    if (!account){
-        throw new Error("Invalid email or password!");  
-      } 
+        const account = await Account.findOne({ email });
 
-    // Check if the account is verified
-    if (!account.isVerified) {
-        throw new Error("Your account is not verified. Please check your email.");
-    }
+        if (!account) {
+            throw { status: 400, message: "Invalid email or password!" };
+        }
 
-    // Check if the password is correct
-    const isPasswordCorrect = await bcrypt.compare(password, account.password);
-    if (!isPasswordCorrect){
-        throw new Error("Invalid email or password!");
-    }
+        if (!account.isVerified) {
+            throw { status: 403, message: "Your account is not verified. Please check your email." };
+        }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(account._id, account.email, res);
-    
-    // Store refresh token
-    await storeRefreshToken(account._id, refreshToken);
+        const isPasswordCorrect = await bcrypt.compare(password, account.password);
+        if (!isPasswordCorrect) {
+            throw { status: 400, message: "Invalid email or password!" };
+        }
 
-    // Find the associated user
-    const user = await User.findOne({ accountId: account._id });
-    if (!user) {    
-        throw new Error("User not found!");
-    }
+        const { accessToken, refreshToken } = await generateTokens(account._id, account.email, res);
+        await storeRefreshToken(account._id, refreshToken);
+        const user = await User.findOne({ accountId: account._id });
 
-    await Account.updateOne(
-      {_id: account._id},
-      {
-          $set: {
-              lastLogin: new Date(),
-          }
-      }
-  )
-    return {
-    user: userDTO(user),
-    account: accountDTO(account),
-    token: tokenDTO(accessToken, refreshToken)};
+        if (!user) {
+            throw { status: 404, message: "User not found!" };
+        }
+
+        await Account.updateOne(
+            { _id: account._id },
+            { $set: { lastLogin: new Date() } }
+        );
+
+        return {
+            user: userDTO(user),
+            account: accountDTO(account),
+            token: tokenDTO(accessToken, refreshToken),
+        };
     } catch (error) {
-        console.error("Error in loginService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-        
+        console.error("Error in loginService:", error.message);
+        throw error; // Throw instead of using res.status()
     }
-}
+};
+
 
 export const verifyEmailService = async(code, res) => {
     try {
@@ -131,12 +121,14 @@ export const verifyEmailService = async(code, res) => {
   
       // If no matching account is found
       if (!account) {
-        return res.status(400).json({ success: false, message: "Invalid or expired verification code!" });
+        throw { status: 400, message: "Invalid or expired verification code!" };
+
       }
   
       // Check if the account is already verified
       if (account.isVerified) {
-        return res.status(400).json({ success: false, message: "Your account is already verified." });
+        throw { status: 400, message: "Your account is already verified." };
+
       }
   
       // Find the associated user by accountId
@@ -144,7 +136,8 @@ export const verifyEmailService = async(code, res) => {
   
       // If user is not found
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found!" });
+        throw { status: 404, message: "User not found!" };
+
       }
   
       await Account.updateOne(
@@ -165,8 +158,7 @@ export const verifyEmailService = async(code, res) => {
     return verificationDTO("Email verified successfully!");
     } catch (error) {
         console.error("Error in verifyEmailService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-        
+        throw error;        
     }
 }
 
@@ -176,12 +168,14 @@ export const resendVerificationEmailService = async(email, res) => {
     const account = await Account.findOne({ email });
 
     if (!account) {
-        return res.status(404).json({ success: false, message: "Account not found!" });
+        throw { status: 404, message: "Account not found!" };
+
     }
 
     // Check if the account is already verified
     if (account.isVerified) {
-        return res.status(400).json({ success: false, message: "Your account is already verified." });
+        throw { status: 400, message: "Your account is already verified." };
+
     }
 
     // Generate a new verification token and expiration time
@@ -203,7 +197,7 @@ export const resendVerificationEmailService = async(email, res) => {
     const user = await User.findOne({ accountId: account._id });
 
     if (!user) {
-        return res.status(404).json({ success: false, message: "User not found!" });
+        throw { status: 404, message: "User not found!" };
     }
 
     // Send the verification email
@@ -212,8 +206,7 @@ export const resendVerificationEmailService = async(email, res) => {
     return resendVerificationEmailDTO("Verification email sent successfully!")
     } catch (error) {
         console.error("Error in resendVerificationEmailService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-        
+        throw error;                
     }
 
 }
@@ -223,7 +216,8 @@ export const forgotPasswordService = async(email, res) => {
         const account = await Account.findOne({email});
 
         if(!account){
-            return res.status(400).json({success: false, message: "Account not found!"});
+            throw { status: 400, message: "Account not found!" };
+
         }
         const user = await User.findOne({ accountId: account._id }); // Match User based on accountId
 
@@ -245,7 +239,7 @@ export const forgotPasswordService = async(email, res) => {
          return forgotPasswordDTO("Password reset link sent to your email!")
     } catch (error) {
         console.error("Error in forgotPasswordService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        throw error;                
     }
 }
 
@@ -257,13 +251,13 @@ export const resetPasswordService = async(token, password, res) => {
         });
     
         if(!account){
-            return res.status(400).json({ success: false, message: "Invalid or expired verification code!" });
+            throw { status: 400, message: "Invalid or expired verification code!" };
         }
     
         const user = await User.findOne({accountId: account._id});
           // If user is not found
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found!" });
+            throw { status: 400, message: "User not found!" };
         }
         
         //update new hash password
@@ -285,14 +279,15 @@ export const resetPasswordService = async(token, password, res) => {
         return resetPasswordDTO("Password reset successful")
     } catch (error) {
         console.error("Error in resetPasswordService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        throw error;                
     }
 }
 
 export const logoutService = async(refreshToken, res) => {
     try {
         if (!refreshToken) {
-            return { success: false, message: "No refresh token provided!" };
+            throw { status: 400, message: "No refresh token provided!" };
+
         };
         try {
             const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
@@ -303,7 +298,7 @@ export const logoutService = async(refreshToken, res) => {
         return logoutDTO("Logout successful!");
     } catch (error) {
         console.error("Error in logoutService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        throw error;                
     }
 }
 
@@ -311,7 +306,8 @@ export const refreshTokenService = async(refreshToken, res) => {
     try {
         // Ensure the refresh token exists
         if (!refreshToken) {
-            return res.status(403).json({ error: "Refresh token is required!" });
+            throw { status: 403, message: "Refresh token is required!" };
+
         }
 
         // Verify the refresh token
@@ -319,13 +315,15 @@ export const refreshTokenService = async(refreshToken, res) => {
         try {
             decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         } catch (error) {
-            return res.status(403).json({ error: "Invalid or expired refresh token!" });
+            throw { status: 403, message: "Invalid or expired refresh token!" };
+
         }
 
         // Check if the refresh token exists in Redis
         const storedToken = await redis.get(`refresh_token: ${decoded.accountId}`);
         if (storedToken !== refreshToken) {
-            return res.status(403).json({ error: "Invalid refresh token!" });
+            throw { status: 403, message: "Invalid refresh token!" };
+
         }
 
         // Generate a new access token
@@ -339,19 +337,20 @@ export const refreshTokenService = async(refreshToken, res) => {
 
     } catch (error) {
         console.error("Error in refreshTokenService: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        throw error;                
     }
 }
 
 export const getMeService = async(userId, res) => {
     try {
         if (!userId) {
-            throw new Error("Unauthorized access!");
+            throw { status: 401, message: "Unauthorized access!" };
         }
 
         const user = await User.findById(userId).select("-password");
         if (!user) {
-            throw new Error("User not found!");
+            throw { status: 404, message: "User not found!" };
+
         }
         await user.populate("accountId", "-password");
 
@@ -361,6 +360,6 @@ export const getMeService = async(userId, res) => {
         }
     } catch (error) {
         console.error("Error in getMeService:", error.message);
-        return res.status(500).json({ error: "Internal Server Error!" });
+        throw error;                
     }
 }

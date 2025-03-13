@@ -31,7 +31,6 @@ export const useAuthStore = create((set) => ({
             if (!response.data.user || !response.data.account) {
                 throw new Error("Invalid response structure");
             }
-
             // Persist user & account in local storage
             localStorage.setItem("user", JSON.stringify(response.data.user));
             localStorage.setItem("account", JSON.stringify(response.data.account));

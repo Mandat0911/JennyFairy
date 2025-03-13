@@ -1,36 +1,16 @@
 import Product from "../../Product/model/product.models.js";
 import User from "../../User/models/user.models.js";
+import { getCartProductsService, removeAllItemService, updateQuantityService } from "../service/cart.service.js";
 export const getCartProducts = async (req, res) => {
     try {
         const user = req.user;
-
-        // Find all product IDs in user's cart
-        const products = await Product.find({ _id: { $in: user.cartItems.map((item) => item.product) } });
-
-        // Create a cart summary grouped by cartItemId
-        const cartItems = user.cartItems.map((cartItem) => {
-            // Find the matching product details
-            const product = products.find((p) => p._id.toString() === cartItem.product.toString());
-
-            return {
-                cartItemId: cartItem._id,  // Unique cart item ID (useful for deletion)
-                productId: product._id,
-                name: product.name,
-                img: product.img,
-                price: product.price,
-                size: cartItem.size, // Ensure different sizes appear separately
-                quantity: cartItem.quantity, // Keep track of quantity
-                totalPrice: cartItem.totalPrice, // Include total price
-            };
-        });
-
+        const cartItems = await getCartProductsService(user);
         res.json(cartItems);
     } catch (error) {
         console.error("Error in getCartProducts controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
-
 
 export const addToCart = async (req, res) => {
     try {
@@ -128,23 +108,11 @@ export const removeCartItem = async (req, res) => {
 export const removeAllItem = async (req, res) => {
     try {
         const user = req.user;
-
-        if(!user) {
-            return res.status(404).json({ error: "User not found !" });
-        }
-
-        if(user.cartItems.length < 0) {
-            return res.status(200).json({message: "Cart is empty!"});
-        }
-
-        user.cartItems = [];
-        await user.save();
-
-        return res.json({success: true, cartItems: []});
-        
+        const response = await removeAllItemService(user);
+        return res.json(response);
     } catch (error) {
         console.error("Error in removeAllItem controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
@@ -153,39 +121,13 @@ export const updateQuantity = async (req, res) => {
         const {id: productId} = req.params;
         const {quantity} = req.body;
         const user = req.user;
-
-        // Validate quantity must be positive
-        if(quantity < 0) {
-            return res.status(404).json({error: "Quantity must be at least 0."});
-        }
-
-        if (!productId) {
-            return res.status(400).json({ error: "Product ID is required!" });
-        }
-
-        // Store total Price
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(400).json({ error: "Product not found!" });
-        }
-
-        const productPrice = product.price;
-
-        const itemIndex = user.cartItems.findIndex((item) => item.product.toString() === String(productId));
-        if (itemIndex !== -1) {
-            if (quantity === 0) {
-                user.cartItems.splice(itemIndex, 1);
-            }else{
-                user.cartItems[itemIndex].quantity = quantity;
-                user.cartItems[itemIndex].totalPrice = productPrice * quantity;
-            }
-
-            await user.save();
-            return res.json(user.cartItems);
-        }
+        
+        const response = await updateQuantityService(user, quantity, productId);
+        return res.json(response);
+        
     } catch (error) {
         console.error("Error in updateQuantity controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 

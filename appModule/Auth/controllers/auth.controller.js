@@ -3,56 +3,63 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const signup = async (req, res) => {
-    try { 
-        const { user, account } = await signupService(req.body, res);
-        res.status(201).json({ user, account });
+    try {
+        const { name, email, password } = req.body;
+        const response = await signupService(name, email, password, res);
+
+        res.status(201).json(response); // Sending a single structured object
     } catch (error) {
-        console.error("Error in signup controller: ", error.message);
-        res.status(400).json({ error: error.message });
+        console.error("Error in signup controller:", error.message);
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const login = async (req, res) => {
     try {
-        const { user, account } = await loginService(req.body, res);
-        res.status(201).json({ user, account });
+        const { email, password } = req.body;
+        const response = await loginService(email, password, res);
+
+        console.log(response);
+        res.status(201).json(response);
     } catch (error) {
-      console.error("Error in login controller", error.message);
-      return res.status(500).json({ error: "Internal Server Error!" });
+        console.error("Error in login controller:", error.message);
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const verifyEmail = async (req, res) => {
-    const { code } = req.body; // Ensure 'code' is coming from req.body
     try {
+        const { code } = req.body; // Ensure 'code' is coming from req.body
         const response = await verifyEmailService(code, res);
       // Send response
       res.status(200).json(response);
     } catch (error) {
-      console.error("Error in verifyEmail controller: ", error.message);
-      res.status(500).json({ error: "Internal Server Error!" });
+        console.error("Error in verifyEmail controller: ", error.message);
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const resendVerificationEmail = async (req, res) => {
-    const { email } = req.body; // Ensure the email is provided in the request body
+
     try {
+        const { email } = req.body;
         const response = await resendVerificationEmailService(email, res);
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in resendVerificationEmail controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const forgotPassword = async (req, res) => {
-    const {email} = req.body;
+    
     try {
+        const {email} = req.body;
         const response = await forgotPasswordService(email, res);
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in forgotPassword controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
@@ -65,7 +72,7 @@ export const resetPassword = async (req, res) => {
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in resetPassword controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
   
@@ -80,7 +87,7 @@ export const logout = async (req, res) => {
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in logout controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
@@ -100,17 +107,17 @@ export const refreshToken = async (req, res) => {
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in refreshToken controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const getMe = async (req, res) => {
     try {
-        const { user, account } = await getMeService(req.user._id);
-        res.status(200).json({ user, account });
+        const response = await getMeService(req.user._id);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getMe controller:", error.message);
-        return res.status(500).json({ error: "Internal Server Error!" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
