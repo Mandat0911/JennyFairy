@@ -164,7 +164,6 @@ export const useUpdateQuantityCartItem = () => {
             return await response.json(); // Ensure a valid return value
         },
         onSuccess: (data) => {
-            console.log(data)
             updateQuantity(data.product, data.size, data.quantity)
             calculateTotals()
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API

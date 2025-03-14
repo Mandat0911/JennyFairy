@@ -1,4 +1,5 @@
 import Product from "../../Product/model/product.models.js";
+import User from "../../User/models/user.models.js";
 import { cartProductDTO } from "../dto/cart.dto.js";
 
 export const getCartProductsService = async (user) => {
@@ -66,7 +67,6 @@ export const updateQuantityService = async (user, quantity, productId) => {
             }
 
             await user.save();
-            console.log(product)
             // Format cart items using DTO before returning
             const updatedCartItems = user.cartItems.map((cartItem) =>
                 cartProductDTO(cartItem, product._id.toString() === cartItem.product.toString() ? product : cartItem.product)
@@ -81,4 +81,100 @@ export const updateQuantityService = async (user, quantity, productId) => {
     }
 };
 
+export const addToCartService = async (user, productId, quantity, size) => {
+    try {
+        if (!user) {
+            throw { status: 404, message: "User not found!" };
+        }
+        if (!size) {
+            throw { status: 400, message: "Size is required!" };
+        }
+                
+        if (!productId) {
+            throw { status: 400, message: "Product ID is required!" };
+        }
+        // Store total Price
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw { status: 400, message: "Product not found!" };
+        }
+        const productPrice = product.price;
+        const totalPrice = productPrice * quantity;
+
+        const existingItem = user.cartItems.find(
+            (item) => item.product._id.toString() === String(productId) && item.size === size
+        );
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            user.cartItems.push({
+                product: productId,
+                size: size,
+                quantity,
+                totalPrice,
+            });
+        }
+
+        await user.save();
+
+        // Fetch and populate the updated user
+        const updatedUser = await User.findById(user._id).populate({
+            path: "cartItems.product",
+            select: "name price image"
+        });
+
+        const updatedCartItems = updatedUser.cartItems.map((cartItem) =>
+            cartProductDTO(cartItem, product._id.toString() === cartItem.product.toString() ? product : cartItem.product)
+        );
+        return updatedCartItems;
+
+        
+    } catch (error) {
+        console.error("Error in addToCartService:", error.message);
+        throw error; 
+    }
+};
+
+export const removeCartItemService = async (user, productId, size) => {
+    try {
+        if (!user) {
+            throw { status: 404, message: "User not found!" };
+        }
+        if (!size) {
+            throw { status: 400, message: "Size is required to remove an item!" };
+        }   
+        if (!productId) {
+            throw { status: 400, message: "Product ID is required!" };
+        }
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw { status: 400, message: "Product not found!" };
+        }
+
+        // Check if the product with the matching size exists in the user's cart
+        const existingItem = user.cartItems.find(
+            (item) => item.product.toString() === String(productId) && item.size === size
+        );
+
+        if (!existingItem) {
+            throw { status: 404, message: "Product with specified size not found in cart!" };
+        }
+
+        // Remove only the item that matches the given productId and size
+        user.cartItems = user.cartItems.filter(
+            (item) => !(item.product.toString() === String(productId) && item.size === size)
+        );
+
+        await user.save();
+
+        const removeCartItems = user.cartItems.map((cartItem) =>
+            cartProductDTO(cartItem, product._id.toString() === cartItem.product.toString() ? product : cartItem.product)
+        );
+        return removeCartItems;
+    } catch (error) {
+        console.error("Error in removeCartItemService:", error.message);
+        throw error; 
+    }
+};
 

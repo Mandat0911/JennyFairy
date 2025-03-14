@@ -1,10 +1,10 @@
 export const cartProductDTO = (cartItem, product) => ({
-    cartItemId: cartItem._id,  
-    productId: product._id,
-    name: product.name,
-    img: product.img, 
-    price: product.price,
-    size: cartItem.size, 
-    quantity: cartItem.quantity, 
-    totalPrice: cartItem.totalPrice, 
+    cartItemId: cartItem._id || null,  
+    productId: product._id || null,
+    name: product.name || null,
+    img: product.img || null, 
+    price: product.price || null,
+    size: cartItem.size || null, 
+    quantity: cartItem.quantity || null, 
+    totalPrice: cartItem.totalPrice || null, 
 });
