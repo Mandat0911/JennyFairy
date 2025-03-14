@@ -13,12 +13,12 @@ const OrderSummary = () => {
 
 	const { data: cart} = useGetCartItems();
 
-	const {resetCoupon} = useCouponStore();
+	const {coupon, resetCoupon} = useCouponStore();
+	
 
 	const location = useLocation(); // Get current page URL
 	const isCheckoutPage = location.pathname === "/checkout"; // Check if on checkout page
-	
-	const { coupon } = useCouponStore();
+
 	const savings = subtotal - total;
 	
 	const formatCurrency = (amount) => 

@@ -1,20 +1,13 @@
-import Coupon from "../model/coupon.models.js";
+import { appliedCouponService, createCouponService, deleteCouponService, getCouponService, validateCouponService } from "../service/coupon.service.js";
 
 export const getCoupon = async (req, res) => {
 	try {
-        const currentDate = new Date();
         const userRole = req.account?.userType || "USER";
-
-        const coupons = userRole === "ADMIN" || userRole === "MANAGER" ? await Coupon.find() 
-                                                                       : await Coupon.find({ isActive: true, expirationDate: { $gte: currentDate }});
-
-        if (!coupons || coupons.length === 0) {
-            return res.status(404).json({ message: "No coupons found" });
-        }
-        res.status(200).json({ success: true, coupons });
+        const response = await getCouponService(userRole);
+        res.json(response);
 	} catch (error) {
 		console.log("Error in getCoupon controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
 	}
 };
 
@@ -23,60 +16,26 @@ export const createCoupon = async (req, res) => {
         const userId = req.user.id;
         const { code, discountPercentage, expirationDate} = req.body;
 
-        // Validate input fields
-        if (!code || !discountPercentage || !expirationDate) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
-
-        if (discountPercentage < 0 || discountPercentage > 100) {
-            return res.status(400).json({ error: "Discount percentage must be between 0 and 100" });
-        }
-
-        const existingCoupon = await Coupon.findOne({ code });
-
-        if (existingCoupon) {
-            return res.status(400).json({ error: "Coupon code already exists" });
-        }
-
-        // Create new coupon
-        const newCoupon = new Coupon({
-            code,
-            discountPercentage,
-            expirationDate,
-            userId,
-            isActive: true,
-        });
-
-        await newCoupon.save();
-
-        res.status(201).json({ message: "Coupon created successfully", coupon: newCoupon });
+        const response = await createCouponService(userId, code, discountPercentage, expirationDate );
+        res.json(response);
     } catch (error) {
         console.error("Error in createCoupon controller:", error.message);
-        res.status(500).json({ error: "Internal Server Error" });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const validateCoupon = async (req, res) => {
 	try {
 		const { code } = req.body;
-		const coupon = await Coupon.findOne({ code: code, isActive: true });
-
-		if (!coupon) {
-			return res.status(404).json({ error: "Coupon not found" });
-		}
-
-		if (coupon.expirationDate.getTime() < new Date().getTime()) {
-            return res.status(400).json({ error: "Coupon has expired" });
-        }
-
+        const response = await validateCouponService(code);
 		res.json({
             message: "Coupon is valid",
-            code: coupon.code,
-            discountPercentage: coupon.discountPercentage,
+            code: response.code,
+            discountPercentage: response.discountPercentage,
 		});
 	} catch (error) {
 		console.log("Error in validateCoupon controller", error.message);
-		res.status(500).json({ error: "Server error", error: error.message });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
 	}
 };
 
@@ -85,40 +44,22 @@ export const appliedCoupon = async (req, res) => {
 		const { code } = req.body;
 		const userId = req.user.id;
 
-		const coupon = await Coupon.findOne({code});
-
-		if (!coupon) {
-			return res.status(404).json({ error: "Coupon not found" });
-		}
-
-        if (coupon.usedBy.includes(userId)) {
-            return res.status(400).json({ error: "Coupon has already been used" });
-        };
-
-        coupon.usedBy.push(userId);
-        await coupon.save();
-
-        res.status(200).json({ success: true, message: "Coupon applied successfully" });
-
+        const response = await appliedCouponService(userId, code);
+        res.json({ message: "Coupon applied successfully" , response});
 	} catch (error) {
-		console.log("Error in applyCoupon controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
+		console.log("Error in appliedCoupon controller", error.message);
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
 	}
 };
 
 export const deleteCoupon = async (req, res) => {
 	try {
 		const {id: couponId} = req.params;
-		const deleteCoupon = await Coupon.findByIdAndDelete(couponId);
-
-		if (!deleteCoupon) {
-			return res.status(404).json({ message: "Coupon not found" });
-		}
-        res.status(200).json({ success: true, message: "Coupon deleted successfully" });
-
+        const response = await deleteCouponService(couponId);
+        res.json(response);
 	} catch (error) {
 		console.log("Error in deleteCoupon controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
 	}
 };
 

@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CollectionDetail = () => {
   const { data: collectionDetail, isLoading, error } = useGetCollectionDetail();
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (isLoading) return <p className="text-center text-gray-500">Loading...</p>;
