@@ -1,5 +1,3 @@
-import Payment from "../../Payment/model/payment.models.js";
-import Order from "../model/order.model.js"
 import { deleteOrderService, editOrderService, getAllOrderService } from "../service/order.service.js";
 export const getAllOrder = async(req, res) => {
     try {

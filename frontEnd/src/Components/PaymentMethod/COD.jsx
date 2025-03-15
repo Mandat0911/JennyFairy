@@ -20,8 +20,6 @@ const COD = () => {
     country: "",
   });
 
-  console.log(cart)
-
     const { mutate: createCheckoutSession } = useCreateSessionCheckoutCod();
     const { mutateAsync: appliedCoupon } = useAppliedCoupon();
   

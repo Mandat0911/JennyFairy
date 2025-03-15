@@ -53,8 +53,6 @@ const paymentSchema = new mongoose.Schema(
 			default: ""
 		},
 
-		
-
 		couponDiscountPercentage: {
 			type: Number,
 			default: 0

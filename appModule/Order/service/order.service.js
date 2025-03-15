@@ -8,6 +8,7 @@ export const getAllOrderService = async (page = 1, limit = 10) => {
         const limitNumber = parseInt(limit);
 
         const orders = await Order.find({})
+            .sort({createdAt: -1})
             .populate({
                 path: "paymentId",
                 select: "paymentMethod paymentStatus couponCode couponDiscountPercentage"
@@ -21,7 +22,7 @@ export const getAllOrderService = async (page = 1, limit = 10) => {
                 select: "name"
             })
             .skip((pageNumber - 1) * limitNumber)
-            .limit(limitNumber);
+            .limit(limitNumber)
 
         const totalOrders = await Order.countDocuments();
         return {
@@ -83,7 +84,7 @@ export const editOrderService = async (orderId, order) => {
             })
 
             if (!updatedPayment) {
-                return res.status(404).json({ error: "Payment record not found." });
+                throw { status: 404, message: "Payment record not found.." };
             }
         }
 
