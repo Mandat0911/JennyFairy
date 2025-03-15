@@ -145,7 +145,7 @@ const handlePaymentStatusChange = (status) => {
               <label className="block text-sm font-medium text-gray-700">Product Details</label>
                 {order.products?.map((product, index) => (
                     <div key={index} className="p-2 border rounded-md bg-gray-100 mb-2">
-                    <p className="text-gray-800 text-sm"><strong>Name:</strong> {product.product.name}</p>
+                    <p className="text-gray-800 text-sm"><strong>Name:</strong> {product.name}</p>
                     <p className="text-gray-800 text-sm"><strong>Price:</strong> {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}</p>
                     <p className="text-gray-800 text-sm"><strong>Size:</strong> {product.size}</p>
                     <p className="text-gray-800 text-sm"><strong>Quantity:</strong> {product.quantity}</p>

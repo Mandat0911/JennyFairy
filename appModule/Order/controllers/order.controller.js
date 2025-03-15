@@ -1,39 +1,14 @@
 import Payment from "../../Payment/model/payment.models.js";
 import Order from "../model/order.model.js"
+import { deleteOrderService, getAllOrderService } from "../service/order.service.js";
 export const getAllOrder = async(req, res) => {
     try {
-        const { page = 1, limit = 10} = req.query;
-        const pageNumber = parseInt(page);
-        const limitNumber = parseInt(limit);
-        
-        const orders = await Order.find({}).populate(
-            {
-                path: "paymentId",
-                select: "paymentMethod paymentStatus couponCode couponDiscountPercentage"
-            })
-            .populate({
-                path: "user",
-                select: "name email"
-            })
-            .populate({
-                path: "products.product",
-                select: "name"
-
-            })
-            .skip((pageNumber - 1) * limitNumber)
-            .limit(limitNumber);
-
-            const totalOrders = await Order.countDocuments();
-
-        res.status(200).json({
-            orders,
-            totalPages: Math.ceil(totalOrders / limitNumber),
-            currentPage: pageNumber,
-            totalOrders
-        })
+        const { page = 1, limit = 10 } = req.query;
+        const response = await getAllOrderService(page, limit);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getAllOrder controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
@@ -107,21 +82,13 @@ export const editOrder = async (req, res) => {
 
 
 
-
 export const deleteOrder = async (req, res) => {
     try {
         const { id: orderId } = req.params;
         
-        const order = await Order.findById(orderId);
-        
-        if (!order) {
-            return res.status(404).json({ message: "Order not found!" });
-        }
-
-        // Delete Order from database
-        await order.deleteOne();
-
-        res.json({ message: "Order deleted successfully!" });
+        await deleteOrderService(orderId);
+    
+        res.status(200).json({ message: "Order deleted successfully!" });
     } catch (error) {
         console.error("Error in deleteOrder controller:", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
