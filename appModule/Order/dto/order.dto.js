@@ -6,6 +6,7 @@ export const orderDTO = (order) => ({
         email: order.user.email
     } : null,
     paymentId: order.paymentId ? {
+        _id: order.paymentId._id,
         paymentMethod: order.paymentId.paymentMethod,
         paymentStatus: order.paymentId.paymentStatus,
         couponCode: order.paymentId.couponCode,
