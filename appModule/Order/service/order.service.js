@@ -2,7 +2,7 @@ import Payment from "../../Payment/model/payment.models.js";
 import { orderDTO } from "../dto/order.dto.js";
 import Order from "../model/order.model.js";
 
-export const getAllOrderService = async (page = 1, limit = 10) => {
+export const getAllOrderService = async (page, limit) => {
     try {
         const pageNumber = parseInt(page);
         const limitNumber = parseInt(limit);
@@ -26,7 +26,7 @@ export const getAllOrderService = async (page = 1, limit = 10) => {
 
         const totalOrders = await Order.countDocuments();
         return {
-            orders: orders.map(orderDTO),  // Convert orders to DTO format
+            orders: orders.map((order) => orderDTO(order)),  // Convert orders to DTO format
             totalPages: Math.ceil(totalOrders / limitNumber),
             currentPage: pageNumber,
             totalOrders
@@ -94,7 +94,7 @@ export const editOrderService = async (orderId, order) => {
         }
         
     } catch (error) {
-        console.error("Error in deleteOrderService:", error.message);
+        console.error("Error in editOrderService:", error.message);
         throw error; 
     }
 };

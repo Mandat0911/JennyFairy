@@ -61,7 +61,6 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
                 isActive: true,
                 expirationDate: { $gte: currentDate },
             });
-            console.log(coupon)
             if (coupon) {
                 const discount = Math.round(totalAmount * (coupon.discountPercentage / 100));
                 totalAmount -= discount;

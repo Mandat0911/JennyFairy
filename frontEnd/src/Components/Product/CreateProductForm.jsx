@@ -62,7 +62,9 @@ const CreateProductForm = ({ initialProduct }) => {
             editProduct(
                 { 
                     productId: initialProduct._id, 
-                    newProduct: product // Ensure you're passing the updated product data 
+                    newProduct:{
+                        newProduct: product
+                    } // Ensure you're passing the updated product data 
                 },
                 {
                     onSuccess: () => {
@@ -77,7 +79,12 @@ const CreateProductForm = ({ initialProduct }) => {
                 }
             );
         } else {
-            createProduct(product, {
+            createProduct(
+                {
+                newProduct: {
+                    newProduct: product
+                }
+            }, {
                 onSuccess: () => {
                     setSelectedCategory([]);
                     setSelectedSizes([]);

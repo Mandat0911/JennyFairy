@@ -1,125 +1,46 @@
-import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
-import { getCachedRecommendedProducts, updateCachedRecommendedProducts, updateFeaturedProductCache } from "../../../backend/lib/redis/redis.config.js";
-import { redis } from "../../../backend/lib/redis/redis.js";
-import Product from "../model/product.models.js";
+import { createProductService, deleteProductService, editProductService, getAllProductervice, getFeaturedProductService, getProductDetailService, getProductsByCategoryService, getRecommendedProductService, toggleFeaturedProductService } from "../service/product.service.js";
 
 export const getAllProduct = async(req, res) => {
     try {
         const {page = 1, limit = 20} = req.query;
-        const pageNumber = parseInt(page);
-        const limitNumber = parseInt(limit);
-        const products = await Product.find({})
-        .skip((pageNumber - 1) * limitNumber)
-        .limit(limitNumber);
-
-        const totalProducts = await Product.countDocuments();
-
-        res.status(200).json({
-            products,
-            totalPages: Math.ceil(totalProducts / limitNumber),
-            currentPage: pageNumber,
-            totalProducts
-        })
+        const response = await getAllProductervice(page, limit);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getAllProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
 export const getProductDetail = async(req, res) => {
     try {
         const {id: productId} = req.params;
-
-        const product = await Product.findById(productId);
-
-        if(!product) {
-            return res.status(404).json({message: "Product not found!"});
-        }
-        res.json(product)
+        const response = await getProductDetailService(productId);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getProductDetail controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
-export const getFeaturedProduct = async(req, res) => {
+export const getFeaturedProducts = async(req, res) => {
     try {
-        // Check redis cache first
-        let featuredProducts = await redis.get("featured_products");
-        if(featuredProducts){
-            return res.json(JSON.parse(featuredProducts));
-        }
-
-        // If featured products not in redis, fetch from MongoDB
-        featuredProducts = await Product.find({isFeatured: true}).lean();
-
-        if(!featuredProducts.length){
-            return res.status(404).json({message: "No featured product"})
-        }
-
-        // if have featured product then store in redis for quick access
-        await redis.set("feature_products", JSON.stringify(featuredProducts), "EX", 3600);
-
-        return res.json(featuredProducts);
+        const response = await getFeaturedProductService();
+        console.log(response);
+        res.status(200).json(response);
 
     } catch (error) {
         console.error("Error in getFeaturedProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
 export const createProduct = async (req, res) => {
     try {
-        const { name, description, price, img, category, sizes, quantity } = req.body;
-        
-        let imageUrls = [];
+        const { newProduct } = req.body;
 
-        if (!img || !Array.isArray(img) || img.length === 0) {
-            return res.status(400).json({ error: "No valid images provided!" });
-        }
-
-        if(!sizes || sizes.length === 0 || !Array.isArray(sizes)){
-            return res.status(400).json({ error: "Sizes field must be an array with at least one value!" }); 
-        }
-
-        const uploadResults = await Promise.allSettled(
-            img.map(async (image) => {
-                try {
-                    const response = await cloudinary.uploader.upload(image, {
-                        folder: "products",
-                        quality: "auto", // Automatically adjusts compression
-                        fetch_format: "webp", // Converts to optimal format (WebP, etc.)
-                        width: 800, // Resize to limit large uploads
-                        height: 800,
-                        crop: "limit",
-                    });
-                    return { status: "fulfilled", url: response.secure_url };
-                } catch (error) {
-                    console.error("Upload error:", error.message);
-                    return { status: "rejected", reason: error.message };
-                }
-            })
-        );
-
-        imageUrls = uploadResults
-            .filter(result => result.status === "fulfilled")
-            .map(result => result.value.url);
-
-        if (imageUrls.length === 0) {
-            return res.status(400).json({ error: "No images uploaded successfully!" });
-        }
-        const product = await Product.create({
-            name,
-            description,
-            price,
-            quantity,
-            img: imageUrls,
-            category,
-            sizes,
-        });
-
-        res.status(201).json(product);
-        
+        const response = await createProductService(newProduct);
+        res.status(200).json(response);
+    
     } catch (error) {
         console.error("Error in createProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
@@ -129,157 +50,56 @@ export const createProduct = async (req, res) => {
 export const editProduct = async(req, res) => {
     try {
         const {id: productId} = req.params;
-        const { name, description, price, img, category, sizes } = req.body;
+        const { newProduct } = req.body;
 
-        let imageUrls = [];
-
-        let product = await Product.findById(productId);
-
-        if(!product){
-            return res.status(404).json({ message: "Product not found!" }); 
-        };
-        // Keep existing img if no new img prodvide
-        let updatedImages = product.img;
-
-        if(img && Array.isArray(img) && img.length > 0){
-            const uploadResults = await Promise.allSettled(
-                img.map(async (image) => {
-                    try {
-                        const response = await cloudinary.uploader.upload(image, {
-                            folder: "products",
-                            quality: "auto", // Automatically adjusts compression
-                            fetch_format: "webp", // Converts to optimal format (WebP, etc.)
-                            width: 800, // Resize to limit large uploads
-                            height: 800,
-                            crop: "limit",
-                        });
-                        return { status: "fulfilled", url: response.secure_url };
-                    } catch (error) {
-                        console.error("Upload error:", error.message);
-                        return { status: "rejected", reason: error.message };
-                    }
-                })
-            );
-
-            imageUrls = uploadResults
-            .filter(result => result.status === "fulfilled")
-            .map(result => result.value.url);
-
-            if (imageUrls.length > 0) {
-                updatedImages = imageUrls; // Replace with new images
-            }
-        }
-
-        product.name = name || product.name;
-        product.description = description || product.description;
-        product.price = price || product.price;
-        product.img = updatedImages
-        product.category = category || product.category;
-        product.sizes = sizes || product.sizes;
-
-        await product.save();
-        res.status(201).json(product);
-
+        const response = await editProductService(productId, newProduct);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in editProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });
     }
 }
 
-
-
 export const deleteProduct = async (req, res) => {
     try {
         const { id: productId } = req.params;
         
-        const product = await Product.findById(productId);
-        
-        if (!product) {
-            return res.status(404).json({ message: "Product not found!" });
-        }
-
-        // Store the isFeatured flag before deleting the product
-        const wasFeatured = product.isFeatured;
-
-        // If product has images, delete them from Cloudinary
-        if (product.img && product.img.length > 0) {
-            try {
-                for (const imgUrl of product.img) {
-                    const publicId = imgUrl.split("/").pop().split(".")[0];
-                    await cloudinary.uploader.destroy(publicId);
-                }
-            } catch (error) {
-                console.error("Error deleting image from Cloudinary:", error);
-            }
-        }
-
-        // Delete product from database
-        await product.deleteOne();
-
-        // Refresh featured products cache if this product was featured
-        if (wasFeatured) {  // Use the stored flag
-            console.log("Refreshing featured products cache...");
-            const newFeaturedProducts = await Product.find({ isFeatured: true }).limit(10); // Fetch new featured products
-            await redis.set("featured_products", JSON.stringify(newFeaturedProducts)); // Update cache
-        }
-
-        res.json({ message: "Product deleted successfully!" });
+        const response = await deleteProductService(productId);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in deleteProduct controller:", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const getRecommendedProduct = async(req, res) => {
     try {
-        //Check redis cache first
-        
+        const response = await getRecommendedProductService();
 
-        const recommendedProducts = await Product.find()
-            .limit(3)
-            .sort({ createdAt: -1 })
-            .select("_id name description price img")
-
-           //Store in redis cache
-        await updateCachedRecommendedProducts(recommendedProducts);
-        const cachedProduct = await getCachedRecommendedProducts();
-        if(cachedProduct){
-            return res.json(cachedProduct);
-        }
-        res.json({recommendedProducts});
-
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getRecommendedProduct controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
 export const getProductsByCategory = async(req, res) => {
     try {
         const {category} = req.params;
-
-        const products = await Product.find({category});
-        res.json({products});
+        const response = await getProductsByCategoryService(category);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in getProductsByCategory controller: ", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
 
 export const toggleFeaturedProduct = async (req, res) => {
     try {
-        const { id } = req.params;
-        const product = await Product.findById(id).lean(); // Use .lean() for raw data
-
-        if (product) {
-            product.isFeatured = !product.isFeatured;
-            await Product.findByIdAndUpdate(id, { isFeatured: product.isFeatured });
-
-            // Update cache accordingly
-            await updateFeaturedProductCache(product, product.isFeatured);
-
-            return res.json({ message: "Product updated successfully!" });
-        }
+        const { id: productId } = req.params;
+        
+        const response = await toggleFeaturedProductService(productId);
+        res.status(200).json(response);
     } catch (error) {
         console.error("Error in toggleFeaturedProduct controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

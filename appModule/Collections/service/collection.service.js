@@ -5,7 +5,7 @@ import Collection from "../model/collections.models.js";
 export const getAllCollectionService = async () => {
     try {
         const collections = await Collection.find({});
-        const formattedCollections = collections.map(collectionDTO)
+        const formattedCollections = collections.map((collection) => collectionDTO(collection))
         return formattedCollections;
     } catch (error) {
         console.error("Error in getAllCollectionService:", error.message);

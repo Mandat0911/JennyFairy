@@ -9,8 +9,7 @@ export const useCreateProduct = () => {
     const queryClient = useQueryClient();
     const { resetProduct, setLoading } = useProductStore();
     return useMutation({
-        mutationFn: async (newProduct) => {
-            console.log(newProduct)
+        mutationFn: async ({newProduct}) => {
             const response = await fetch(PRODUCT_API_ENDPOINTS.CREATE_PRODUCT, {
                 method: 'POST',
                 headers: { 
@@ -39,9 +38,7 @@ export const useEditProduct = () => {
     const { resetProduct, setLoading } = useProductStore();
 
     return useMutation({
-        mutationFn: async ({ productId, newProduct }) => {
-            console.log("Editing product:", productId, newProduct);
-            
+        mutationFn: async ({ productId, newProduct }) => {            
             const response = await fetch(PRODUCT_API_ENDPOINTS.EDIT_PRODUCT(productId), {
                 method: 'PUT',
                 headers: { 
@@ -178,7 +175,7 @@ export const useToggleFeatureProduct = () => {
     
     return useMutation({
         mutationFn: async (productId) => {
-            const response = await fetch(PRODUCT_API_ENDPOINTS.FEATURE_PRODUCT(productId), {
+            const response = await fetch(PRODUCT_API_ENDPOINTS.TOGGLE_FEATURE_PRODUCT(productId), {
                 method: "PATCH",
                 credentials: 'include',
             });

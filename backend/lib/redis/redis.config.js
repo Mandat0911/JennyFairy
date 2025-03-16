@@ -17,7 +17,25 @@ export const updateCachedRecommendedProducts = async (products) => {
     try {
         await redis.set("recommended_products", JSON.stringify(products), "EX", CACHE_EXPIRATION);
     } catch (error) {
-        console.error("Error in setCachedRecommendedProducts: ", error.message);
+        console.error("Error in updateCachedRecommendedProducts: ", error.message);
+    }
+};
+
+export const getCachedFeaturedProducts = async () => {
+    try {
+        const cachedFeaturedProducts = await redis.get("featured_products");
+        return cachedFeaturedProducts ? JSON.parse(cachedFeaturedProducts) : null;
+    } catch (error) {
+        console.error("Error in getCachedFeaturedProducts: ", error.message);
+        return null;
+    }
+};
+
+export const updateCachedFeaturedProducts = async (products) => {
+    try {
+        await redis.set("featured_products", JSON.stringify(products), "EX", CACHE_EXPIRATION);
+    } catch (error) {
+        console.error("Error in updateCachedFeaturedProducts: ", error.message);
     }
 };
 

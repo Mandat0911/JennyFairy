@@ -11,7 +11,7 @@ export const getCouponService = async (userRole) => {
         if (!coupons || coupons.length === 0) {
             throw { status: 404, message: "No coupons found" };
         }
-        const formattedCoupons = coupons.map(couponDTO)
+        const formattedCoupons = coupons.map((coupon) => couponDTO(coupon))
         return formattedCoupons;
     } catch (error) {
         console.error("Error in getCouponService:", error.message);

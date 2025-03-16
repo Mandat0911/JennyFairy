@@ -30,8 +30,6 @@ const RedirectAuthenticatedUser = ({ children }) => {
 
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     const { isAuthenticated, account, isCheckingAuth } = useAuthStore();
-    console.log(isAuthenticated, account, isCheckingAuth);
-
     if (isCheckingAuth) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
     if (!account?.isVerified) return <Navigate to="/verify-email" replace />;

@@ -1,5 +1,5 @@
 import express from "express"
-import {getAllProduct, getFeaturedProduct, createProduct, deleteProduct, getRecommendedProduct, getProductsByCategory, toggleFeaturedProduct, editProduct, getProductDetail} from "../../Product/controllers/product.controller.js"
+import {getAllProduct, getFeaturedProducts, createProduct, deleteProduct, getRecommendedProduct, getProductsByCategory, toggleFeaturedProduct, editProduct, getProductDetail} from "../../Product/controllers/product.controller.js"
 import {protectRoute } from "../../utils/middleware/protectRoute.js";
 
 
@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", getAllProduct);
 router.get("/:id", getProductDetail);
-router.get("/featured", getFeaturedProduct);
+router.get("/products/featured", getFeaturedProducts);
 router.get("/recommendations/recommendations", getRecommendedProduct);
 router.get("/category/:category", getProductsByCategory);
 router.post("/create-product", protectRoute(["MANAGER", "ADMIN"]), createProduct);
