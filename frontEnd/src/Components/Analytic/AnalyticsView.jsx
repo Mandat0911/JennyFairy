@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from "framer-motion";
-import { Users, Package, ShoppingCart, DollarSign } from "lucide-react";
+import { Users, Package, ShoppingCart, Dot } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   AreaChart, Area,
@@ -8,6 +8,12 @@ import {
 import { useGetAnalytic } from '../../Store/API/Analytic.API.js';
 
 const AnalyticsView = () => {
+  const formatPrice = (totalRevenue) => {
+		return new Intl.NumberFormat("vi-VN", {
+			style: "currency",
+			currency: "VND",
+		}).format(totalRevenue);
+	};
   const [analyticsData, setAnalyticsData] = useState({
     users: 0,
     products: 0,
@@ -37,7 +43,7 @@ const AnalyticsView = () => {
         <AnalyticsCard title="Total Users" value={analyticsData.users.toLocaleString()} icon={Users} />
         <AnalyticsCard title="Total Products" value={analyticsData.products.toLocaleString()} icon={Package} />
         <AnalyticsCard title="Total Sales" value={analyticsData.totalSales.toLocaleString()} icon={ShoppingCart} />
-        <AnalyticsCard title="Total Revenue" value={`$${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} />
+        <AnalyticsCard title="Total Revenue" value={formatPrice(analyticsData.totalRevenue)} icon={Dot} />
       </div>
 
       {/* CHART SECTION */}

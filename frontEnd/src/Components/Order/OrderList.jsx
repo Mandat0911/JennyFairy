@@ -15,7 +15,6 @@ const OrderList = () => {
     const { data } = useGetAllOrder(currentPage, limit);
     const orders = data?.orders || [];
     const totalPages = data?.totalPages || 1;
-    console.log(orders);
     const { mutate: deleteOrder } = useDeleteOrder();
     const [deletingOrderId, setDeletingOrderId] = useState(null);
     
@@ -27,8 +26,6 @@ const OrderList = () => {
         order.shippingDetails.deliveryStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.paymentId.paymentMethod.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    console.log(orders)
   return (
   <motion.div
             className="bg-white shadow-xl rounded-lg overflow-hidden max-w-5xl mx-auto p-4 md:p-6"

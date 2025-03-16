@@ -16,7 +16,6 @@ const ProductList = () => {
     const { data } = useGetAllProduct(currentPage, limit);
     const products = data?.products || [];
     const totalPages = data?.totalPages || 1;
-    console.log(products)
     const filteredProducts = products.filter(product => 
         product._id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.name?.toString().toLowerCase().includes(searchTerm) ||
