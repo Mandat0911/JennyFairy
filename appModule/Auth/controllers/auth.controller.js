@@ -78,9 +78,7 @@ export const resetPassword = async (req, res) => {
   
 export const logout = async (req, res) => {
     try {
-        
         const refreshToken = req.cookies.refreshToken;
-        console.log(refreshToken);
         const response = await logoutService(refreshToken);
 
         res.clearCookie("accessToken");
@@ -96,12 +94,10 @@ export const logout = async (req, res) => {
 export const refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
-
-
         const response = await refreshTokenService(refreshToken);
         // Send the new access token as a cookie
         res.cookie("accessToken", response.accessToken, {
-            maxAge: 60 * 60 * 1000, // 15 minutes in milliseconds
+            maxAge: 1 * 60 * 1000, // 15 minutes in milliseconds
             httpOnly: true, // Prevent access to cookies via JavaScript
             sameSite: "strict", // Prevent CSRF attacks
             secure: process.env.NODE_ENV === "production", // Secure only in production

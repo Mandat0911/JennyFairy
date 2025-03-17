@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "../../lib/axios.lib.js";
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create((set, get) => ({
     user: null,
     account: null, // Add account state
     isAuthenticated: false,
@@ -133,23 +133,24 @@ export const useAuthStore = create((set) => ({
     },
 
     refreshToken: async () => {
-        const { isCheckingAuth } = useAuthStore.getState();
-
-        if (isCheckingAuth) {
-            console.log("🔄 Already checking auth, skipping refresh...");
-            return;
+        console.log("🚀 Calling refresh API...", get().isCheckingAuth);
+        
+        if (get().ischeckingAuth) return;
+    
+        set({ isCheckingAuth: true });
+    
+        try {
+            const response = await axios.post("/auth/refresh-token");
+            console.log("✅ Refresh successful:", response.data);
+    
+            set({ isCheckingAuth: false });
+            return response.data;
+        } catch (error) {
+            console.error("❌ Refresh failed:", error);
+            set({ user: null, isCheckingAuth: false });
+            throw error;
         }
-
-        set({ checkingAuth: true });
-		try {
-			const response = await axios.post("/auth/refresh-token");
-			set({ checkingAuth: false });
-			return response.data;
-		} catch (error) {
-			set({ user: null, checkingAuth: false });
-			throw error;
-		}
-	},
+    },
 }));
 
 
@@ -161,28 +162,33 @@ export const useAuthStore = create((set) => ({
         (response) => response,
         async (error) => {
             const originalRequest = error.config;
+            console.log("🚨 Interceptor triggered:", error.response?.status);
+    
             if (error.response?.status === 401 && !originalRequest._retry) {
+                console.log("🔄 401 detected, attempting refresh...");
                 originalRequest._retry = true;
-                console.log(!originalRequest._retry)
+    
                 try {
-                    // If a refresh is already in progress, wait for it to complete
                     if (refreshPromise) {
+                        console.log("🔄 Waiting for ongoing refresh...");
                         await refreshPromise;
-                        return axios(originalRequest);
+                    } else {
+                        console.log("🔄 Starting new refresh...");
+                        refreshPromise = useAuthStore.getState().refreshToken();
+                        await refreshPromise;
+                        refreshPromise = null;
                     }
     
-                    // Start a new refresh process
-                    refreshPromise = useAuthStore.getState().refreshToken();
-                    await refreshPromise;
-                    refreshPromise = null;
-    
-                    return axios(originalRequest);
+                    return axios(originalRequest); // Retry request with new token
                 } catch (refreshError) {
-                    // If refresh fails, redirect to login or handle as needed
+                    console.error("❌ Refresh token failed, logging out...");
                     useAuthStore.getState().logout();
                     return Promise.reject(refreshError);
                 }
             }
+    
             return Promise.reject(error);
         }
     );
+    
+    
