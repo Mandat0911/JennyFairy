@@ -283,7 +283,7 @@ export const resetPasswordService = async(token, password, res) => {
     }
 }
 
-export const logoutService = async(refreshToken, res) => {
+export const logoutService = async(refreshToken) => {
     try {
         if (!refreshToken) {
             throw { status: 400, message: "No refresh token provided!" };
@@ -291,7 +291,7 @@ export const logoutService = async(refreshToken, res) => {
         };
         try {
             const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-            await redis.del(`refresh_token: ${decoded.accountId}`);
+            await redis.del(`refresh_token:${decoded.accountId}`);
         } catch (error) {
             console.warn("Invalid or expired refresh token:", error.message);
         }
@@ -302,14 +302,12 @@ export const logoutService = async(refreshToken, res) => {
     }
 }
 
-export const refreshTokenService = async(refreshToken, res) => {
+export const refreshTokenService = async(refreshToken) => {
     try {
         // Ensure the refresh token exists
         if (!refreshToken) {
             throw { status: 403, message: "Refresh token is required!" };
-
         }
-
         // Verify the refresh token
         let decoded;
         try {

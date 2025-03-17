@@ -78,11 +78,13 @@ export const resetPassword = async (req, res) => {
   
 export const logout = async (req, res) => {
     try {
+        
         const refreshToken = req.cookies.refreshToken;
-        const response = await logoutService(refreshToken, res);
+        console.log(refreshToken);
+        const response = await logoutService(refreshToken);
 
-        res.clearCookie("refreshToken");
         res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
         
         res.status(200).json(response);
     } catch (error) {
@@ -94,6 +96,7 @@ export const logout = async (req, res) => {
 export const refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
+
 
         const response = await refreshTokenService(refreshToken);
         // Send the new access token as a cookie

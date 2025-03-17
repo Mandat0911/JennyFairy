@@ -10,18 +10,18 @@ export const generateTokens = async (accountId, email, res) => {
     })
 
     const refreshToken = jwt.sign({accountId, email}, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: "10d",
+        expiresIn: "7d",
     });
 
     res.cookie("accessToken", accessToken, {
-        maxAge: 60 * 60 * 1000, // 10 days in milliseconds
+        maxAge: 1 * 60 * 1000, // 10 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "strict", // Prevent CSRF attacks
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
 
     res.cookie("refreshToken", refreshToken, {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "strict", // Prevent CSRF attacks
         secure: process.env.NODE_ENV === "production", // Secure only in production
