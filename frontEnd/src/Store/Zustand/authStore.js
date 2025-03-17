@@ -134,8 +134,8 @@ export const useAuthStore = create((set, get) => ({
 
     refreshToken: async () => {
         console.log("🚀 Calling refresh API...", get().isCheckingAuth);
-        
-        if (get().ischeckingAuth) return;
+    
+        if (get().isCheckingAuth) return;
     
         set({ isCheckingAuth: true });
     
@@ -143,14 +143,17 @@ export const useAuthStore = create((set, get) => ({
             const response = await axios.post("/auth/refresh-token");
             console.log("✅ Refresh successful:", response.data);
     
-            set({ isCheckingAuth: false });
+            set({ isCheckingAuth: false }); // Reset after success
             return response.data;
         } catch (error) {
             console.error("❌ Refresh failed:", error);
-            set({ user: null, isCheckingAuth: false });
+    
+            // ✅ Ensure isCheckingAuth is reset
+            set({ isCheckingAuth: false, user: null });
+    
             throw error;
         }
-    },
+    }    
 }));
 
 
@@ -174,6 +177,8 @@ export const useAuthStore = create((set, get) => ({
                         await refreshPromise;
                     } else {
                         console.log("🔄 Starting new refresh...");
+                        useAuthStore.setState({ isCheckingAuth: false, user: null });
+
                         refreshPromise = useAuthStore.getState().refreshToken();
                         await refreshPromise;
                         refreshPromise = null;
@@ -182,6 +187,7 @@ export const useAuthStore = create((set, get) => ({
                     return axios(originalRequest); // Retry request with new token
                 } catch (refreshError) {
                     console.error("❌ Refresh token failed, logging out...");
+
                     useAuthStore.getState().logout();
                     return Promise.reject(refreshError);
                 }
