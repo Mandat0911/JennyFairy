@@ -97,7 +97,7 @@ export const refreshToken = async (req, res) => {
         const response = await refreshTokenService(refreshToken);
         // Send the new access token as a cookie
         res.cookie("accessToken", response.accessToken, {
-            maxAge: 1 * 60 * 1000, // 15 minutes in milliseconds
+            maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
             httpOnly: true, // Prevent access to cookies via JavaScript
             sameSite: "strict", // Prevent CSRF attacks
             secure: process.env.NODE_ENV === "production", // Secure only in production

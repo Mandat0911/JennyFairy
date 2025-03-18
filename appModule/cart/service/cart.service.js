@@ -36,7 +36,7 @@ export const removeAllItemService = async (user) => {
     }
 };
 
-export const updateQuantityService = async (user, quantity, productId) => {
+export const updateQuantityService = async (user, quantity, size, productId) => {
     try {
         if(!user) {
             throw { status: 404, message: "User not found!" };
@@ -56,7 +56,7 @@ export const updateQuantityService = async (user, quantity, productId) => {
         }
         const productPrice = product.price;
 
-        const itemIndex = user.cartItems.findIndex((item) => item.product.toString() === String(productId));
+        const itemIndex = user.cartItems.findIndex((item) => item.product.toString() === String(productId) && item.size === size);
         
         if (itemIndex !== -1) {
             if (quantity === 0) {

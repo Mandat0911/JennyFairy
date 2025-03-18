@@ -41,7 +41,7 @@ export const useAuthStore = create((set, get) => ({
                 isAuthenticated: true,
                 isLoading: false
             });
-            
+            console.log(get().isCheckingAuth)
         } catch (error) {
             set({ error: error.response?.data?.error || "Error logging in", isLoading: false });
             throw error;
@@ -66,6 +66,7 @@ export const useAuthStore = create((set, get) => ({
     
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
+
         try {
             const response = await axios.get("/auth/me");
             const { user, account } = response.data;
@@ -80,9 +81,13 @@ export const useAuthStore = create((set, get) => ({
                 isAuthenticated: true,
                 isCheckingAuth: false
             });
+            
         } catch (error) {
-            set({ error: null, isCheckingAuth: false, isAuthenticated: false });
-            throw error;
+            console.error("❌ checkAuth failed:", error); // Debugging log
+            set({isCheckingAuth: false, user: null, account: null  })
+            console.log(get().isCheckingAuth);
+        
+            return error; // Return instead of throwing, to allow further handling
         }
     },
 
@@ -133,29 +138,24 @@ export const useAuthStore = create((set, get) => ({
     },
 
     refreshToken: async () => {
-        console.log("🚀 Calling refresh API...", get().isCheckingAuth);
-    
         if (get().isCheckingAuth) return;
-    
         set({ isCheckingAuth: true });
-    
+
         try {
             const response = await axios.post("/auth/refresh-token");
-            console.log("✅ Refresh successful:", response.data);
     
             set({ isCheckingAuth: false }); // Reset after success
             return response.data;
         } catch (error) {
             console.error("❌ Refresh failed:", error);
     
-            // ✅ Ensure isCheckingAuth is reset
+
             set({ isCheckingAuth: false, user: null });
     
             throw error;
         }
     }    
 }));
-
 
     // TODO: Implement the axios interceptors for refreshing access token
 
@@ -165,29 +165,24 @@ export const useAuthStore = create((set, get) => ({
         (response) => response,
         async (error) => {
             const originalRequest = error.config;
-            console.log("🚨 Interceptor triggered:", error.response?.status);
     
             if (error.response?.status === 401 && !originalRequest._retry) {
-                console.log("🔄 401 detected, attempting refresh...");
                 originalRequest._retry = true;
-    
                 try {
                     if (refreshPromise) {
-                        console.log("🔄 Waiting for ongoing refresh...");
                         await refreshPromise;
+                        return axios(originalRequest);
                     } else {
-                        console.log("🔄 Starting new refresh...");
-                        useAuthStore.setState({ isCheckingAuth: false, user: null });
-
+                        useAuthStore.setState({ isCheckingAuth: false });
                         refreshPromise = useAuthStore.getState().refreshToken();
+                        
                         await refreshPromise;
                         refreshPromise = null;
                     }
     
                     return axios(originalRequest); // Retry request with new token
                 } catch (refreshError) {
-                    console.error("❌ Refresh token failed, logging out...");
-
+                    
                     useAuthStore.getState().logout();
                     return Promise.reject(refreshError);
                 }

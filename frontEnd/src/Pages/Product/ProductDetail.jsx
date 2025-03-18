@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAddItemToCart } from "../../Store/API/Cart.API.js";
 
 const ProductDetail = () => {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, isCheckingAuth } = useAuthStore();
     const [selectedSize, setSelectedSize] = useState(null);
     const { data: productDetail, isLoading, error } = useGetProductDetail();
     const [selectedImage, setSelectedImage] = useState(0);
@@ -23,8 +23,9 @@ const ProductDetail = () => {
             setSizeError(true);
             return;
         }
-        if (!isAuthenticated) {
+        if (!isAuthenticated && !isCheckingAuth) {
             toast.error("Please login to add product to cart", { id: "login" });
+            console.log(isCheckingAuth)
             return;
         } else {
             // add to cart

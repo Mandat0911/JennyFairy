@@ -60,10 +60,10 @@ export const removeAllItem = async (req, res) => {
 export const updateQuantity = async (req, res) => {
     try {
         const {id: productId} = req.params;
-        const {quantity} = req.body;
+        const {quantity, size} = req.body;
         const user = req.user;
         
-        const response = await updateQuantityService(user, quantity, productId);
+        const response = await updateQuantityService(user, quantity, size, productId);
         return res.json(response);
     } catch (error) {
         console.error("Error in updateQuantity controller: ", error.message);

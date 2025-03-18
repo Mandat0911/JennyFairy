@@ -55,38 +55,44 @@ export const useAddItemToCart = () => {
                 throw new Error(data.error || 'Failed to add item to cart');
             }
 
-            // Ensure localStorage updates correctly with new cart items
+            // ✅ Ensure localStorage updates correctly with new cart items
             localStorage.setItem("cart-storage", JSON.stringify(data.cartItems));
 
-            return data.cartItems; // Return updated cart
+            return { cartItems: data.cartItems, productId: newItem.productId, size: newItem.size, quantity: newItem.quantity };
         },
-        onMutate: async (newItem) => {
-            // Fetch full product details before adding to Zustand store
-            const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(newItem.productId));
-            const productData = await productResponse.json();
+        onSuccess: async ({ productId, size, quantity }) => {
+            try {
+                // ✅ Fetch full product details before adding to Zustand store
+                const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId));
+                const productData = await productResponse.json();
 
-            if (!productResponse.ok) {
-                throw new Error("Failed to fetch product details");
+                if (!productResponse.ok) {
+                    throw new Error("Failed to fetch product details");
+                }
+
+                const detailedItem = {
+                    ...productData,
+                    productId,
+                    size,
+                    quantity,
+                };
+
+                addToCart(detailedItem);
+                
+                queryClient.invalidateQueries(['cart']);
+                toast.success('Item added to cart successfully!', { id: "added" });
+
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+                toast.error("Failed to fetch product details after adding to cart.");
             }
-
-            const detailedItem = {
-                ...productData,
-                productId: newItem.productId,
-                size: newItem.size,
-                quantity: newItem.quantity,
-            };
-            // Update Zustand Store & LocalStorage
-            addToCart(detailedItem);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['cart']);
-            toast.success('Item added to cart successfully!', { id: "added" });
         },
         onError: (error) => {
             toast.error(`Error adding item to cart: ${error.message}`);
         }
     });
 };
+
 
 export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
@@ -147,14 +153,15 @@ export const useUpdateQuantityCartItem = () => {
     const calculateTotals = useCartStore((state) => state.calculateTotals);
 
     return useMutation({
-        mutationFn: async ({ productId, quantity }) => {
+        mutationFn: async ({ productId, quantity, size }) => {
+
             const response = await fetch(CART_API_ENDPOINTS.UPDATE_QUANTITY(productId), {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({ quantity }), // Fixed the API request payload
+                body: JSON.stringify({ quantity, size }), // Fixed the API request payload
             });
 
             if (!response.ok) {
