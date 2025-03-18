@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import {  Menu, X} from "lucide-react";
+import { useState } from "react";
+import { Menu, X} from "lucide-react";
 import { useAuthStore } from "../../Store/Zustand/authStore.js";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,7 +59,16 @@ const Navbar = () => {
                             </span>
                         )}
                     </Link>
-                    
+                    )}
+
+                    {user && (
+                        <Link 
+                        to="/profile" 
+                        className="relative text-black tracking-wide text-sm hover:opacity-70 transition duration-300"
+                    >
+                        Profile
+                       
+                    </Link>
                     )}
                     {isAdmin && (
                         <Link
@@ -115,6 +124,11 @@ const Navbar = () => {
                                     {cart.length}
                                 </span>
                             )}
+                        </Link>
+                        )}
+                        {user && (
+                            <Link to="/profile" onClick={() => setIsOpen(false)} className="relative text-lg font-medium text-gray-800 hover:underline">
+                            Profile
                         </Link>
                         )}
                         {isAdmin && (

@@ -5,7 +5,7 @@ import useCartStore from "../Zustand/cartStore.js";
 
 
 export const useGetCartItems = () => {
-    const { addToCart } = useCartStore();
+    const { initializeCart } = useCartStore();
     return useQuery({
         queryKey: ['cart'],
         queryFn: async () => {
@@ -13,63 +13,54 @@ export const useGetCartItems = () => {
                 const response = await fetch(CART_API_ENDPOINTS.GET_CART, {
                     credentials: 'include',
                 });
-                
 
                 if (!response.ok) {
-                    const errorMessage = `Failed to fetch collections: ${response.status} ${response.statusText}`;
-                    throw new Error(errorMessage);
+                    throw new Error(`Failed to fetch collections: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
                 
-                // Ensure it's always an array
-                const cartItem = Array.isArray(data) 
+                const cartItems = Array.isArray(data) 
                     ? data 
                     : (Array.isArray(data.cartItem) ? data.cartItem : []);
                     
-                    localStorage.setItem("cart", JSON.stringify(cartItem));
+                localStorage.setItem("cart-storage", JSON.stringify(cartItems));
 
-                    const productId = cartItem?.map((cart) => cart.productId)
-                    console.log(productId.length)
-
-                    for(let i = 0; i < productId.length; i++) {
+                const detailedCartItems = await Promise.all(
+                    cartItems.map(async (cartItem) => {
                         try {
-                        // Fetch full product details before adding to Zustand store
-                        const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId[i]));
-                        
-                        const productData = await productResponse.json();
-                        console.log(productData)
-        
-                        if (!productResponse.ok) {
-                            throw new Error("Failed to fetch product details");
+                            const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(cartItem.productId));
+                            if (!productResponse.ok) {
+                                throw new Error("Failed to fetch product details");
+                            }
+                            const productData = await productResponse.json();
+
+                            return {
+                                ...productData,
+                                productId: cartItem.productId,
+                                size: cartItem.size,
+                                quantity: cartItem.quantity,
+                            };
+                        } catch (error) {
+                            console.error("Error fetching product details:", error);
+                            return null;
                         }
-        
-                        const detailedItem = {
-                            ...productData,
-                            productId,
-                            size,
-                            quantity,
-                        };
-        
-                        addToCart(detailedItem);
-                        
-                    }catch(error) {
+                    })
+                );
 
-                    }
-                    }
+                const validCartItems = detailedCartItems.filter((item) => item !== null);
 
+                initializeCart(validCartItems); // Initialize Zustand store with fetched cart data
 
-
-
-
-                return cartItem;
+                return validCartItems;
             } catch (error) {
-                console.error("Error fetching cartItem:", error);
-                throw new Error("Unable to retrieve cartItem. Please try again later.");
+                console.error("Error fetching cart items:", error);
+                throw new Error("Unable to retrieve cart items. Please try again later.");
             }
         },
     });
 };
+
 
 export const useAddItemToCart = () => {
     const { addToCart } = useCartStore();

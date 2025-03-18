@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import useCouponStore from "./coupon";
-import { useGetCartItems } from "../API/Cart.API";
-
 
 const useCartStore = create(
     persist(
@@ -12,6 +10,20 @@ const useCartStore = create(
             total: 0,
             discount: 0,
             isCouponApplied: false,
+
+            initializeCart: (cartItems) => {
+                set(() => {
+                    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+                    const coupon = useCouponStore.getState().coupon;
+                    const discountAmount = coupon?.discountPercentage
+                        ? (subtotal * coupon.discountPercentage) / 100
+                        : 0;
+                    const total = subtotal - discountAmount;
+
+                    return { cart: cartItems, subtotal, discount: discountAmount, total };
+                });
+            },
 
             addToCart: (item) => {
                 set((state) => {
