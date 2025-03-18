@@ -5,6 +5,7 @@ import useCartStore from "../Zustand/cartStore.js";
 
 
 export const useGetCartItems = () => {
+    const { addToCart } = useCartStore();
     return useQuery({
         queryKey: ['cart'],
         queryFn: async () => {
@@ -25,6 +26,41 @@ export const useGetCartItems = () => {
                 const cartItem = Array.isArray(data) 
                     ? data 
                     : (Array.isArray(data.cartItem) ? data.cartItem : []);
+                    
+                    localStorage.setItem("cart", JSON.stringify(cartItem));
+
+                    const productId = cartItem?.map((cart) => cart.productId)
+                    console.log(productId.length)
+
+                    for(let i = 0; i < productId.length; i++) {
+                        try {
+                        // Fetch full product details before adding to Zustand store
+                        const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId[i]));
+                        
+                        const productData = await productResponse.json();
+                        console.log(productData)
+        
+                        if (!productResponse.ok) {
+                            throw new Error("Failed to fetch product details");
+                        }
+        
+                        const detailedItem = {
+                            ...productData,
+                            productId,
+                            size,
+                            quantity,
+                        };
+        
+                        addToCart(detailedItem);
+                        
+                    }catch(error) {
+
+                    }
+                    }
+
+
+
+
 
                 return cartItem;
             } catch (error) {
@@ -54,6 +90,7 @@ export const useAddItemToCart = () => {
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to add item to cart');
             }
+            console.log("data:", data)
 
             // ✅ Ensure localStorage updates correctly with new cart items
             localStorage.setItem("cart-storage", JSON.stringify(data.cartItems));
@@ -62,7 +99,7 @@ export const useAddItemToCart = () => {
         },
         onSuccess: async ({ productId, size, quantity }) => {
             try {
-                // ✅ Fetch full product details before adding to Zustand store
+                // Fetch full product details before adding to Zustand store
                 const productResponse = await fetch(PRODUCT_API_ENDPOINTS.GET_PRODUCT_DETAIL(productId));
                 const productData = await productResponse.json();
 

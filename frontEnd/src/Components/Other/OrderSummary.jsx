@@ -31,9 +31,12 @@ const OrderSummary = () => {
 	const formattedTotal = formatCurrency(total);
 	const formattedSavings = formatCurrency(savings);
 
+
       useEffect(() => {
         calculateTotals();
     }, [cart, coupon]);
+
+
 
 	const handleRemoveCoupon = (e) => {
 		e.preventDefault();

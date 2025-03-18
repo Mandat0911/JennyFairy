@@ -41,7 +41,6 @@ export const useAuthStore = create((set, get) => ({
                 isAuthenticated: true,
                 isLoading: false
             });
-            console.log(get().isCheckingAuth)
         } catch (error) {
             set({ error: error.response?.data?.error || "Error logging in", isLoading: false });
             throw error;
@@ -83,11 +82,8 @@ export const useAuthStore = create((set, get) => ({
             });
             
         } catch (error) {
-            console.error("❌ checkAuth failed:", error); // Debugging log
-            set({isCheckingAuth: false, user: null, account: null  })
-            console.log(get().isCheckingAuth);
-        
-            return error; // Return instead of throwing, to allow further handling
+            set({isCheckingAuth: false, user: null, account: null  })        
+            throw error; // Return instead of throwing, to allow further handling
         }
     },
 
@@ -99,7 +95,7 @@ export const useAuthStore = create((set, get) => ({
             localStorage.removeItem("account");
             set({ user: null, account: null, isAuthenticated: false, isLoading: false });
         } catch (error) {
-            set({ error: error.response.data.error || "Error logging out", isLoading: false });
+            set({isLoading: false });
             throw error;
         }
     },
@@ -147,8 +143,7 @@ export const useAuthStore = create((set, get) => ({
             set({ isCheckingAuth: false }); // Reset after success
             return response.data;
         } catch (error) {
-            console.error("❌ Refresh failed:", error);
-    
+            console.error("Refresh failed:", error);
 
             set({ isCheckingAuth: false, user: null });
     

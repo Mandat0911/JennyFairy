@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import useCouponStore from "./coupon";
+import { useGetCartItems } from "../API/Cart.API";
+
 
 const useCartStore = create(
     persist(
