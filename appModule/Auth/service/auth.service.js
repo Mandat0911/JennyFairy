@@ -10,6 +10,8 @@ import bcrypt from 'bcryptjs';
 import crypto from "crypto";
 import dotenv from "dotenv";
 import  jwt  from "jsonwebtoken";
+import Order from "../../Order/model/order.model.js";
+import Payment from "../../Payment/model/payment.models.js";
 
 dotenv.config();
 
@@ -335,6 +337,35 @@ export const refreshTokenService = async(refreshToken) => {
 
     } catch (error) {
         console.error("Error in refreshTokenService: ", error.message);
+        throw error;                
+    }
+}
+
+export const getUserProfileService = async(userId) => {
+    try {
+        const user = await User.findById(userId).select("name email");
+        if (!user) {
+            throw { status: 404, message: "User not found!" };
+        }
+        
+        const orders = await Order.find({user: userId})
+        .sort({createdAt: -1})
+        .populate("products.product", "-_id name img");
+
+        return {
+            user: {
+                name: user.name,
+                email: user.email,
+            },
+            orders: orders.map((order) => ({
+                id: order._id,
+                products: order.products || [],
+                totalAmount: order.totalAmount || null,
+                shippingDetails: order.shippingDetails || {},
+            }))
+        };
+    } catch (error) {
+        console.error("Error in getUserProfileService:", error.message);
         throw error;                
     }
 }

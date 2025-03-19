@@ -1,5 +1,5 @@
 import express from "express"
-import {signup, login, logout, refreshToken, verifyEmail, forgotPassword, resetPassword, getMe, resendVerificationEmail} from "../../Auth/controllers/auth.controller.js"
+import {signup, login, logout, refreshToken, verifyEmail, forgotPassword, resetPassword, getMe, resendVerificationEmail, getUserProfile} from "../../Auth/controllers/auth.controller.js"
 import { protectRoute } from "../../utils/middleware/protectRoute.js";
 
 
@@ -22,5 +22,6 @@ router.post("/refresh-token", refreshToken);
 router.post("/resend-verification", resendVerificationEmail);
 
 router.get("/me", protectRoute(["USER", "MANAGER", "ADMIN"]), getMe);
+router.get("/user-profile", protectRoute(["USER", "MANAGER", "ADMIN"]), getUserProfile);
 
 export default router;
