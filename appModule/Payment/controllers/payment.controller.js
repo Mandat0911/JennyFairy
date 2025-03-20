@@ -1,8 +1,4 @@
-import { stripe } from "../../../backend/lib/stripe/stripe.js";
-import Payment from "../model/payment.models.js";
-import Order from "../../Order/model/order.model.js";
-import User from "../../User/models/user.models.js";
-import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
+
 import { checkoutSuccessService, createCheckoutCODService, createCheckoutQrcodeService, createCheckoutSessionService } from "../service/payment.service.js";
 
 

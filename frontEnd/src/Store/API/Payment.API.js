@@ -51,8 +51,8 @@ export const useCheckSuccessStripe = () => {
             let data;
             try {
 
-                const data = await response.json();
-            } catch (error) {
+                data = await response.json();
+            } catch (Error) {
                 throw new Error("Invalid response from server");
             }
 

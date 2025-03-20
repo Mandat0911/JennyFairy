@@ -7,6 +7,7 @@ import Payment from "../model/payment.models.js";
 import Order from "../../Order/model/order.model.js";
 import User from "../../User/models/user.models.js";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
+import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
 
 dotenv.config();
 export const createCheckoutSessionService = async (userId, products, couponCode, shippingDetails) => {
@@ -70,6 +71,7 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
         }
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: lineItems,
@@ -96,7 +98,7 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
         return checkoutDTO(session, totalAmount)
 
     } catch (error) {
-        console.error("Error in getAllOrderService:", error.message);
+        console.error("Error in createCheckoutSessionService:", error.message);
         throw error; 
     }
 };

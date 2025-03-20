@@ -100,6 +100,21 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
+    deleteAccount: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            await axios.delete("/auth/delete-account");
+            localStorage.removeItem("user");
+            localStorage.removeItem("account");
+            localStorage.removeItem("cart-storage");
+            localStorage.removeItem("coupon-storage");
+            set({ user: null, account: null, isAuthenticated: false, isLoading: false });
+        } catch (error) {
+            set({isLoading: false });
+            throw error;
+        }
+    },
+
     forgotPassword: async (email) => {
         set({ isLoading: true, error: null });
         try {

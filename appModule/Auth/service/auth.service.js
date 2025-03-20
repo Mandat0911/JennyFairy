@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import  jwt  from "jsonwebtoken";
 import Order from "../../Order/model/order.model.js";
 import Payment from "../../Payment/model/payment.models.js";
+import Coupon from "../../Coupons/model/coupon.models.js";
 
 dotenv.config();
 
@@ -367,6 +368,29 @@ export const getUserProfileService = async(userId) => {
         };
     } catch (error) {
         console.error("Error in getUserProfileService:", error.message);
+        throw error;                
+    }
+}
+
+export const deleteAccountService = async(userId, res) => {
+    try {
+        const user = await User.findById(userId).select("accountId");
+        if (!user) {
+            throw { status: 404, message: "User not found!" };
+
+        }
+        await Promise.all([
+            Payment.deleteMany({user: userId}),
+            Order.deleteMany({user: userId}),
+            Coupon.updateMany({usedBy: userId}, {$pull: {usedBy: userId}}),
+            user.accountId ? Account.findByIdAndDelete(user.accountId) : null
+        ])
+        
+        await User.findByIdAndDelete(userId);
+        
+        return {message: "Account delete successful!"};
+    } catch (error) {
+        console.error("Error in deleteAccountService:", error.message);
         throw error;                
     }
 }

@@ -1,4 +1,4 @@
-import { forgotPasswordService, getMeService, getUserProfileService, loginService, logoutService, refreshTokenService, resendVerificationEmailService, resetPasswordService, signupService, verifyEmailService } from "../service/auth.service.js";
+import { deleteAccountService, forgotPasswordService, getMeService, getUserProfileService, loginService, logoutService, refreshTokenService, resendVerificationEmailService, resetPasswordService, signupService, verifyEmailService } from "../service/auth.service.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -117,6 +117,16 @@ export const getUserProfile = async (req, res) => {
         res.status(200).json(response);
     } catch (error) {
         console.error("Error in getUserProfile controller:", error.message);
+        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+    }
+};
+
+export const deleteAccount = async (req, res) => {
+    try {
+        const response = await deleteAccountService(req.user._id);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error in deleteAccount controller:", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };

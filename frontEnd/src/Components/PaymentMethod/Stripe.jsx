@@ -25,8 +25,6 @@ const Stripe = () => {
   const { mutateAsync: appliedCoupon } = useAppliedCoupon();
 
 
-
-
   const handleConfirmPayment = async () => {
 
        
@@ -41,15 +39,12 @@ const Stripe = () => {
     setLoading(true);
 
     try {
-      if (coupon?.code) {
-        await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
-      }
+
       createCheckoutSession(
         { products: cart, couponCode: coupon?.code || null, shippingDetails },
         {
           onSuccess: async (data) => {
             if (!data.sessionId) {
-              toast.error("Failed to get Stripe session ID");
               setLoading(false);
               return;
             }
@@ -68,6 +63,10 @@ const Stripe = () => {
             
             if (result.error) {
               toast.error(`Error: ${result.error.message}`);
+            }
+            
+            if (coupon?.code) {
+              await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
             }
             
           },
