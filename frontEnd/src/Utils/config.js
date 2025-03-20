@@ -55,7 +55,12 @@ export const PAYMENT_API_ENDPOINTS = {
   CREATE_CHECKOUT_SUCCESS_QRCODE: `${API_BE_URL}/payment/create-checkout-qrcode`,
 }
 
-// Payment API Endpoints
+// Analytic API Endpoints
 export const ANALYTIC_API_ENDPOINTS = {
   GET_ANALYTIC: `${API_BE_URL}/analytic/`,
+}
+
+// Analytic API Endpoints
+export const AUTH_API_ENDPOINTS = {
+  GET_USER_PROFILE: `${API_BE_URL}/auth/user-profile`,
 }

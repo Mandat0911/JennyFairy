@@ -350,7 +350,7 @@ export const getUserProfileService = async(userId) => {
         
         const orders = await Order.find({user: userId})
         .sort({createdAt: -1})
-        .populate("products.product", "-_id name img");
+        .populate("products.product", "-_id name img createdAt");
 
         return {
             user: {
@@ -359,6 +359,7 @@ export const getUserProfileService = async(userId) => {
             },
             orders: orders.map((order) => ({
                 id: order._id,
+                createdAt: order.createdAt,
                 products: order.products || [],
                 totalAmount: order.totalAmount || null,
                 shippingDetails: order.shippingDetails || {},

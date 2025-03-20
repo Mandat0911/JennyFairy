@@ -1,18 +1,13 @@
 import React from "react";
 import { User, Mail, Phone, ShoppingBag, Settings, MapPin, Star, Trash } from "lucide-react";
+import { useGetUserProfile } from "../../Store/API/Auth.API";
+import { formatDate } from "../../Utils/Date";
 
 const ProfilePage = () => {
-  const user = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    phone: "+1 234 567 890",
-    address: "123 Fashion St, New York, NY",
-    membership: "Gold Member",
-    orders: [
-      { id: "001", date: "Feb 15, 2024", status: "Delivered", total: "$150.00" },
-      { id: "002", date: "Jan 28, 2024", status: "Shipped", total: "$220.00" },
-    ],
-  };
+
+  const {data: userData} = useGetUserProfile();
+  console.log(userData)
+
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6 md:px-10 lg:px-16">
@@ -20,19 +15,11 @@ const ProfilePage = () => {
       <div className="bg-gray-100 p-6 rounded-xl shadow-sm flex flex-col md:flex-row items-center gap-6">
         <User className="w-12 h-12 text-gray-700" />
         <div className="text-center md:text-left">
-          <h2 className="text-2xl font-bold uppercase tracking-wide">{user.name}</h2>
+          <h2 className="text-2xl font-bold uppercase tracking-wide">{userData?.user.name}</h2>
           <p className="text-gray-600 flex items-center gap-2 mt-1">
-            <Mail className="w-5 h-5" /> {user.email}
+            <Mail className="w-5 h-5" /> {userData?.user.email}
           </p>
-          <p className="text-gray-600 flex items-center gap-2 mt-1">
-            <Phone className="w-5 h-5" /> {user.phone}
-          </p>
-          <p className="text-gray-600 flex items-center gap-2 mt-1">
-            <MapPin className="w-5 h-5" /> {user.address}
-          </p>
-          <p className="text-yellow-500 flex items-center gap-2 mt-2 font-semibold">
-            <Star className="w-5 h-5" /> {user.membership}
-          </p>
+
         </div>
       </div>
 
@@ -42,12 +29,43 @@ const ProfilePage = () => {
           <ShoppingBag className="w-6 h-6" /> Order History
         </h3>
         <ul className="bg-white p-4 rounded-xl shadow-md divide-y">
-          {user.orders.map((order) => (
-            <li key={order.id} className="py-4 flex flex-col md:flex-row justify-between items-start md:items-center">
-              <span className="text-sm md:text-base">Order #{order.id} - {order.date}</span>
-              <span className="text-gray-600 text-sm md:text-base">{order.status} - {order.total}</span>
-            </li>
-          ))}
+<ul className="bg-white p-4 rounded-xl shadow-md divide-y">
+  {userData?.orders.map((order) => (
+    <li key={order.id} className="py-4">
+      {/* Order Header */}
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-sm md:text-base font-semibold">
+          Order #{order.id} - {formatDate(order.createdAt)}
+        </span>
+        <span className="text-gray-600 text-sm md:text-base">
+          {order.shippingDetails.deliveryStatus} - {order.totalAmount}
+        </span>
+      </div>
+
+      {/* Order Products */}
+      <div className="space-y-3">
+        {order?.products.map((product) => (
+          <div key={product._id} className="flex items-center gap-4">
+            {/* Product Image */}
+            <img 
+              src={product?.product?.img[0]} 
+              alt={product?.product?.name} 
+              className="w-16 h-16 object-cover rounded-lg"
+            />
+
+            {/* Product Details */}
+            <div>
+              <p className="text-sm md:text-base font-medium">{product?.product?.name}</p>
+              <p className="text-gray-600 text-sm">Quantity: {product.quantity}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </li>
+  ))}
+</ul>
+
+
         </ul>
       </div>
 
