@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import useOrderStore from '../../Store/Zustand/orderStore.js';
 import { PlusCircle, Loader } from 'lucide-react';
@@ -32,13 +33,13 @@ const EditOrderForm = ({ initialOrder }) => {
         products: initialOrder?.products || [],
         totalAmount: initialOrder?.totalAmount || '',
         shippingDetails: {
-          fullName: initialOrder.shippingDetails?.fullName || '',
-          phone: initialOrder.shippingDetails?.phone || '',
-          address: initialOrder.shippingDetails?.address || '',
-          city: initialOrder.shippingDetails?.city || '',
-          postalCode: initialOrder.shippingDetails?.postalCode || '',
-          country: initialOrder.shippingDetails?.country || '',
-          deliveryStatus: initialOrder.shippingDetails?.deliveryStatus || '',
+          fullName: initialOrder?.shippingDetails?.fullName || '',
+          phone: initialOrder?.shippingDetails?.phone || '',
+          address: initialOrder?.shippingDetails?.address || '',
+          city: initialOrder?.shippingDetails?.city || '',
+          postalCode: initialOrder?.shippingDetails?.postalCode || '',
+          country: initialOrder?.shippingDetails?.country || '',
+          deliveryStatus: initialOrder?.shippingDetails?.deliveryStatus || '',
         },
       });
       setSelectedDeliveryStatus(initialOrder?.shippingDetails?.deliveryStatus || []);
@@ -48,15 +49,17 @@ const EditOrderForm = ({ initialOrder }) => {
   
 
   const handleStatusChange = (status) => {
-    const {order, setOrder } = useOrderStore.getState(); // Directly access state
+    const { order, setOrder } = useOrderStore.getState(); // Get the current state
 
-        setOrder({
-            ...order,
-            shippingDetails: {
-                deliveryStatus: status, // Update delivery status
-            },
-        });
+    setOrder({
+        ...order,
+        shippingDetails: {
+            ...order.shippingDetails, // Keep other shipping details
+            deliveryStatus: status, // Update only the delivery status
+        },
+    });
 };
+
 
 const handlePaymentStatusChange = (status) => {
   const {order, setOrder } = useOrderStore.getState(); // Directly access state
@@ -177,17 +180,17 @@ const handlePaymentStatusChange = (status) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Postal Code</label>
-              <input type="text" value={order?.shippingDetails?.postalCode} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, postalCode: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800" required />
+              <input type="text" value={order?.shippingDetails?.postalCode} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, postalCode: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800"  />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">City</label>
-              <input type="text" value={order?.shippingDetails?.city} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, city: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800" required />
+              <input type="text" value={order?.shippingDetails?.city} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, city: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800"  />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Country</label>
-              <input type="text" value={order?.shippingDetails?.country} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, country: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800" required />
+              <input type="text" value={order?.shippingDetails?.country} onChange={(e) => setOrder({ ...order, shippingDetails: { ...order.shippingDetails, country: e.target.value } })} className="block w-full bg-gray-100 border rounded-md py-2 px-3 text-gray-800"  />
             </div>
           </div>
         </div>

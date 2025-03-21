@@ -5,9 +5,10 @@ import QRCode from "../../Components/PaymentMethod/QRCode";
 import COD from "../../Components/PaymentMethod/COD";
 import PaymentMethod from "../../Components/PaymentMethod/PaymentMethod";
 import GiftCouponCard from "../../Components/Coupon/GiftCouponCard";
+import Paypal from "../../Components/PaymentMethod/Paypal";
 
 const CheckoutPage = () => {
-  const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [paymentMethod, setPaymentMethod] = useState("paypal");
 
   return (
     <div className="max-w-4xl mx-auto my-12 bg-white p-10 shadow-lg rounded-xl">
@@ -18,10 +19,12 @@ const CheckoutPage = () => {
 
       <div className="grid md:grid-cols-2 gap-10">
         {/* Left: Order Summary */}
-        <div className=" items-center border-gray-300 pr-8">
+        <div className=" items-center border-gray-300 =">
           <h3 className="text-lg font-medium text-gray-800 mb-4 tracking-wider">Order Summary</h3>
-          <OrderSummary />
-          <GiftCouponCard />
+          <div className="mb-2">
+            <OrderSummary />
+            </div>
+          <GiftCouponCard  />
         </div>
         
         
@@ -33,6 +36,7 @@ const CheckoutPage = () => {
 
           <div className="mt-6  border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
             {paymentMethod === "stripe" && <Stripe />}
+            {paymentMethod === "paypal" && <Paypal />}
             {paymentMethod === "qrcode" && <QRCode />}
             {paymentMethod === "cod" && <COD />}
           </div>

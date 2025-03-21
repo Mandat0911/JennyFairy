@@ -109,6 +109,7 @@ const OrderList = () => {
                                     className={`px-2 py-1 text-xs font-semibold rounded-full 
                                         ${order.paymentId.paymentMethod === "QR code" ? "bg-cyan-500 text-white" : 
                                         order.paymentId.paymentMethod === "Stripe" ? "bg-blue-500 text-white" : 
+                                        order.paymentId.paymentMethod === "Paypal" ? "bg-blue-500 text-white" : 
                                         order.paymentId.paymentMethod === "Cash on Delivery" ? "bg-red-500 text-white" : 
                                         "bg-gray-500 text-white"}`}
                                 >

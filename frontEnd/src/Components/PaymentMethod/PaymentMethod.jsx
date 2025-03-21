@@ -2,7 +2,8 @@ const PaymentMethod = ({ onChange, selected }) => {
     return (
         <div className="flex justify-between gap-4">
             {[
-                { id: "stripe", label: "💳 Card Payment" },
+                // { id: "stripe", label: "💳 Card Payment" },
+                { id: "paypal", label: "💳 Paypal" },
                 { id: "qrcode", label: "📷 QR Code" },
                 { id: "cod", label: "🏠 Cash on Delivery" },
             ].map((method) => (

@@ -28,9 +28,7 @@ export const useUpdateOrder = () => {
     const { resetProduct, setLoading } = useOrderStore();
 
     return useMutation({
-        mutationFn: async ({ orderId, newOrder }) => {
-            console.log("Editing order:", orderId, newOrder);
-            
+        mutationFn: async ({ orderId, newOrder }) => {            
             const response = await fetch(ORDER_API_ENDPOINTS.EDIT_ORDER(orderId), {
                 method: 'PUT',
                 headers: { 

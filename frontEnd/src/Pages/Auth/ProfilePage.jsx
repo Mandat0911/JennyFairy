@@ -22,12 +22,12 @@ const ProfilePage = () => {
   const handleCancelOrder = (orderId) => {
     setSelectedOrderId(orderId),
     setIsModalOpenCancel(true);
-  }
+  };
 
   const confirmCancelOrder = () => {
     cancelOrder(selectedOrderId);
     setIsModalOpenCancel(false)
-  }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {

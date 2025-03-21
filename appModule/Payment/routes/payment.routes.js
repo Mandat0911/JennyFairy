@@ -1,6 +1,6 @@
 import express from "express"
 import {protectRoute } from "../../utils/middleware/protectRoute.js";
-import { createCheckoutSession, checkoutSuccess, createCheckoutQrcode, createCheckoutCOD } from "../controllers/payment.controller.js";
+import { createCheckoutSession, checkoutSuccess, createCheckoutQrcode, createCheckoutCOD, createCheckoutPaypalCode } from "../controllers/payment.controller.js";
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.post("/checkout-success", protectRoute(["USER", "MANAGER", "ADMIN"]), che
 router.post("/create-checkout-cod", protectRoute(["USER", "MANAGER", "ADMIN"]), createCheckoutCOD)
 
 router.post("/create-checkout-qrcode", protectRoute(["USER", "MANAGER", "ADMIN"]), createCheckoutQrcode)
+router.post("/create-checkout-paypal", protectRoute(["USER", "MANAGER", "ADMIN"]), createCheckoutPaypalCode)
 
 
 export default router;

@@ -53,6 +53,7 @@ export const PAYMENT_API_ENDPOINTS = {
   SUCCESS_CHECKOUT_SESSION: `${API_BE_URL}/payment/checkout-success`,
   CREATE_CHECKOUT_SUCCESS_COD: `${API_BE_URL}/payment/create-checkout-cod`,
   CREATE_CHECKOUT_SUCCESS_QRCODE: `${API_BE_URL}/payment/create-checkout-qrcode`,
+  CREATE_CHECKOUT_SUCCESS_PAYPAL: `${API_BE_URL}/payment/create-checkout-paypal`,
 }
 
 // Analytic API Endpoints

@@ -236,6 +236,81 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
     }
 };
 
+export const createCheckoutPaypalCodeService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails) => {
+    try {
+        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {
+            throw { status: 400, message: "Products, totalAmount, and shipping details are required."  };
+
+        }
+
+        const { fullName, phone, address } = shippingDetails;
+        if (!fullName || !phone || !address) {
+            throw { status: 400, message: "Full Name, Phone, and Address are required."  };
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            throw { status: 404, message: "User not found." }
+        }
+
+        const formattedProducts = products.map((product, index) => ({
+            product: products[index].productId, 
+            quantity: products[index].quantity,
+            size: products[index].size,
+            price: product.price, 
+        }));
+        
+        const randomTransactionId = generateVerificationToken(12);
+        const randomStripeSessionId = generateVerificationToken(12);
+
+        const payment = new Payment({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            paymentMethod: "Paypal",
+            paymentStatus: "pending",
+            isPaid: false,
+            couponCode: couponCode || "",
+            couponDiscountPercentage: couponDiscountPercentage || 0,
+            paymentDetails: {
+                transactionId: randomTransactionId, 
+                stripeSessionId: randomStripeSessionId,
+                paymentError: null,
+            },
+        });
+
+        await payment.save();
+
+        // Create an order record with shipping details
+        const order = new Order({
+            user: userId,
+            products: formattedProducts,
+            totalAmount,
+            Code: Code,
+            paymentId: payment._id,
+            shippingDetails: {
+                fullName,
+                phone,
+                address,
+                city: shippingDetails.city || "",
+                postalCode: shippingDetails.postalCode || "",
+                country: shippingDetails.country || "",
+                deliveryStatus: "pending", 
+            },
+        });
+
+        await order.save();
+
+        return {
+            paymentId: payment._id,
+            orderId: order._id,
+        }
+    } catch (error) {
+        console.error("Error in createCheckoutPaypalCodeService:", error.message);
+        throw error; 
+    }
+};
+
 export const createCheckoutCODService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, shippingDetails) => {
     try {
         if (!userId || !products || products.length === 0 || !totalAmount) {

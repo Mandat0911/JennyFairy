@@ -33,7 +33,7 @@ const paymentSchema = new mongoose.Schema(
 		},
 		paymentMethod: {
 			type: String,
-			enum: ["Stripe", "QR code", "Cash on Delivery"], // Expand as needed
+			enum: ["Stripe", "QR code", "Paypal" ,"Cash on Delivery"], // Expand as needed
 			required: true,
 		},
 		paymentStatus: {

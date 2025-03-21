@@ -127,3 +127,32 @@ export const useCreateSessionCheckoutQrCode = () => {
         }
     });
 };
+
+
+export const useCreateSessionCheckoutPaypal = () => {
+    const { mutate: clearAllItems } = useDeleteAllCartItem();
+    return useMutation({
+        mutationFn: async (checkoutData) => {
+            const response = await fetch(PAYMENT_API_ENDPOINTS.CREATE_CHECKOUT_SUCCESS_PAYPAL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(checkoutData),
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data?.error||'Failed to create checkout Paypal');
+            }
+        
+            return data;
+        },
+        onSuccess: () => {
+            toast.success("Order placed successfully!");  
+            clearAllItems();
+        },
+        onError: (error) => {
+            toast.error(error.message || "Something went wrong!");
+        }
+    });
+};

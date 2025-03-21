@@ -1,5 +1,5 @@
 
-import { checkoutSuccessService, createCheckoutCODService, createCheckoutQrcodeService, createCheckoutSessionService } from "../service/payment.service.js";
+import { checkoutSuccessService, createCheckoutCODService, createCheckoutPaypalCodeService, createCheckoutQrcodeService, createCheckoutSessionService } from "../service/payment.service.js";
 
 
 export const createCheckoutSession = async (req, res) => {
@@ -50,6 +50,30 @@ export const createCheckoutQrcode = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in createCheckoutQrcode controller:", error.message);
+        res.status(500).json({ error: error.message || "Internal Server Error!" });
+    }
+}
+
+export const createCheckoutPaypalCode = async (req, res) => {
+    try {
+        const {        
+            products, 
+            totalAmount, 
+            couponCode, 
+            couponDiscountPercentage, 
+            Code,
+            shippingDetails} = req.body;
+
+        const userId = req.user.id;
+
+        const response = await createCheckoutPaypalCodeService(userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails);
+        
+        res.status(200).json({
+            message: "Payment successful, order created, and coupon deactivated if used.",
+            response
+        });
+    } catch (error) {
+        console.error("Error in createCheckoutPaypalCode controller:", error.message);
         res.status(500).json({ error: error.message || "Internal Server Error!" });
     }
 }
