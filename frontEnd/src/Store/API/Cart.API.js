@@ -81,9 +81,8 @@ export const useAddItemToCart = () => {
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to add item to cart');
             }
-            console.log("data:", data)
 
-            // ✅ Ensure localStorage updates correctly with new cart items
+            // Ensure localStorage updates correctly with new cart items
             localStorage.setItem("cart-storage", JSON.stringify(data.cartItems));
 
             return { cartItems: data.cartItems, productId: newItem.productId, size: newItem.size, quantity: newItem.quantity };

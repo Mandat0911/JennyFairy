@@ -6,7 +6,7 @@ import { useCreateSessionCheckoutStripe } from "../../Store/API/Payment.API";
 import useCouponStore from "../../Store/Zustand/coupon.js";
 import { useAppliedCoupon } from "../../Store/API/Coupon.API.js";
 
-const stripePromise = loadStripe ("pk_test_51Qt5G8RwMpBGl8YKTW579QWkTxTSkX1P89HWG4EokOnsdp4Qine0kT6ynH2PQ3MsiL6e8cmsSgTWfdjeHS8vAyGf00RPGVFO05")
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 const Stripe = () => {
   const [loading, setLoading] = useState(false);
@@ -39,7 +39,9 @@ const Stripe = () => {
     setLoading(true);
 
     try {
-
+      if (coupon?.code) {
+        await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
+      }
       createCheckoutSession(
         { products: cart, couponCode: coupon?.code || null, shippingDetails },
         {
@@ -63,10 +65,6 @@ const Stripe = () => {
             
             if (result.error) {
               toast.error(`Error: ${result.error.message}`);
-            }
-            
-            if (coupon?.code) {
-              await appliedCoupon({ code: coupon.code }); // Ensure coupon is applied first
             }
             
           },

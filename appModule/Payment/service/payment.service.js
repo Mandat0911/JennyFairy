@@ -8,6 +8,7 @@ import Order from "../../Order/model/order.model.js";
 import User from "../../User/models/user.models.js";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
+import { appliedCouponService } from "../../Coupons/service/coupon.service.js";
 
 dotenv.config();
 export const createCheckoutSessionService = async (userId, products, couponCode, shippingDetails) => {
@@ -115,17 +116,6 @@ export const checkoutSuccessService = async (userId, sessionId) => {
         if(session.payment_status !== "paid") {
             throw { status: 400, message: "Payment not completed!"  };
         }
-        // Check if coupon is already used by the user
-        if (sessionCouponCode) {
-            const existingPayment = await Payment.findOne({
-                user: userId,
-                couponCode: sessionCouponCode,
-            });
-
-            if (existingPayment) {
-                throw { status: 400, message: "You already used this coupon" };
-            }
-        };
 
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 

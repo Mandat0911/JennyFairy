@@ -27,7 +27,8 @@ export const createCoupon = async (req, res) => {
 export const validateCoupon = async (req, res) => {
 	try {
 		const { code } = req.body;
-        const response = await validateCouponService(code);
+        const userId = req.user.id;
+        const response = await validateCouponService(userId, code);
 		res.json({
             message: "Coupon is valid",
             code: response.code,

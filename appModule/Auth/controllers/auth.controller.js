@@ -18,8 +18,6 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const response = await loginService(email, password, res);
-
-        console.log(response);
         res.status(201).json(response);
     } catch (error) {
         console.error("Error in login controller:", error.message);

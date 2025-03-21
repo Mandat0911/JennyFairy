@@ -27,10 +27,6 @@ export const appliedCouponService = async (userId, code) => {
             throw { status: 404, message: "No coupons found" };
 		}
 
-        if (coupon.usedBy.includes(userId)) {
-            throw { status: 400, message: "Coupon has already been used"};
-        };
-
         coupon.usedBy.push(userId);
         await coupon.save();
 
@@ -53,7 +49,7 @@ export const deleteCouponService = async (couponId) => {
     }
 };
 
-export const validateCouponService = async (code) => {
+export const validateCouponService = async (userId, code) => {
     try {
 		const coupon = await Coupon.findOne({ code: code, isActive: true });
 
@@ -64,6 +60,9 @@ export const validateCouponService = async (code) => {
         if (coupon.expirationDate.getTime() < new Date().getTime()) {
             throw { status: 400, message: "Coupon has expired" };
         }
+        if (coupon.usedBy.includes(userId)) {
+            throw { status: 400, message: "Coupon has already been used"};
+        };
 
         return couponDTO(coupon);
     } catch (error) {
