@@ -17,8 +17,8 @@ export const ORDER_API_ENDPOINTS = {
   GET_ORDER: `${API_BE_URL}/order`,
   EDIT_ORDER: (orderId) => `${API_BE_URL}/order/edit-order/${orderId}`,
   DELETE_ORDER: (orderId) => `${API_BE_URL}/order/delete/${orderId}`,
+  CANCEL_ORDER: (orderId) => `${API_BE_URL}/order/delete/${orderId}`,
 }
-
 
 // Collection API Endpoints
 export const COLLECTION_API_ENDPOINTS = {

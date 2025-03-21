@@ -114,3 +114,24 @@ export const deleteOrderService = async (orderId) => {
         throw error; 
     }
 };
+
+export const deleteOrderUserService = async (orderId) => {
+    try {
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            {"shippingDetails.deliveryStatus": "canceled"},
+            { new: true, runValidators: true }
+        );
+
+		if (!order) {
+            throw { status: 404, message: "Order not found" };
+		}
+
+        console.log(order)
+        return order
+        
+    } catch (error) {
+        console.error("Error in deleteOrderService:", error.message);
+        throw error; 
+    }
+};

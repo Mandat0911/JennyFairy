@@ -77,3 +77,21 @@ export const useDeleteOrder = () => {
         },
     })
 }
+
+export const useCancelOrder = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: async (orderId) => {
+            const response = await fetch(ORDER_API_ENDPOINTS.CANCEL_ORDER(orderId), {
+                method: "PUT",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to canceled order');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['orders']); // Refresh the list after deletion
+            toast.success('Order canceled successfully!');
+        },
+    })
+}

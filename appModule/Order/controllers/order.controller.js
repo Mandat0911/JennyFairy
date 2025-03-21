@@ -1,4 +1,4 @@
-import { deleteOrderService, editOrderService, getAllOrderService } from "../service/order.service.js";
+import { deleteOrderService, deleteOrderUserService, editOrderService, getAllOrderService } from "../service/order.service.js";
 export const getAllOrder = async(req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
@@ -27,6 +27,17 @@ export const deleteOrder = async (req, res) => {
     try {
         const { id: orderId } = req.params;
         await deleteOrderService(orderId);
+        res.status(200).json({ message: "Order deleted successfully!" });
+    } catch (error) {
+        console.error("Error in deleteOrder controller:", error.message);
+        res.status(500).json({ error: "Internal Server Error!" });
+    }
+};
+
+export const deleteOrderUser = async (req, res) => {
+    try {
+        const { id: orderId } = req.params;
+        await deleteOrderUserService(orderId);
         res.status(200).json({ message: "Order deleted successfully!" });
     } catch (error) {
         console.error("Error in deleteOrder controller:", error.message);
