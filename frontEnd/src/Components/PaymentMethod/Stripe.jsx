@@ -6,7 +6,7 @@ import { useCreateSessionCheckoutStripe } from "../../Store/API/Payment.API";
 import useCouponStore from "../../Store/Zustand/coupon.js";
 import { useAppliedCoupon } from "../../Store/API/Coupon.API.js";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "abc")
 
 const Stripe = () => {
   const [loading, setLoading] = useState(false);

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectMongoDB from "./lib/db/connectToMongoDB.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path"
 
 import authRoute from "../appModule/Auth/routes/auth.routes.js"
 import productRoute from "../appModule/Product/routes/product.routes.js"
@@ -20,6 +21,8 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
 
+const __dirname = path.resolve();
+
 // API auth
 app.use("/api/auth/", authRoute);
 app.use("/api/product/", productRoute);
@@ -27,8 +30,17 @@ app.use("/api/order/", orderRoute);
 app.use("/api/collection/", collectionRoute);
 app.use("/api/cart/", cartRoute);
 app.use("/api/coupon/", cartCoupons);
-app.use("/api/payment/", paymentRoute)
-app.use("/api/analytic/", analyticRoute)
+app.use("/api/payment/", paymentRoute);
+app.use("/api/analytic/", analyticRoute);
+
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, "/frontEnd/dist")))
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
+    }
+  )
+}
+
 
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
