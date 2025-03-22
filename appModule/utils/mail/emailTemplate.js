@@ -5,114 +5,53 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Verification</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #F4F4F4;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    .logo {
-      margin-bottom: 20px;
-    }
-    .logo img {
-      max-width: 150px;
-    }
-    .divider {
-      height: 1px;
-      background-color: #ddd;
-      margin: 20px 0;
-    }
-    .title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #000;
-      margin-bottom: 10px;
-    }
-    .message {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.8;
-      margin-bottom: 20px;
-    }
-    .verification-box {
-      background-color: #000;
-      color: #fff;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 20px;
-      border-radius: 5px;
-    }
-    .button {
-      display: inline-block;
-      background-color: #000;
-      color: #ffffff;
-      text-decoration: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 5px;
-      margin-top: 20px;
-      transition: 0.3s ease-in-out;
-    }
-    .button:hover {
-      background-color: #222;
-    }
-    .footer {
-      font-size: 12px;
-      color: #888;
-      margin-top: 30px;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-  </style>
 </head>
-<body>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;">
+  
+  <!-- Header -->
+  <div style="text-align: center; padding: 30px 0;">
+    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" 
+         alt="JennyFairy Logo" style="max-width: 180px;">
+  </div>
 
-  <div class="container">
-    <div class="logo">
-      <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 150px;">
+  <!-- Main Container -->
+  <div style="background: #ffffff; padding: 40px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+    
+    <h1 style="font-size: 22px; font-weight: bold; margin-bottom: 15px; color: #333;">Verify Your Email Address</h1>
+    
+    <p style="font-size: 16px; margin-bottom: 20px; color: #444;">
+      Hello <strong>{{userName}}</strong>,
+    </p>
+
+    <p style="font-size: 15px; margin-bottom: 20px; color: #444;">
+      Thank you for signing up with <strong>JennyFairy</strong>. To complete your registration, please verify your email address by clicking the button below:
+    </p>
+
+    <div style="background-color: #000; color: #fff; padding: 15px; font-size: 18px; font-weight: bold; display: block; letter-spacing: 1px; margin-top: 20px; border-radius: 5px;">
+          {{verificationToken}}
     </div>
 
-    <div class="divider"></div>
+    <!-- Verification Button -->
+    <a href="{{verificationLink}}" 
+       style="display: inline-block; background: black; color: white; text-decoration: none; font-size: 14px; font-weight: bold; padding: 12px 25px; border-radius: 3px; margin-top: 20px;">
+      Verify My Email
+    </a>
 
-    <p class="title">Verify Your Email</p>
+    <p style="font-size: 14px; margin-top: 20px; color: #666;">
+      If you did not request this, please ignore this email.
+    </p>
 
-    <p class="message">Hello, <strong>{{userName}}</strong>,<br> 
-      Thank you for joining us! Please verify your email address using the verification token below.</p>
-    
-    <div class="verification-box">{{verificationToken}}</div>
-    
-    <p class="message">Or simply click the button below:</p>
-    
-    <a href="{{verificationLink}}" class="button">Verify Your Email</a>
-    
-    <p class="message" style="margin-top: 30px;">If you didn't create this account, you can ignore this email.</p>
-    
-    <div class="divider"></div>
+  </div>
 
-    <p class="footer">&copy; 2024 JENNYFAIRY. All rights reserved.</p>
+  <!-- Footer -->
+  <div style="text-align: center; font-size: 12px; color: #777; margin-top: 20px;">
+    <p>&copy; 2024 JennyFairy. All rights reserved.</p>
+    <p>This is an automated message, please do not reply.</p>
   </div>
 
 </body>
 </html>
 `;
-
-
-
 
 export const WELCOME_EMAIL_TEMPLATE = `
 <!DOCTYPE html>
@@ -170,7 +109,6 @@ export const WELCOME_EMAIL_TEMPLATE = `
 </html>
 `;
 
-
 export const RESET_PASSWORD_EMAIL_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -216,8 +154,6 @@ export const RESET_PASSWORD_EMAIL_TEMPLATE = `
 </body>
 </html>
 `;
-
-
 
 export const PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE = `
 <!DOCTYPE html>
@@ -285,18 +221,31 @@ export const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
     <p style="font-size: 16px; margin-bottom: 20px; color: #444;">Hello <strong>{{userName}}</strong>,</p>
     
     <p style="font-size: 15px; margin-bottom: 20px; color: #444;">
-      Your order <strong>#{{orderId}}</strong> has been successfully placed. Below are your order details:
+      Your order <strong>#{{orderId}}</strong> has been successfully placed.
     </p>
 
     <!-- Order Details -->
     <div style="text-align: left; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #fafafa;">
       <p><strong>Order ID:</strong> {{orderId}}</p>
       <p><strong>Order Date:</strong> {{orderDate}}</p>
-      <p><strong>Total Amount:</strong> {{totalAmount}}</p>
+      <p><strong>Total Amount:</strong> <span style="color: #d32f2f;">{{totalAmount}} VND</span></p>
       
-      <h3 style="font-size: 18px; font-weight: 600; margin-top: 15px;">Products:</h3>
-      {{orderItems}}
-      
+      <h3 style="font-size: 18px; font-weight: 600; margin-top: 15px;">Products Ordered:</h3>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+          <tr>
+            <th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: left;">Product</th>
+            <th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: center;">Size</th>
+            <th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: center;">Qty</th>
+            <th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: right;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{orderItems}}
+        </tbody>
+      </table>
+
       <h3 style="font-size: 18px; font-weight: 600; margin-top: 15px;">Shipping Details:</h3>
       <p><strong>Name:</strong> {{fullName}}</p>
       <p><strong>Phone:</strong> {{phone}}</p>
@@ -325,4 +274,5 @@ export const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
 
 </body>
 </html>
+
 `;

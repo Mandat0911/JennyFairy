@@ -2,6 +2,7 @@ import { PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, V
 import {transporter} from "./email.Config.js";
 
 import dotenv from "dotenv";
+import Order from "../../Order/model/order.model.js";
 
 
 dotenv.config();
@@ -84,23 +85,39 @@ export const sendResetPasswordSuccessEmail = async (userEmail, userName) => {
 };
 
 export const sendOrderDetailSuccessEmail = async (userEmail, username, order) => {
-  const formattedItems = order.products
-    .map((p) => `<p>${p.quantity}x ${p.product.name} - $${p.price}</p>`)
-    .join("");
+  const populatedOrder = await Order.findById(order._id).populate("products.product");
+  const formattedTotalAmount = populatedOrder.totalAmount.toLocaleString('en-US');
 
+  const orderItems = populatedOrder.products
+  .map((p) => `
+    <tr>
+      <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+        <img src="${p.product?.img[0]|| null}" 
+             alt="${p.product?.name || 'Product Image'}" 
+             style="width: 50px; height: 50px; border-radius: 5px; margin-right: 10px;">
+        ${p.product?.name || "Product Not Found"}
+      </td>
+      <td style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">${p.size || "-"}</td>
+      <td style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">${p.quantity}</td>
+      <td style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">${p.price.toLocaleString('en-US')} VND</td>
+    </tr>
+  `)
+  .join("");
+  
   const emailContent = ORDER_CONFIRMATION_EMAIL_TEMPLATE
     .replace("{{userName}}", username)
-    .replace("{{orderId}}", order._id)
-    .replace("{{orderDate}}", new Date(order.createdAt).toLocaleDateString())
-    .replace("{{totalAmount}}", order.totalAmount)
-    .replace("{{orderItems}}", formattedItems)
-    .replace("{{fullName}}", order.shippingDetails.fullName)
-    .replace("{{phone}}", order.shippingDetails.phone)
-    .replace("{{address}}", order.shippingDetails.address)
-    .replace("{{city}}", order.shippingDetails.city || "")
-    .replace("{{postalCode}}", order.shippingDetails.postalCode || "")
-    .replace("{{country}}", order.shippingDetails.country || "")
-    .replace("{{trackingLink}}", `${process.env.CLIENT_URL}/orders/${order._id}`);
+    .replace("{{orderId}}", populatedOrder._id)
+    .replace("{{orderId}}", populatedOrder._id)    
+    .replace("{{orderDate}}", new Date(populatedOrder.createdAt).toLocaleDateString())
+    .replace("{{totalAmount}}", formattedTotalAmount)
+    .replace("{{orderItems}}", orderItems)
+    .replace("{{fullName}}", populatedOrder.shippingDetails.fullName)
+    .replace("{{phone}}", populatedOrder.shippingDetails.phone)
+    .replace("{{address}}", populatedOrder.shippingDetails.address)
+    .replace("{{city}}", populatedOrder.shippingDetails.city || "")
+    .replace("{{postalCode}}", populatedOrder.shippingDetails.postalCode || "")
+    .replace("{{country}}", populatedOrder.shippingDetails.country || "")
+    .replace("{{trackingLink}}", `${process.env.CLIENT_URL}/orders/${populatedOrder._id}`);
 
   try {
     const info = await transporter.sendMail({
@@ -115,6 +132,7 @@ export const sendOrderDetailSuccessEmail = async (userEmail, username, order) =>
     throw new Error("Failed to send order confirmation email.");
   }
 };
+
 
 
   

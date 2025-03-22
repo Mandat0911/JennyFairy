@@ -205,7 +205,6 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
 
         await order.save();
         await sendOrderDetailSuccessEmail(user.email, user.name, order); 
-
         return {
             paymentId: payment._id,
             orderId: order._id,
@@ -273,7 +272,7 @@ export const createCheckoutPaypalCodeService = async (userId, products, totalAmo
         });
 
         await order.save();
-
+        await sendOrderDetailSuccessEmail(user.email, user.name, order); 
         return {
             paymentId: payment._id,
             orderId: order._id,
@@ -341,7 +340,7 @@ export const createCheckoutCODService = async (userId, products, totalAmount, co
         });
 
         await order.save();
-
+        await sendOrderDetailSuccessEmail(user.email, user.name, order); 
         return {
             paymentId: payment._id,
             orderId: order._id,
