@@ -12,17 +12,13 @@ import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
 import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
 import collectionRoute from "../appModule/Collections/routes/collections.routes.js"
 import orderRoute from "../appModule/Order/routes/order.routes.js"
-
-
-
 const app = express();
 
 dotenv.config();
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(express.json({ limit: "1mb" })); // This middleware parses req.body for JSON data
-app.use(express.urlencoded({ extended: true })); // This parses application/x-www-form-urlencoded data
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
-
 
 // API auth
 app.use("/api/auth/", authRoute);
@@ -33,7 +29,6 @@ app.use("/api/cart/", cartRoute);
 app.use("/api/coupon/", cartCoupons);
 app.use("/api/payment/", paymentRoute)
 app.use("/api/analytic/", analyticRoute)
-
 
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {

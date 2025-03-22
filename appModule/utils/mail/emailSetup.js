@@ -1,4 +1,4 @@
-import { PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplate.js";
+import { PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
 import {transporter} from "./email.Config.js";
 
 import dotenv from "dotenv";
@@ -9,14 +9,9 @@ dotenv.config();
 export const sendVerificationEmail = async (userEmail, userName , verificationToken) => {
     try {
       // Generate verification link
-    //   const verificationLink = `https://yourdomain.com/verify-email?token=${verificationToken}`;
-  
-      // Replace placeholders in the email template
       const htmlContent = VERIFICATION_EMAIL_TEMPLATE.replace("{{verificationToken}}", verificationToken)
                                                      .replace("{{userName}}", userName)
                                                      .replace("{{verificationLink}}", `${process.env.CLIENT_URL}/verify-email`)
-        // .replace("{{verificationLink}}", verificationLink);
-  
       // Send email using the configured transporter
       const info = await transporter.sendMail({
         from: '"Jenny Fairy" <nguyenmandat0744@gmail.com>',
@@ -38,7 +33,6 @@ export const sendVerificationEmail = async (userEmail, userName , verificationTo
 export const sendWelcomeEmail = async (userEmail, userName) => {
   const emailContent = WELCOME_EMAIL_TEMPLATE.replace("{{userName}}", userName)
                                              .replace("{{ShoppingLink}}", `${process.env.CLIENT_URL}`)
-
   try {
     const info = await transporter.sendMail({
       from: '"Jenny Fairy" <nguyenmandat0744@gmail.com>',
@@ -58,7 +52,6 @@ export const sendWelcomeEmail = async (userEmail, userName) => {
 export const sendResetPasswordEmail = async (userEmail, userName, resetToken) => {
   const emailContent = RESET_PASSWORD_EMAIL_TEMPLATE.replace("{{userName}}", userName)
                                                             .replace("{resetLink}", `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
-
   try {
     const info = await transporter.sendMail({
       from: '"Jenny Fairy" <nguyenmandat0744@gmail.com>',
@@ -66,9 +59,7 @@ export const sendResetPasswordEmail = async (userEmail, userName, resetToken) =>
       subject: "Password Reset",
       html: emailContent,
     });
-
     console.log("Password reset email sent successfully!", info);
-
   } catch (error) {
     console.error("Error sending password reset success email:", error.message);
     throw new Error("Failed to send password reset success email.");
@@ -78,7 +69,6 @@ export const sendResetPasswordEmail = async (userEmail, userName, resetToken) =>
 export const sendResetPasswordSuccessEmail = async (userEmail, userName) => {
   const emailContent = PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE.replace("{{userName}}", userName)
                                                             .replace("{{resetLink}}", `${process.env.CLIENT_URL}/login`);
-
   try {
     const info = await transporter.sendMail({
       from: '"Jenny Fairy" <nguyenmandat0744@gmail.com>',
@@ -86,12 +76,45 @@ export const sendResetPasswordSuccessEmail = async (userEmail, userName) => {
       subject: "Password Reset Successful",
       html: emailContent,
     });
-
     console.log("Password reset successful email sent successfully!", info);
   } catch (error) {
     console.error("Error sending password reset success email:", error.message);
     throw new Error("Failed to send password reset success email.");
   }
 };
+
+export const sendOrderDetailSuccessEmail = async (userEmail, username, order) => {
+  const formattedItems = order.products
+    .map((p) => `<p>${p.quantity}x ${p.product.name} - $${p.price}</p>`)
+    .join("");
+
+  const emailContent = ORDER_CONFIRMATION_EMAIL_TEMPLATE
+    .replace("{{userName}}", username)
+    .replace("{{orderId}}", order._id)
+    .replace("{{orderDate}}", new Date(order.createdAt).toLocaleDateString())
+    .replace("{{totalAmount}}", order.totalAmount)
+    .replace("{{orderItems}}", formattedItems)
+    .replace("{{fullName}}", order.shippingDetails.fullName)
+    .replace("{{phone}}", order.shippingDetails.phone)
+    .replace("{{address}}", order.shippingDetails.address)
+    .replace("{{city}}", order.shippingDetails.city || "")
+    .replace("{{postalCode}}", order.shippingDetails.postalCode || "")
+    .replace("{{country}}", order.shippingDetails.country || "")
+    .replace("{{trackingLink}}", `${process.env.CLIENT_URL}/orders/${order._id}`);
+
+  try {
+    const info = await transporter.sendMail({
+      from: '"Jenny Fairy" <nguyenmandat0744@gmail.com>',
+      to: userEmail,
+      subject: "Your Order Confirmation",
+      html: emailContent,
+    });
+    console.log("Order confirmation email sent successfully!", info);
+  } catch (error) {
+    console.error("Error sending order confirmation email:", error.message);
+    throw new Error("Failed to send order confirmation email.");
+  }
+};
+
 
   

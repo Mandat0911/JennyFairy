@@ -8,7 +8,7 @@ import Order from "../../Order/model/order.model.js";
 import User from "../../User/models/user.models.js";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
 import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
-import { appliedCouponService } from "../../Coupons/service/coupon.service.js";
+import { sendOrderDetailSuccessEmail } from "../../utils/mail/emailSetup.js";
 
 dotenv.config();
 export const createCheckoutSessionService = async (userId, products, couponCode, shippingDetails) => {
@@ -17,13 +17,9 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
         let coupon;
         const currentDate = new Date();
         
-        if (!Array.isArray(products) || products.length === 0) {
-            throw { status: 404, message: "Invalid or empty products array" };
-        }
+        if (!Array.isArray(products) || products.length === 0) {throw { status: 404, message: "Invalid or empty products array" }}
 
-        if (!shippingDetails || !shippingDetails.fullName || !shippingDetails.address || !shippingDetails.phone) {
-            throw { status: 400, message: "Shipping details are required"  };
-        }
+        if (!shippingDetails || !shippingDetails.fullName || !shippingDetails.address || !shippingDetails.phone) {throw { status: 400, message: "Shipping details are required"  }}
 
         // Fetch full product details
         const productDetails = await Promise.all(
@@ -66,9 +62,7 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
             if (coupon) {
                 const discount = Math.round(totalAmount * (coupon.discountPercentage / 100));
                 totalAmount -= discount;
-            } else {
-                throw { status: 400, message: "Invalid or expired coupon code"  };
-            }
+            } else {throw { status: 400, message: "Invalid or expired coupon code"  }}
         }
 
         const stripeCouponId = coupon ? await createStripeCoupon(coupon.discountPercentage) : null;
@@ -97,7 +91,6 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
         });
 
         return checkoutDTO(session, totalAmount)
-
     } catch (error) {
         console.error("Error in createCheckoutSessionService:", error.message);
         throw error; 
@@ -106,16 +99,12 @@ export const createCheckoutSessionService = async (userId, products, couponCode,
 
 export const checkoutSuccessService = async (userId, sessionId) => {
     try {
-
-        // Retrieve Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         const products = await JSON.parse(session.metadata.products);
         const shippingDetails = JSON.parse(session.metadata.shippingDetails);
         const sessionCouponCode = session.metadata.couponCode;
 
-        if(session.payment_status !== "paid") {
-            throw { status: 400, message: "Payment not completed!"  };
-        }
+        if(session.payment_status !== "paid") { throw { status: 400, message: "Payment not completed!"  }}
 
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 
@@ -142,7 +131,6 @@ export const checkoutSuccessService = async (userId, sessionId) => {
 
         await payment.save();
 
-        // Create order after successful payment
         const newOrder = new Order({
             user: userId,
             paymentId: payment._id,
@@ -153,7 +141,6 @@ export const checkoutSuccessService = async (userId, sessionId) => {
         });
 
         await newOrder.save(); 
-
         return newOrder._id;
     } catch (error) {
         console.error("Error in checkoutSuccessService:", error.message);
@@ -163,20 +150,13 @@ export const checkoutSuccessService = async (userId, sessionId) => {
 
 export const createCheckoutQrcodeService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails) => {
     try {
-        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {
-            throw { status: 400, message: "Products, totalAmount, and shipping details are required."  };
-
-        }
+        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {throw { status: 400, message: "Products, totalAmount, and shipping details are required."  }}
 
         const { fullName, phone, address } = shippingDetails;
-        if (!fullName || !phone || !address) {
-            throw { status: 400, message: "Full Name, Phone, and Address are required."  };
-        }
+        if (!fullName || !phone || !address) {throw { status: 400, message: "Full Name, Phone, and Address are required."  }}
 
         const user = await User.findById(userId);
-        if (!user) {
-            throw { status: 404, message: "User not found." }
-        }
+        if (!user) {throw { status: 404, message: "User not found." }}
 
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 
@@ -206,7 +186,6 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
 
         await payment.save();
 
-        // Create an order record with shipping details
         const order = new Order({
             user: userId,
             products: formattedProducts,
@@ -225,6 +204,7 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
         });
 
         await order.save();
+        await sendOrderDetailSuccessEmail(user.email, user.name, order); 
 
         return {
             paymentId: payment._id,
@@ -238,20 +218,13 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
 
 export const createCheckoutPaypalCodeService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails) => {
     try {
-        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {
-            throw { status: 400, message: "Products, totalAmount, and shipping details are required."  };
-
-        }
+        if (!products || products.length === 0 || !totalAmount || !shippingDetails) {throw { status: 400, message: "Products, totalAmount, and shipping details are required."  }}
 
         const { fullName, phone, address } = shippingDetails;
-        if (!fullName || !phone || !address) {
-            throw { status: 400, message: "Full Name, Phone, and Address are required."  };
-        }
+        if (!fullName || !phone || !address) {throw { status: 400, message: "Full Name, Phone, and Address are required."  }}
 
         const user = await User.findById(userId);
-        if (!user) {
-            throw { status: 404, message: "User not found." }
-        }
+        if (!user) {throw { status: 404, message: "User not found." }}
 
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 
@@ -313,19 +286,13 @@ export const createCheckoutPaypalCodeService = async (userId, products, totalAmo
 
 export const createCheckoutCODService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, shippingDetails) => {
     try {
-        if (!userId || !products || products.length === 0 || !totalAmount) {
-            throw { status: 400, message: "All fields are required."  };        
-        }
+        if (!userId || !products || products.length === 0 || !totalAmount) {throw { status: 400, message: "All fields are required."  }}
 
         const { fullName, phone, address } = shippingDetails;
-        if (!fullName || !phone || !address) {
-            throw { status: 400, message: "Full Name, Phone, and Address are required."  };
-        }
+        if (!fullName || !phone || !address) {throw { status: 400, message: "Full Name, Phone, and Address are required."  }}
 
         const user = await User.findById(userId);
-        if (!user) {
-            throw { status: 404, message: "User not found." }
-        }
+        if (!user) {throw { status: 404, message: "User not found." }}
 
         const formattedProducts = products.map((product, index) => ({
             product: products[index].productId, 

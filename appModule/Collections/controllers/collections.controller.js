@@ -4,8 +4,7 @@ import { createCollectionService, deleteCollectionService, editCollectionService
 
 export const getAllCollection = async(req, res) => {
     try {
-        const response = await getAllCollectionService();
-        res.json(response);
+        res.json(await getAllCollectionService());
     } catch (error) {
         console.error("Error in getAllCollection controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -15,8 +14,7 @@ export const getAllCollection = async(req, res) => {
 export const getCollectionDetail = async(req, res) => {
     try {
         const {id: collectionId} = req.params;
-        const response = await getCollectionDetailService(collectionId);
-        res.json(response);
+        res.json(await getCollectionDetailService(collectionId));
     } catch (error) {
         console.error("Error in getCollectionDetail controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -26,8 +24,7 @@ export const getCollectionDetail = async(req, res) => {
 export const createCollection = async (req, res) => {
     try {
         const { name, description, img} = req.body;
-        const response = await createCollectionService(name, description, img);
-        res.json(response);
+        res.json(await createCollectionService(name, description, img));
     } catch (error) {
         console.error("Error in createCollection controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -38,10 +35,7 @@ export const editCollection = async(req, res) => {
     try {
         const {id: collectionId} = req.params;
         const { name, description, img} = req.body;
-
-        const response = await editCollectionService(collectionId, name, description, img);
-        res.json(response);
-
+        res.json(await editCollectionService(collectionId, name, description, img));
     } catch (error) {
         console.error("Error in editCollection controller: ", error.message);
         res.status(500).json({ error: "Internal Server Error!" });

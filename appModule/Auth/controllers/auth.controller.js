@@ -5,44 +5,39 @@ dotenv.config();
 export const signup = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        const response = await signupService(name, email, password, res);
-
-        res.status(201).json(response); // Sending a single structured object
+        res.status(201).json(await signupService(name, email, password, res));
     } catch (error) {
-        console.error("Error in signup controller:", error.message);
-        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+        console.error("Signup error:", error.message);
+        res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
+
 
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const response = await loginService(email, password, res);
-        res.status(201).json(response);
+        res.status(201).json(await loginService(email, password, res));
     } catch (error) {
         console.error("Error in login controller:", error.message);
-        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+        res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
 export const verifyEmail = async (req, res) => {
     try {
-        const { code } = req.body; // Ensure 'code' is coming from req.body
-        const response = await verifyEmailService(code, res);
-      // Send response
-      res.status(200).json(response);
+        const { code } = req.body;
+        res.status(200).json(await verifyEmailService(code, res));
     } catch (error) {
-        console.error("Error in verifyEmail controller: ", error.message);
-        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+        console.error("Error in verifyEmail controller:", error.message);
+        res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
+;
 
 export const resendVerificationEmail = async (req, res) => {
-
     try {
         const { email } = req.body;
-        const response = await resendVerificationEmailService(email, res);
-        res.status(200).json(response);
+        res.status(200).json(await resendVerificationEmailService(email, res));
     } catch (error) {
         console.error("Error in resendVerificationEmail controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -50,11 +45,9 @@ export const resendVerificationEmail = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
-    
     try {
         const {email} = req.body;
-        const response = await forgotPasswordService(email, res);
-        res.status(200).json(response);
+        res.status(200).json(await forgotPasswordService(email, res));
     } catch (error) {
         console.error("Error in forgotPassword controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -65,9 +58,7 @@ export const resetPassword = async (req, res) => {
     try {
         const {token} = req.params;
         const {password} = req.body;
-
-        const response = await resetPasswordService(token, password, res);
-        res.status(200).json(response);
+        res.status(200).json(await resetPasswordService(token, password, res));
     } catch (error) {
         console.error("Error in resetPassword controller: ", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -76,16 +67,11 @@ export const resetPassword = async (req, res) => {
   
 export const logout = async (req, res) => {
     try {
-        const refreshToken = req.cookies.refreshToken;
-        const response = await logoutService(refreshToken);
-
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        
-        res.status(200).json(response);
+        const response = await logoutService(req.cookies.refreshToken);
+        res.clearCookie("accessToken").clearCookie("refreshToken").status(200).json(response);
     } catch (error) {
-        console.error("Error in logout controller: ", error.message);
-        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+        console.error("Error in logout controller:", error.message);
+        res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
@@ -93,26 +79,19 @@ export const refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
         const response = await refreshTokenService(refreshToken);
-        // Send the new access token as a cookie
         res.cookie("accessToken", response.accessToken, {
-            maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-            httpOnly: true, // Prevent access to cookies via JavaScript
-            sameSite: "strict", // Prevent CSRF attacks
-            secure: process.env.NODE_ENV === "production", // Secure only in production
+            maxAge: 86400000, httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production"
         });
-
         res.status(200).json(response);
     } catch (error) {
-        console.error("Error in refreshToken controller: ", error.message);
-        return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
+        console.error("Error in refreshToken controller:", error.message);
+        res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
 };
 
-
 export const getUserProfile = async (req, res) => {
     try {
-        const response = await getUserProfileService(req.user._id);
-        res.status(200).json(response);
+        res.status(200).json(await getUserProfileService(req.user._id));
     } catch (error) {
         console.error("Error in getUserProfile controller:", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -121,8 +100,7 @@ export const getUserProfile = async (req, res) => {
 
 export const deleteAccount = async (req, res) => {
     try {
-        const response = await deleteAccountService(req.user._id);
-        res.status(200).json(response);
+        res.status(200).json(await deleteAccountService(req.user._id));
     } catch (error) {
         console.error("Error in deleteAccount controller:", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
@@ -131,8 +109,7 @@ export const deleteAccount = async (req, res) => {
 
 export const getMe = async (req, res) => {
     try {
-        const response = await getMeService(req.user._id);
-        res.status(200).json(response);
+        res.status(200).json(await getMeService(req.user._id));
     } catch (error) {
         console.error("Error in getMe controller:", error.message);
         return res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });

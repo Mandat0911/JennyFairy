@@ -27,8 +27,6 @@ const CheckoutPage = () => {
           <GiftCouponCard  />
         </div>
         
-        
-
         {/* Right: Payment Section */}
         <div>
           <h3 className="text-lg font-medium text-gray-800 mb-4 tracking-wider">Payment Method</h3>

@@ -3,15 +3,12 @@ import { getCachedFeaturedProducts, getCachedRecommendedProducts, updateCachedFe
 import { productDTO } from "../dto/product.dto.js";
 import Product from "../model/product.models.js";
 
-export const getAllProductervice = async (page, limit) => {
+export const getAllProductService = async (page, limit) => {
     try {
         const pageNumber = parseInt(page);
         const limitNumber = parseInt(limit);
 
-        const products = await Product.find({})
-        .sort({createdAt: -1})
-        .skip((pageNumber - 1) * limitNumber)
-        .limit(limitNumber);
+        const products = await Product.find({}).sort({createdAt: -1}).skip((pageNumber - 1) * limitNumber).limit(limitNumber);
 
         const totalProducts = await Product.countDocuments();
         
@@ -33,24 +30,18 @@ export const createProductService = async (newProduct) => {
 
         const { name, description, price, img, category, sizes, quantity } = newProduct;
 
-        if (!img || !Array.isArray(img) || img.length === 0) {
-            throw { status: 404, message: "No valid images provided!"};
+        if (!img || !Array.isArray(img) || img.length === 0) {throw { status: 404, message: "No valid images provided!"}}
 
-        }
-
-        if(!sizes || sizes.length === 0 || !Array.isArray(sizes)){
-            throw { status: 404, message: "Sizes field must be an array with at least one value!"};
-
-        }
+        if(!sizes || sizes.length === 0 || !Array.isArray(sizes)){throw { status: 404, message: "Sizes field must be an array with at least one value!"}}
 
         const uploadResults = await Promise.allSettled(
             img.map(async (image) => {
                 try {
                     const response = await cloudinary.uploader.upload(image, {
                         folder: "products",
-                        quality: "auto", // Automatically adjusts compression
-                        fetch_format: "webp", // Converts to optimal format (WebP, etc.)
-                        width: 800, // Resize to limit large uploads
+                        quality: "auto", 
+                        fetch_format: "webp", 
+                        width: 800, 
                         height: 800,
                         crop: "limit",
                     });
@@ -69,15 +60,7 @@ export const createProductService = async (newProduct) => {
         if (imageUrls.length === 0) {
             return res.status(400).json({ error: "No images uploaded successfully!" });
         }
-        const product = await Product.create({
-            name,
-            description,
-            price,
-            quantity,
-            img: imageUrls, 
-            category,
-            sizes,
-        });
+        const product = await Product.create({name, description, price, quantity, img: imageUrls, category, sizes});
 
         return productDTO(product);
     } catch (error) {
@@ -90,9 +73,7 @@ export const editProductService = async (productId, newProduct) => {
     try {
         let product = await Product.findById(productId);
         let imageUrls = [];
-        if(!product){
-            throw { status: 404, message: "Product not found!"};
-        };
+        if(!product){throw { status: 404, message: "Product not found!"}};
         const { name, description, price, img, category, sizes } = newProduct;
 
         // Keep existing img if no new img prodvide
@@ -146,11 +127,7 @@ export const editProductService = async (productId, newProduct) => {
 export const deleteProductService = async (productId) => {
     try {
         const product = await Product.findById(productId);
-
-		if (!product) {
-            throw { status: 404, message: "Product not found" };
-		}
-        
+        if(!product){throw { status: 404, message: "Product not found!"}};
         // Store the isFeatured flag before deleting the product
         const wasFeatured = product.isFeatured;
 
@@ -173,11 +150,6 @@ export const deleteProductService = async (productId) => {
             const newFeaturedProducts = await Product.find({ isFeatured: true }).limit(10); // Fetch new featured products
             await redis.set("featured_products", JSON.stringify(newFeaturedProducts)); // Update cache
         }
-
-        return {
-            message: "Product deleted successfully!",
-        }
-
     } catch (error) {
         console.error("Error in deleteProductService:", error.message);
         throw error; 
@@ -188,14 +160,9 @@ export const getRecommendedProductService = async () => {
     try {
         // check redis first
         const cachedProduct = await getCachedRecommendedProducts();
-        if(cachedProduct){
-            return cachedProduct;
-        }
+        if(cachedProduct){ return cachedProduct}
 
-        const products = await Product.find()
-        .limit(3)
-        .sort({ createdAt: -1 })
-        .select("_id name description price img");
+        const products = await Product.find().limit(3).sort({ createdAt: -1 }).select("_id name description price img");
 
         // convet to DTO format
         const recommendedProducts = products.map((product) => productDTO(product));
@@ -214,15 +181,12 @@ export const getFeaturedProductService = async () => {
     try {
         // check redis first
         const cachedProduct = await getCachedFeaturedProducts();
-        if(cachedProduct){
-            return cachedProduct;
-        }
+        if(cachedProduct){return cachedProduct}
 
         const products = await Product.find({isFeatured: true}).lean();
 
-        if(!products.length){
-            throw { status: 404, message: "No featured product"};
-        }
+        if(!products.length){throw { status: 404, message: "No featured product"}}
+
         // convet to DTO format
         const featuredProducts = products.map((product) => productDTO(product));
 
@@ -241,9 +205,7 @@ export const getProductDetailService = async (productId) => {
     try {
         const product = await Product.findById(productId);
 
-        if(!product){
-            throw { status: 404, message: "Product not found!"};
-        }
+        if(!product){throw { status: 404, message: "Product not found!"}}
 
         return productDTO(product);
     } catch (error) {
@@ -256,9 +218,7 @@ export const getProductsByCategoryService = async (category) => {
     try {
         const products = await Product.find({category});
 
-        if(!products){
-            throw { status: 404, message: "Product not found!"};
-        }
+        if(!products){throw { status: 404, message: "Product not found!"}}
 
         const formattedProducts = products.map((product) => productDTO(product));
 

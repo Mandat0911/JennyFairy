@@ -8,29 +8,15 @@ export const getAllOrderService = async (page, limit) => {
         const limitNumber = parseInt(limit);
 
         const orders = await Order.find({})
-            .sort({createdAt: -1})
-            .populate({
-                path: "paymentId",
-                select: "paymentMethod paymentStatus couponCode couponDiscountPercentage"
-            })
-            .populate({
-                path: "user",
-                select: "name email"
-            })
-            .populate({
-                path: "products.product",
-                select: "name"
-            })
+            .sort({createdAt: -1}).populate({path: "paymentId", select: "paymentMethod paymentStatus couponCode couponDiscountPercentage"})
+            .populate({path: "user", select: "name email"})
+            .populate({path: "products.product", select: "name"})
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber)
 
         const totalOrders = await Order.countDocuments();
         return {
-            orders: orders.map((order) => orderDTO(order)),  // Convert orders to DTO format
-            totalPages: Math.ceil(totalOrders / limitNumber),
-            currentPage: pageNumber,
-            totalOrders
-        };
+            orders: orders.map((order) => orderDTO(order)), totalPages: Math.ceil(totalOrders / limitNumber), currentPage: pageNumber, totalOrders};
     } catch (error) {
         console.error("Error in getAllOrderService:", error.message);
         throw error; 
@@ -40,16 +26,11 @@ export const getAllOrderService = async (page, limit) => {
 
 export const editOrderService = async (orderId, order) => {
     try {
-
-		if (!order || !order.shippingDetails) {
-            throw { status: 404, message: "Shipping details are required." };
-		}
+		if (!order || !order.shippingDetails) {throw { status: 404, message: "Shipping details are required." }}
 
         const { fullName, phone, address, city, postalCode, country, deliveryStatus } = order.shippingDetails;
 
-        if (!fullName && !phone && !address && !city && !postalCode && !country && !deliveryStatus) {
-            throw { status: 400, message: "At least one field must be updated." };
-        }
+        if (!fullName && !phone && !address && !city && !postalCode && !country && !deliveryStatus) {throw { status: 400, message: "At least one field must be updated." }}
 
         // Update Order shipping details
         const updatedOrder = await Order.findByIdAndUpdate(orderId, {
@@ -67,9 +48,7 @@ export const editOrderService = async (orderId, order) => {
             runValidators: true
         }).populate("user paymentId products.product");
 
-        if (!updatedOrder) {
-            return res.status(404).json({ error: "Order not found." });
-        }
+        if (!updatedOrder) {return res.status(404).json({ error: "Order not found." })}
 
         // Update Payment status if `paymentId` exists
         let updatedPayment = null;
@@ -83,16 +62,10 @@ export const editOrderService = async (orderId, order) => {
                 runValidators: true
             })
 
-            if (!updatedPayment) {
-                throw { status: 404, message: "Payment record not found.." };
-            }
+            if (!updatedPayment) {throw { status: 404, message: "Payment record not found.." }}
         }
 
-        return {
-            updatedOrder: orderDTO(updatedOrder),
-            updatedPayment
-        }
-        
+        return {updatedOrder: orderDTO(updatedOrder), updatedPayment}
     } catch (error) {
         console.error("Error in editOrderService:", error.message);
         throw error; 
@@ -102,34 +75,20 @@ export const editOrderService = async (orderId, order) => {
 export const deleteOrderService = async (orderId) => {
     try {
         const order = await Order.findById(orderId);
-
-		if (!order) {
-            throw { status: 404, message: "Order not found" };
-		}
-        // Delete Order from database
+		if (!order) {throw { status: 404, message: "Order not found" }}
         await order.deleteOne();
-        
     } catch (error) {
         console.error("Error in deleteOrderService:", error.message);
         throw error; 
     }
 };
 
-export const deleteOrderUserService = async (orderId) => {
+export const cancelOrderUserService = async (orderId) => {
     try {
-        const order = await Order.findByIdAndUpdate(
-            orderId,
-            {"shippingDetails.deliveryStatus": "canceled"},
-            { new: true, runValidators: true }
-        );
+        const order = await Order.findByIdAndUpdate(orderId, {"shippingDetails.deliveryStatus": "canceled"}, { new: true, runValidators: true });
 
-		if (!order) {
-            throw { status: 404, message: "Order not found" };
-		}
-
-        console.log(order)
+		if (!order) {throw { status: 404, message: "Order not found" }}
         return order
-        
     } catch (error) {
         console.error("Error in deleteOrderService:", error.message);
         throw error; 

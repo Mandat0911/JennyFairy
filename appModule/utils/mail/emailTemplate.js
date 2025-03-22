@@ -261,3 +261,68 @@ export const PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;">
+  
+  <!-- Header -->
+  <div style="text-align: center; padding: 30px 0;">
+    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 180px;">
+  </div>
+
+  <!-- Main Container -->
+  <div style="background: #ffffff; padding: 40px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+    
+    <h1 style="font-size: 24px; font-weight: 600; margin-bottom: 15px;">Thank You for Your Order!</h1>
+    
+    <p style="font-size: 16px; margin-bottom: 20px; color: #444;">Hello <strong>{{userName}}</strong>,</p>
+    
+    <p style="font-size: 15px; margin-bottom: 20px; color: #444;">
+      Your order <strong>#{{orderId}}</strong> has been successfully placed. Below are your order details:
+    </p>
+
+    <!-- Order Details -->
+    <div style="text-align: left; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #fafafa;">
+      <p><strong>Order ID:</strong> {{orderId}}</p>
+      <p><strong>Order Date:</strong> {{orderDate}}</p>
+      <p><strong>Total Amount:</strong> {{totalAmount}}</p>
+      
+      <h3 style="font-size: 18px; font-weight: 600; margin-top: 15px;">Products:</h3>
+      {{orderItems}}
+      
+      <h3 style="font-size: 18px; font-weight: 600; margin-top: 15px;">Shipping Details:</h3>
+      <p><strong>Name:</strong> {{fullName}}</p>
+      <p><strong>Phone:</strong> {{phone}}</p>
+      <p><strong>Address:</strong> {{address}}, {{city}}, {{postalCode}}, {{country}}</p>
+      <p><strong>Delivery Status:</strong> <span style="color: #FFA500;">Pending</span></p>
+    </div>
+
+    <p style="font-size: 14px; margin-top: 20px; color: #666;">
+      You will receive an update once your order has been shipped. You can track your order status in your account.
+    </p>
+
+    <a href="{{trackingLink}}" 
+       style="display: inline-block; background: black; color: white; text-decoration: none; font-size: 14px; font-weight: bold; padding: 12px 25px; border-radius: 3px; margin-top: 20px;">
+      Track Your Order
+    </a>
+
+    <p style="font-size: 14px; margin-top: 25px; color: #666;">If you have any questions, feel free to contact our support team.</p>
+    
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; font-size: 12px; color: #777; margin-top: 20px;">
+    <p>&copy; 2024 JennyFairy. All rights reserved.</p>
+    <p>This is an automated message, please do not reply.</p>
+  </div>
+
+</body>
+</html>
+`;
