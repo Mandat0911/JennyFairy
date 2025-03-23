@@ -13,6 +13,7 @@ import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
 import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
 import collectionRoute from "../appModule/Collections/routes/collections.routes.js"
 import orderRoute from "../appModule/Order/routes/order.routes.js"
+"../"
 const app = express();
 
 dotenv.config();
