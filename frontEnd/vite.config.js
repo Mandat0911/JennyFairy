@@ -13,17 +13,4 @@ export default defineConfig({
       }
     }
   },
-  build: {
-    outDir: 'dist', // Ensure the output directory is set correctly
-    sourcemap: true, // Optional: Helps with debugging in production
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor'; // Splitting vendor code
-          }
-        }
-      }
-    }
-  }
 });
