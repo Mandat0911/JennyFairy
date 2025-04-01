@@ -71,7 +71,7 @@ export const logout = async (req, res) => {
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",       // Ensure HTTPS only
-            sameSite: "None",   // Important for cross-origin requests
+            sameSite: "lax",   // Important for cross-origin requests
             domain: ".onrender.com",  // Ensure it matches frontend
             path: "/",
         });
@@ -79,7 +79,7 @@ export const logout = async (req, res) => {
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "None",
+            sameSite: "lax",
             domain: ".onrender.com",
             path: "/",
         });
