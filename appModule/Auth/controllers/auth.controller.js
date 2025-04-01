@@ -80,7 +80,7 @@ export const refreshToken = async (req, res) => {
         const refreshToken = req.cookies.refreshToken;
         const response = await refreshTokenService(refreshToken);
         res.cookie("accessToken", response.accessToken, {
-            maxAge: 86400000, httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production"
+            maxAge: 86400000, httpOnly: true, sameSite: "none", secure: process.env.NODE_ENV === "production"
         });
         res.status(200).json(response);
     } catch (error) {
