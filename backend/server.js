@@ -18,7 +18,7 @@ const app = express();
 
 dotenv.config();
 const __dirname = path.resolve();
-app.use(cors({ origin: "https://jennyfairy-1fe.onrender.com", credentials: true, 
+app.use(cors({ origin: "https://www.jennyfairy.store/", credentials: true, 
 	      credentials: true, // Enable cookies and other credentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Specify allowed HTTP methods
     allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
