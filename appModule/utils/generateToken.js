@@ -16,7 +16,7 @@ export const generateTokens = async (accountId, email, res) => {
     res.cookie("accessToken", accessToken, {
         maxAge: 24 * 60 * 60 * 1000, // 1 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
-        sameSite: "none", // Prevent CSRF attacks
+        sameSite: "lax", // Prevent CSRF attacks
         domain: ".onrender.com", 
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
@@ -24,7 +24,7 @@ export const generateTokens = async (accountId, email, res) => {
     res.cookie("refreshToken", refreshToken, {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
-        sameSite: "none", // Prevent CSRF attacks
+        sameSite: "lax", // Prevent CSRF attacks
         domain: ".onrender.com", 
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
