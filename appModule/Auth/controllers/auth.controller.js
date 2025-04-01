@@ -68,23 +68,9 @@ export const resetPassword = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         const response = await logoutService(req.cookies.refreshToken);
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",       // Ensure HTTPS only
-            sameSite: "None",   // Important for cross-origin requests
-            domain: ".onrender.com",  // Ensure it matches frontend
-            path: "/",
-        });
-
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "None",
-            domain: ".onrender.com",
-            path: "/",
-        });
-
-        return res.status(200).json(response);    } catch (error) {
+        res.clearCookie("accessToken").clearCookie("refreshToken").status(200).json(response);
+ 
+    } catch (error) {
         console.error("Error in logout controller:", error.message);
         res.status(error.status || 500).json({ error: error.message || "Internal Server Error!" });
     }
