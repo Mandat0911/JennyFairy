@@ -72,7 +72,7 @@ export const logout = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",       // Ensure HTTPS only
             sameSite: "lax",   // Important for cross-origin requests
-            domain: ".onrender.com",  // Ensure it matches frontend
+            domain: ".jennyfairy.store",
             path: "/",
         });
 
@@ -80,7 +80,7 @@ export const logout = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            domain: ".onrender.com",
+            domain: ".jennyfairy.store",
             path: "/",
         });
 
@@ -98,7 +98,7 @@ export const refreshToken = async (req, res) => {
         const refreshToken = req.cookies.refreshToken;
         const response = await refreshTokenService(refreshToken);
         res.cookie("accessToken", response.accessToken, {
-            maxAge: 86400000, httpOnly: true, sameSite: "lax",  domain: ".onrender.com", secure: process.env.NODE_ENV === "production"
+            maxAge: 86400000, httpOnly: true, sameSite: "lax",   domain: ".jennyfairy.store", secure: process.env.NODE_ENV === "production"
         });
         res.status(200).json(response);
     } catch (error) {
