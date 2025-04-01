@@ -188,9 +188,9 @@ const ProfilePage = () => {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="bg-white p-6 w-full max-w-sm rounded-xl shadow-xl text-center"
           >
-            <h2 className="text-lg font-semibold text-gray-900">Delete Account</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Cancel Order</h2>
             <p className="text-gray-600 text-sm mt-2">
-              Are you sure you want to delete your account? This action cannot be undone.
+              Are you sure you want to cancel this order? This action cannot be undone.
             </p>
 
             <div className="flex flex-col md:flex-row justify-center gap-3 mt-6">
@@ -204,7 +204,7 @@ const ProfilePage = () => {
                 onClick={confirmCancelOrder}
                 className="w-full md:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition text-sm"
               >
-                Yes, Delete
+                Yes, Cancel
               </button>
             </div>
           </motion.div>
