@@ -13,11 +13,11 @@ import paymentRoute from "../appModule/Payment/routes/payment.routes.js"
 import analyticRoute from "../appModule/Analytics/routes/analytic.routes.js"
 import collectionRoute from "../appModule/Collections/routes/collections.routes.js"
 import orderRoute from "../appModule/Order/routes/order.routes.js"
-"../"
+
 const app = express();
 
 dotenv.config();
-const __dirname = path.resolve();
+
 app.use(cors({
     origin: "https://www.jennyfairy.store",
     credentials: true,
@@ -41,15 +41,6 @@ app.use("/api/cart/", cartRoute);
 app.use("/api/coupon/", cartCoupons);
 app.use("/api/payment/", paymentRoute);
 app.use("/api/analytic/", analyticRoute);
-
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/frontEnd/dist")));
-
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "frontEnd", "dist", "index.html"));
-	});
-}
-
 
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
