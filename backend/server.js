@@ -18,12 +18,14 @@ const app = express();
 
 dotenv.config();
 const __dirname = path.resolve();
-app.use(cors({ origin: "https://www.jennyfairy.store/", credentials: true, 
-	      credentials: true, // Enable cookies and other credentials
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Specify allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
-	     
-	     }));
+app.use(cors({
+    origin: "https://www.jennyfairy.store",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Set-Cookie"]
+}));
+
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
