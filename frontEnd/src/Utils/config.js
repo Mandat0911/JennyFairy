@@ -1,4 +1,4 @@
-const API_BE_URL = "https://jennyfairy-1a.onrender.com/api";
+const API_BE_URL = "https://api.jennyfairy.store/api";
 
 // Product API Endpoints
 export const PRODUCT_API_ENDPOINTS = {
