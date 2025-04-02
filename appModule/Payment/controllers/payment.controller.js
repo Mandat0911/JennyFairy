@@ -1,29 +1,35 @@
 
-import { checkoutSuccessService, createCheckoutCODService, createCheckoutPaypalCodeService, createCheckoutQrcodeService, createCheckoutSessionService } from "../service/payment.service.js";
+import { 
+    // checkoutSuccessService, 
+    createCheckoutCODService, 
+    createCheckoutPaypalCodeService, 
+    createCheckoutQrcodeService, 
+    // createCheckoutSessionService 
+} from "../service/payment.service.js";
 
 
-export const createCheckoutSession = async (req, res) => {
-    try {
-        const { products, couponCode, shippingDetails } = req.body;
-        const userId = req.user.id;
-        res.status(200).json(await createCheckoutSessionService(userId, products, couponCode, shippingDetails));
-    } catch (error) {
-        console.error("Error in createCheckoutSession controller: ", error.message);
-        res.status(500).json({ error: error.message || "Internal Server Error!" });
-    }
-};
+// export const createCheckoutSession = async (req, res) => {
+//     try {
+//         const { products, couponCode, shippingDetails } = req.body;
+//         const userId = req.user.id;
+//         res.status(200).json(await createCheckoutSessionService(userId, products, couponCode, shippingDetails));
+//     } catch (error) {
+//         console.error("Error in createCheckoutSession controller: ", error.message);
+//         res.status(500).json({ error: error.message || "Internal Server Error!" });
+//     }
+// };
 
-export const checkoutSuccess = async (req, res) => {
-    try {
-        const { sessionId } = req.body;
-        const userId = req.user.id;
-        const response = await checkoutSuccessService(userId, sessionId);
-        res.status(200).json({message: "Payment successful, order created, and coupon deactivated if used.", orderId: response});
-    } catch (error) {
-        console.error("Error in checkoutSuccess controller:", error.message);
-        res.status(500).json({ error: "Internal Server Error!" });
-    }
-};
+// export const checkoutSuccess = async (req, res) => {
+//     try {
+//         const { sessionId } = req.body;
+//         const userId = req.user.id;
+//         const response = await checkoutSuccessService(userId, sessionId);
+//         res.status(200).json({message: "Payment successful, order created, and coupon deactivated if used.", orderId: response});
+//     } catch (error) {
+//         console.error("Error in checkoutSuccess controller:", error.message);
+//         res.status(500).json({ error: "Internal Server Error!" });
+//     }
+// };
 
 export const createCheckoutQrcode = async (req, res) => {
     try {
