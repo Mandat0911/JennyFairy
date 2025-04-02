@@ -28,14 +28,14 @@ const DashboardPage = () => {
     >
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Title */}
-        <motion.h1
+        <h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center text-4xl sm:text-5xl mt-4 md:mt-6 lg:mt-8  font-semibold uppercase tracking-wide text-gray-900"
         >
           Explore Our New Collections
-        </motion.h1>
+        </h1>
 
         {/* Subtitle */}
         <motion.p
