@@ -21,7 +21,7 @@ dotenv.config();
 app.use(cors({
     origin: "https://www.jennyfairy.store",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     exposedHeaders: ["Set-Cookie"]
 }));
