@@ -113,20 +113,13 @@ return (
 
     {/* QR Code Image */}
     <div className="flex justify-center mb-6">
+    <a href="https://www.acb.com.vn/payment" target="_blank" rel="noopener noreferrer">
     <img 
-  src={qrCodeImage} 
-  alt="VietQR Code" 
-  className="w-40 h-40 border rounded-lg shadow-md cursor-pointer" 
-  onClick={() => {
-    if (/Android|iPhone/i.test(navigator.userAgent)) {
-      window.location.href = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
-    } else {
-      // Optional: Open QR Code image in a new tab for desktop users
-      window.open(qrCodeImage, "_blank", "noopener,noreferrer");
-    }
-  }}
-/>
-      
+      src={qrCodeImage} 
+      alt="VietQR Code" 
+      className="w-40 h-40 border rounded-lg shadow-md" 
+    />
+    </a>
     </div>
 
     {/* Input Fields */}
