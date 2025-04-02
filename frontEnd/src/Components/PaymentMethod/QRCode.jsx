@@ -113,23 +113,19 @@ return (
 
     {/* QR Code Image */}
     <div className="flex justify-center mb-6">
-    <a 
-href={qrCodeImage} 
-target="_blank" 
-rel="noopener noreferrer"
-onClick={() => {
-  if (/Android|iPhone/i.test(navigator.userAgent)) {
-    window.location.href = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
-  }
-}}
->
-<img 
+    <img 
   src={qrCodeImage} 
   alt="VietQR Code" 
-  className="w-40 h-40 border rounded-lg shadow-md" 
+  className="w-40 h-40 border rounded-lg shadow-md cursor-pointer" 
+  onClick={() => {
+    if (/Android|iPhone/i.test(navigator.userAgent)) {
+      window.location.href = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
+    } else {
+      // Optional: Open QR Code image in a new tab for desktop users
+      window.open(qrCodeImage, "_blank", "noopener,noreferrer");
+    }
+  }}
 />
-</a>
-
       
     </div>
 
