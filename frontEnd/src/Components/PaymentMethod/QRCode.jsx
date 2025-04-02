@@ -113,22 +113,13 @@ return (
 
     {/* QR Code Image */}
     <div className="flex justify-center mb-6">
-    <a 
-href={qrCodeImage} 
-target="_blank" 
-rel="noopener noreferrer"
-onClick={() => {
-  if (/Android|iPhone/i.test(navigator.userAgent)) {
-    window.location.href = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
-  }
-}}
->
-<img 
-  src={qrCodeImage} 
-  alt="VietQR Code" 
-  className="w-40 h-40 border rounded-lg shadow-md" 
-/>
-</a>
+    <a href="https://www.acb.com.vn/payment" target="_blank" rel="noopener noreferrer">
+    <img 
+      src={qrCodeImage} 
+      alt="VietQR Code" 
+      className="w-40 h-40 border rounded-lg shadow-md" 
+    />
+    </a>
 
       
     </div>
