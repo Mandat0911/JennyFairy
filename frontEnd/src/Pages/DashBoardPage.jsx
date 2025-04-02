@@ -43,6 +43,7 @@ const DashboardPage = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center text-lg sm:text-xl text-gray-500 mt-3 mb-8"
+          style={{ willChange: "transform, opacity" }} 
         >
           Discover the latest trends in fashion
         </motion.p>
