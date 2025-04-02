@@ -1,13 +1,13 @@
-import { stripe } from "../../../backend/lib/stripe/stripe.js";
-import Coupon from "../../Coupons/model/coupon.models.js";
-import dotenv from "dotenv";
-import Product from "../../Product/model/product.models.js";
-import {checkoutDTO} from "../dto/payment.dto.js"
+// import { stripe } from "../../../backend/lib/stripe/stripe.js";
+// import Coupon from "../../Coupons/model/coupon.models.js";
+// import Product from "../../Product/model/product.models.js";
+// import {checkoutDTO} from "../dto/payment.dto.js"
+// // import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
 import Payment from "../model/payment.models.js";
 import Order from "../../Order/model/order.model.js";
 import User from "../../User/models/user.models.js";
 import { generateVerificationToken } from "../../utils/generateVerificationCode.js";
-// import { createStripeCoupon } from "../../../backend/lib/stripe/stripe.config.js";
+import dotenv from "dotenv";
 import { sendOrderDetailSuccessEmail } from "../../utils/mail/emailSetup.js";
 
 dotenv.config();
