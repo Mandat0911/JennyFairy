@@ -74,7 +74,7 @@ export const editProductService = async (productId, newProduct) => {
         let product = await Product.findById(productId);
         let imageUrls = [];
         if(!product){throw { status: 404, message: "Product not found!"}};
-        const { name, description, price, img, category, sizes } = newProduct;
+        const { name, description, price, img, category, sizes, quantity } = newProduct;
 
         // Keep existing img if no new img prodvide
         let updatedImages = product.img;
@@ -114,6 +114,7 @@ export const editProductService = async (productId, newProduct) => {
         product.img = updatedImages
         product.category = category || product.category;
         product.sizes = sizes || product.sizes;
+        product.quantity = quantity || product.quantity;
 
         await product.save();
 
@@ -136,7 +137,7 @@ export const deleteProductService = async (productId) => {
             try {
                 for (const imgUrl of product.img) {
                     const publicId = imgUrl.split("/").pop().split(".")[0];
-                    await cloudinary.uploader.destroy(publicId);
+                    await cloudinary.uploader.destroy(`products/${publicId}`);
                 }
             } catch (error) {
                 console.error("Error deleting image from Cloudinary:", error);

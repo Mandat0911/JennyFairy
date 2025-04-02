@@ -45,7 +45,7 @@ const ProductList = () => {
                         className="border px-2 py-1 rounded-md text-sm w-1/3"
                         />
 
-            <select
+                <select
                     value={limit}
                     onChange={(e) => { setLimit(Number(e.target.value)); setCurrentPage(1); }}
                     className="border mx-2 mb-4 px-2 py-1 rounded-md text-sm"
@@ -54,8 +54,8 @@ const ProductList = () => {
                     <option value={10}>10 per page</option>
                     <option value={20}>20 per page</option>
                 </select>
-
-            <table className="min-w-full divide-y divide-gray-200">
+                <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Product</th>
@@ -132,6 +132,9 @@ const ProductList = () => {
                         ))}
                     </tbody>
                 </table>
+                </div>
+
+
             </div>
             <div className="flex justify-between items-center mt-4">
                 <button

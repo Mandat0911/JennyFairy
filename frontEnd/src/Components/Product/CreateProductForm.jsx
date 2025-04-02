@@ -98,6 +98,8 @@ const CreateProductForm = ({ initialProduct }) => {
         }
     };
 
+    
+
     const handleCategoryChange = (e, cat) => {
         const { product, setProduct } = useProductStore.getState(); // Directly access state
         

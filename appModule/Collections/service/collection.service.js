@@ -34,7 +34,7 @@ export const deleteCollectionService = async (collectionId) => {
             try {
                 for (const imgUrl of collection.img) {
                     const publicId = imgUrl.split("/").pop().split(".")[0];
-                    await cloudinary.uploader.destroy(publicId);
+                    await cloudinary.uploader.destroy(`collections/${publicId}`);
                 }
             } catch (error) {
                 console.error("Error deleting image from Cloudinary:", error);

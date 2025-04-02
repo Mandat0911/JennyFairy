@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import connectMongoDB from "./lib/db/connectToMongoDB.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path"
+
 
 import authRoute from "../appModule/Auth/routes/auth.routes.js"
 import productRoute from "../appModule/Product/routes/product.routes.js"
@@ -18,19 +18,22 @@ const app = express();
 
 dotenv.config();
 
+const allowedOrigin = process.env.NODE_ENV === "development" ? "http://localhost:5173" : "https://www.jennyfairy.store"
+
+
 app.use(cors({
-    origin: "https://www.jennyfairy.store",
+    origin: allowedOrigin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     exposedHeaders: ["Set-Cookie"]
 }));
 
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
 
-console.log(process.env.NODE_ENV);
+console.log(allowedOrigin);
 
 // API auth
 app.use("/api/auth/", authRoute);

@@ -24,7 +24,7 @@ const DashboardPage = () => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="mt-4 relative min-h-screen text-white overflow-hidden"
+      className="mt-8 relative min-h-screen text-white overflow-hidden"
     >
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Title */}

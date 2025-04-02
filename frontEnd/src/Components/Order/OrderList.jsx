@@ -54,110 +54,113 @@ const OrderList = () => {
                     <option value={10}>10 per page</option>
                     <option value={20}>20 per page</option>
                 </select>
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Order id</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total amount</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment status</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Delivery Status</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment method</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Create At</th>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Order id</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total amount</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment status</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Delivery Status</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment method</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Create At</th>
 
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredOrders.length > 0 ? (
-                        filteredOrders?.map((order) => (
-                            <tr key={order._id} className="hover:bg-gray-50 transition duration-200">
-                                <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
-                                    <span className="text-sm font-medium text-gray-900">{order._id}</span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <span className="text-sm font-semibold text-gray-700">
-                                        {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(order.totalAmount)}
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {filteredOrders.length > 0 ? (
+                            filteredOrders?.map((order) => (
+                                <tr key={order._id} className="hover:bg-gray-50 transition duration-200">
+                                    <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
+                                        <span className="text-sm font-medium text-gray-900">{order._id}</span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className="text-sm font-semibold text-gray-700">
+                                            {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(order.totalAmount)}
+                                        </span>
+                                    </td>
+                                    
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                    <span
+                                        className={`px-2 py-1 text-xs font-semibold rounded-full 
+                                            ${order.paymentId.paymentStatus === "pending" ? "bg-yellow-500 text-white" : 
+                                            order.paymentId.paymentStatus === "completed" ? "bg-green-500 text-white" : 
+                                            order.paymentId.paymentStatus === "failed" ? "bg-red-500 text-white" : 
+                                            "bg-gray-500 text-white"}`}
+                                    >
+                                        {order.paymentId.paymentStatus}
                                     </span>
-                                </td>
-                                
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                <span
-                                    className={`px-2 py-1 text-xs font-semibold rounded-full 
-                                        ${order.paymentId.paymentStatus === "pending" ? "bg-yellow-500 text-white" : 
-                                        order.paymentId.paymentStatus === "completed" ? "bg-green-500 text-white" : 
-                                        order.paymentId.paymentStatus === "failed" ? "bg-red-500 text-white" : 
-                                        "bg-gray-500 text-white"}`}
-                                >
-                                    {order.paymentId.paymentStatus}
-                                </span>
-                                </td>
-                                
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                <span
-                                    className={`px-2 py-1 text-xs font-semibold rounded-full 
-                                        ${order.shippingDetails.deliveryStatus === "pending" ? "bg-yellow-500 text-white" : 
-                                        order.shippingDetails.deliveryStatus === "delivered" ? "bg-green-500 text-white" : 
-                                        order.shippingDetails.deliveryStatus === "canceled" ? "bg-gray-500 text-white" : 
-                                        order.shippingDetails.deliveryStatus === "shipped" ? "bg-blue-500 text-white" : 
-                                        "bg-gray-500 text-white"}`}
-                                >
-                                    {order.shippingDetails.deliveryStatus}
-                                </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                <span
-                                    className={`px-2 py-1 text-xs font-semibold rounded-full 
-                                        ${order.paymentId.paymentMethod === "QR code" ? "bg-cyan-500 text-white" : 
-                                        order.paymentId.paymentMethod === "Stripe" ? "bg-blue-500 text-white" : 
-                                        order.paymentId.paymentMethod === "Paypal" ? "bg-blue-500 text-white" : 
-                                        order.paymentId.paymentMethod === "Cash on Delivery" ? "bg-red-500 text-white" : 
-                                        "bg-gray-500 text-white"}`}
-                                >
-                                    {order.paymentId.paymentMethod}
-                                </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                    <div className="flex flex-wrap gap-1">
-                                        <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                            {formatDate(order.createdAt)}
-                                        </span>   
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button
-                                        onClick={() => {
-                                            setDeletingOrderId(order._id);
-                                            deleteOrder(order._id, {
-                                                onSettled: () => setDeletingOrderId(null),
-                                            });
-                                        }}
-                                        className="text-red-500 hover:text-red-400"
-                                        disabled={deletingOrderId === order._id}
+                                    </td>
+                                    
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                    <span
+                                        className={`px-2 py-1 text-xs font-semibold rounded-full 
+                                            ${order.shippingDetails.deliveryStatus === "pending" ? "bg-yellow-500 text-white" : 
+                                            order.shippingDetails.deliveryStatus === "delivered" ? "bg-green-500 text-white" : 
+                                            order.shippingDetails.deliveryStatus === "canceled" ? "bg-gray-500 text-white" : 
+                                            order.shippingDetails.deliveryStatus === "shipped" ? "bg-blue-500 text-white" : 
+                                            "bg-gray-500 text-white"}`}
                                     >
-                                        {deletingOrderId === order._id ? (
-                                            <Loader className="mr-2 h-5 w-5 animate-spin" />
-                                        ) : (
-                                            <Trash className="h-5 w-5" />
-                                        )}
-                                    </button>
-                                    <button
-                                        onClick={() => setEditOrderData(order)}
-                                        className="text-green-400 hover:text-green-300 px-2"
+                                        {order.shippingDetails.deliveryStatus}
+                                    </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                    <span
+                                        className={`px-2 py-1 text-xs font-semibold rounded-full 
+                                            ${order.paymentId.paymentMethod === "QR code" ? "bg-cyan-500 text-white" : 
+                                            order.paymentId.paymentMethod === "Stripe" ? "bg-blue-500 text-white" : 
+                                            order.paymentId.paymentMethod === "Paypal" ? "bg-blue-500 text-white" : 
+                                            order.paymentId.paymentMethod === "Cash on Delivery" ? "bg-red-500 text-white" : 
+                                            "bg-gray-500 text-white"}`}
                                     >
-                                        <Edit className="h-5 w-5" />
-                                    </button>
+                                        {order.paymentId.paymentMethod}
+                                    </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                        <div className="flex flex-wrap gap-1">
+                                            <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                                {formatDate(order.createdAt)}
+                                            </span>   
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button
+                                            onClick={() => {
+                                                setDeletingOrderId(order._id);
+                                                deleteOrder(order._id, {
+                                                    onSettled: () => setDeletingOrderId(null),
+                                                });
+                                            }}
+                                            className="text-red-500 hover:text-red-400"
+                                            disabled={deletingOrderId === order._id}
+                                        >
+                                            {deletingOrderId === order._id ? (
+                                                <Loader className="mr-2 h-5 w-5 animate-spin" />
+                                            ) : (
+                                                <Trash className="h-5 w-5" />
+                                            )}
+                                        </button>
+                                        <button
+                                            onClick={() => setEditOrderData(order)}
+                                            className="text-green-400 hover:text-green-300 px-2"
+                                        >
+                                            <Edit className="h-5 w-5" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6" className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                                    No orders found
                                 </td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="6" className="px-4 py-3 text-center text-sm font-medium text-gray-700">
-                                No orders found
-                            </td>
-                        </tr>
-                    )}
-                    </tbody>
-                </table>
+                        )}
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
             <div className="flex justify-between items-center mt-4">
                 <button

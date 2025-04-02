@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import ProductCard from "../../Components/Product/ProductCard.jsx";
-import {  useGetAllProductUser } from "../../Store/API/Product.API.js";
+import { useGetAllProductUser } from "../../Store/API/Product.API.js";
 import { motion } from "framer-motion";
 import { category } from "../../Utils/Category.js";
 
 const ProductPage = () => {
-    const {data: products} = useGetAllProductUser();
+    const { data: products } = useGetAllProductUser();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
 
-    // Filter products based on search and category
+    // Filter products based on search, category, and quantity (only in-stock items)
     const filteredProducts = products?.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (selectedCategory === "All" || product.category.includes(selectedCategory))
+        (selectedCategory === "All" || product.category.includes(selectedCategory)) &&
+        product.quantity > 0
     );
 
+    console.log(filteredProducts);
+
     return (
-        <div className="min-h-screen bg-gray-50 mt-4">
+        <div className="min-h-screen bg-gray-50 mt-8">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
                 {/* Page Title */}
                 <motion.h1
@@ -64,7 +67,7 @@ const ProductPage = () => {
                     {filteredProducts?.length === 0 ? (
                         <div className="col-span-full w-full flex justify-center items-center">
                             <h2 className="text-xl sm:text-2xl font-light text-gray-500 text-center">
-                                No products found                             
+                                No products found
                             </h2>
                         </div>
                     ) : (
