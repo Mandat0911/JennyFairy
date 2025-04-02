@@ -10,7 +10,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
   
   <!-- Header -->
   <div style="text-align: center; padding: 30px 0;">
-    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" 
+    <img src="https://res.cloudinary.com/dmzfjdowd/image/upload/v1743621391/logoEmail_fyemfp.png" 
          alt="JennyFairy Logo" style="max-width: 180px;">
   </div>
 
@@ -65,7 +65,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
 
   <!-- Header Section with Logo -->
   <div style="background: white; padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 150px; margin-bottom: 10px;">
+    <img src="https://res.cloudinary.com/dmzfjdowd/image/upload/v1743621391/logoEmail_fyemfp.png" alt="JennyFairy Logo" style="max-width: 150px; margin-bottom: 10px;">
     <h1 style="color: #111; font-size: 26px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Welcome to JennyFairy</h1>
   </div>
 
@@ -87,7 +87,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
 
     <!-- Main Call to Action -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="http://localhost:5173" 
+      <a href="http://jennyfairy.store" 
          style="text-decoration: none; background-color: #000; color: white; padding: 14px 32px; font-size: 16px; border-radius: 50px; font-weight: bold; letter-spacing: 0.5px; display: inline-block; transition: background 0.3s ease;">
         EXPLORE NOW →
       </a>
@@ -122,7 +122,7 @@ export const RESET_PASSWORD_EMAIL_TEMPLATE = `
   <!-- Header Section -->
   <div style="background: white; padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <!-- Brand Logo -->
-     <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 150px; margin-bottom: 10px;">
+     <img src="https://res.cloudinary.com/dmzfjdowd/image/upload/v1743621391/logoEmail_fyemfp.png" alt="JennyFairy Logo" style="max-width: 150px; margin-bottom: 10px;">
     <h1 style="color: #fff; margin: 0; font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Reset Your Password</h1>
   </div>
 
@@ -167,7 +167,7 @@ export const PASSWORD_RESET_SUCCESS_EMAIL_TEMPLATE = `
   
   <!-- Header -->
   <div style="text-align: center; padding: 30px 0;">
-    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 180px;">
+    <img src="https://res.cloudinary.com/dmzfjdowd/image/upload/v1743621391/logoEmail_fyemfp.png" alt="JennyFairy Logo" style="max-width: 180px;">
   </div>
 
   <!-- Main Container -->
@@ -210,7 +210,7 @@ export const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
   
   <!-- Header -->
   <div style="text-align: center; padding: 30px 0;">
-    <img src="https://res.cloudinary.com/dfewsut9x/image/upload/v1740493113/logoEmail_ssr6k5.png" alt="JennyFairy Logo" style="max-width: 180px;">
+    <img src="https://res.cloudinary.com/dmzfjdowd/image/upload/v1743621391/logoEmail_fyemfp.png" alt="JennyFairy Logo" style="max-width: 180px;">
   </div>
 
   <!-- Main Container -->
