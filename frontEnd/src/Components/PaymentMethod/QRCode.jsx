@@ -113,19 +113,23 @@ return (
 
     {/* QR Code Image */}
     <div className="flex justify-center mb-6">
-    <img 
+<img 
   src={qrCodeImage} 
   alt="VietQR Code" 
   className="w-40 h-40 border rounded-lg shadow-md cursor-pointer" 
   onClick={() => {
-    if (/Android|iPhone/i.test(navigator.userAgent)) {
-      window.location.href = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
-    } else {
-      // Optional: Open QR Code image in a new tab for desktop users
-      window.open(qrCodeImage, "_blank", "noopener,noreferrer");
-    }
+    const deepLink = `acbmobile://payment?account=${accountNumber}&amount=${total}&addInfo=${subjectCode}`;
+    const fallbackLink = "https://play.google.com/store/apps/details?id=com.acb.acbbank"; // Change this for iOS
+    
+    window.location.href = deepLink;
+
+    // If the deep link fails, open the app store after a short delay
+    setTimeout(() => {
+      window.location.href = fallbackLink;
+    }, 2000);
   }}
 />
+
       
     </div>
 
