@@ -37,8 +37,7 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     if (requiredRoles.length > 0 && !requiredRoles.includes(account?.userType)) {
         return <Navigate to="/" replace />;
     }
-
-    return children;
+        return children;
 };
 
 function App() {

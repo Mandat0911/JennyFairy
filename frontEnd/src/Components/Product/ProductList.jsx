@@ -67,69 +67,77 @@ const ProductList = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredProducts?.map((product) => (
-                            <tr key={product._id} className="hover:bg-gray-50 transition duration-200">
-                                <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
-                                    <img className="h-12 w-12 rounded-lg object-cover" src={product.img[0]} alt={product.name} />
-                                    <span className="text-sm font-medium text-gray-900">{product.name}</span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <span className="text-sm font-semibold text-gray-700">
-                                        {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                    <div className="flex flex-wrap gap-1">
-                                        {Array.isArray(product.category) &&
-                                            product.category.map((cat, index) => (
-                                                <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                                    {cat}
-                                                </span>
-                                            ))}
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${product.quantity ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                        {product.quantity ? "In Stock" : "Out of Stock"}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <button
-                                        onClick={() => toggleFeaturedProduct.mutate(product._id)}
-                                        className={`flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg transition duration-200 ${
-                                            product.isFeatured ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500" : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-                                        }`}
-                                    >
-                                        <Star className="h-4 w-4" />
-                                        {product.isFeatured ? "Featured" : "Set Featured"}
-                                    </button>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button
-                                        onClick={() => {
-                                            setDeletingProductId(product._id);
-                                            deleteMutation(product._id, {
-                                                onSettled: () => setDeletingProductId(null),
-                                            });
-                                        }}
-                                        className="text-red-500 hover:text-red-400"
-                                        disabled={deletingProductId === product._id}
-                                    >
-                                        {deletingProductId === product._id ? (
-                                            <Loader className="mr-2 h-5 w-5 animate-spin" />
-                                        ) : (
-                                            <Trash className="h-5 w-5" />
-                                        )}
-                                    </button>
-                                    <button
-                                        onClick={() => setEditProductData(product)}
-                                        className="text-green-400 hover:text-green-300 px-2"
-                                    >
-                                        <Edit className="h-5 w-5" />
-                                    </button>
+                        {filteredProducts?.length > 0 ? (
+                            filteredProducts?.map((product) => (
+                                <tr key={product._id} className="hover:bg-gray-50 transition duration-200">
+                                    <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
+                                        <img className="h-12 w-12 rounded-lg object-cover" src={product.img[0]} alt={product.name} />
+                                        <span className="text-sm font-medium text-gray-900">{product.name}</span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className="text-sm font-semibold text-gray-700">
+                                            {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                        <div className="flex flex-wrap gap-1">
+                                            {Array.isArray(product.category) &&
+                                                product.category.map((cat, index) => (
+                                                    <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                                        {cat}
+                                                    </span>
+                                                ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${product.quantity ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                                            {product.quantity ? "In Stock" : "Out of Stock"}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <button
+                                            onClick={() => toggleFeaturedProduct.mutate(product._id)}
+                                            className={`flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg transition duration-200 ${
+                                                product.isFeatured ? "bg-yellow-400 text-gray-900 hover:bg-yellow-500" : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                                            }`}
+                                        >
+                                            <Star className="h-4 w-4" />
+                                            {product.isFeatured ? "Featured" : "Set Featured"}
+                                        </button>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button
+                                            onClick={() => {
+                                                setDeletingProductId(product._id);
+                                                deleteMutation(product._id, {
+                                                    onSettled: () => setDeletingProductId(null),
+                                                });
+                                            }}
+                                            className="text-red-500 hover:text-red-400"
+                                            disabled={deletingProductId === product._id}
+                                        >
+                                            {deletingProductId === product._id ? (
+                                                <Loader className="mr-2 h-5 w-5 animate-spin" />
+                                            ) : (
+                                                <Trash className="h-5 w-5" />
+                                            )}
+                                        </button>
+                                        <button
+                                            onClick={() => setEditProductData(product)}
+                                            className="text-green-400 hover:text-green-300 px-2"
+                                        >
+                                            <Edit className="h-5 w-5" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ):(
+                            <tr>
+                                <td colSpan="6" className="text-center py-4 text-gray-500">
+                                    No products found.
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
                 </div>

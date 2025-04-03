@@ -29,57 +29,65 @@ const CouponList = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {allCoupons?.map((coupon) => (
-                            <tr key={coupon._id} className="hover:bg-gray-50 transition duration-200">
-                                <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
-                                    <span className="text-sm font-medium text-gray-900">{coupon.code}</span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell ">
-                                    <div className="flex flex-wrap gap-1">
-                                                <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                                {coupon.discountPercentage}
-                                                </span>   
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${new Date(coupon.expirationDate).getTime() > new Date(coupon.createdAt).getTime() ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                        {new Date(coupon.expirationDate).getTime() > new Date(coupon.createdAt).getTime() ? "Active" : "Inactive"}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                    <div className="flex flex-wrap gap-1">
-                                                <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                                {formatDate(coupon.createdAt)}
-                                                </span>   
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                    <div className="flex flex-wrap gap-1">
-                                                <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                                {formatDate(coupon.expirationDate)}
-                                                </span>   
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button
-                                        onClick={() => {
-                                            setDeletingCouponId(coupon._id);
-                                            deleteCoupon(coupon._id, {
-                                                onSettled: () => setDeletingCouponId(null),
-                                            });
-                                        }}
-                                        className="text-red-500 hover:text-red-400"
-                                        disabled={deletingCouponId === coupon._id}
-                                    >
-                                        {deletingCouponId === coupon._id ? (
-                                            <Loader className="mr-2 h-5 w-5 animate-spin" />
-                                        ) : (
-                                            <Trash className="h-5 w-5" />
-                                        )}
-                                    </button>
+                        {allCoupons?.length > 0 ? (
+                            allCoupons?.map((coupon) => (
+                                <tr key={coupon._id} className="hover:bg-gray-50 transition duration-200">
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className="text-sm font-medium text-gray-900">{coupon.code}</span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell ">
+                                        <div className="flex flex-wrap gap-1">
+                                                    <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                                    {coupon.discountPercentage}
+                                                    </span>   
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${new Date(coupon.expirationDate).getTime() > new Date(coupon.createdAt).getTime() ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                                            {new Date(coupon.expirationDate).getTime() > new Date(coupon.createdAt).getTime() ? "Active" : "Inactive"}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                        <div className="flex flex-wrap gap-1">
+                                                    <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                                    {formatDate(coupon.createdAt)}
+                                                    </span>   
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                                        <div className="flex flex-wrap gap-1">
+                                                    <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                                    {formatDate(coupon.expirationDate)}
+                                                    </span>   
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button
+                                            onClick={() => {
+                                                setDeletingCouponId(coupon._id);
+                                                deleteCoupon(coupon._id, {
+                                                    onSettled: () => setDeletingCouponId(null),
+                                                });
+                                            }}
+                                            className="text-red-500 hover:text-red-400"
+                                            disabled={deletingCouponId === coupon._id}
+                                        >
+                                            {deletingCouponId === coupon._id ? (
+                                                <Loader className="mr-2 h-5 w-5 animate-spin" />
+                                            ) : (
+                                                <Trash className="h-5 w-5" />
+                                            )}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ):(
+                            <tr>
+                                <td colSpan="6" className="text-center py-4 text-gray-500">
+                                    No coupons found.
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

@@ -7,7 +7,7 @@ import { useGetCartItems } from "../../Store/API/Cart.API.js";
 
 const Navbar = () => {
     const { user, account, logout } = useAuthStore();
-    const isAdmin = account?.userType === "ADMIN";
+    const isAdmin =["ADMIN", "MANAGER"].includes(account?.userType);
     const [isOpen, setIsOpen] = useState(false);
     const { data: cart} = useGetCartItems();
 

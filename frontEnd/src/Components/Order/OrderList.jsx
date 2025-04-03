@@ -64,7 +64,6 @@ const OrderList = () => {
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Delivery Status</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment method</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Create At</th>
-
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -72,7 +71,7 @@ const OrderList = () => {
                             {filteredOrders.length > 0 ? (
                             filteredOrders?.map((order) => (
                                 <tr key={order._id} className="hover:bg-gray-50 transition duration-200">
-                                    <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
+                                    <td className="px-4 py-3 whitespace-nowrap">
                                         <span className="text-sm font-medium text-gray-900">{order._id}</span>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap">
@@ -152,11 +151,11 @@ const OrderList = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="px-4 py-3 text-center text-sm font-medium text-gray-700">
-                                    No orders found
-                                </td>
-                            </tr>
-                        )}
+                            <td colSpan="7" className="text-center py-4 text-gray-500">
+                                No orders found.
+                            </td>
+                        </tr>
+                    )}
                         </tbody>
                     </table>
                 </div>

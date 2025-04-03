@@ -30,41 +30,49 @@ const CollectionList = () => {
                 </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-                {collections?.map((collection) => (
-                    <tr key={collection._id} className="hover:bg-gray-50 transition duration-200">
-                        <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
-                            <img className="h-12 w-12 rounded-lg object-cover" src={collection.img[0]} alt={collection.name} />
-                            <span className="text-sm font-medium text-gray-900">{collection.name}</span>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button
-                                onClick={() => {
-                                    setDeletingCollectionId(collection._id);
-                                    deleteMutation(collection._id, {
-                                        onSettled: () => setDeletingCollectionId(null),
-                                    });
-                                }}
-                                className="text-red-500 hover:text-red-400"
-                                disabled={deletingCollectionId === collection._id}
+                {collections?.length > 0 ? (
+                    collections?.map((collection) => (
+                        <tr key={collection._id} className="hover:bg-gray-50 transition duration-200">
+                            <td className="px-4 py-3 whitespace-nowrap flex items-center gap-3">
+                                <img className="h-12 w-12 rounded-lg object-cover" src={collection.img[0]} alt={collection.name} />
+                                <span className="text-sm font-medium text-gray-900">{collection.name}</span>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button
+                                    onClick={() => {
+                                        setDeletingCollectionId(collection._id);
+                                        deleteMutation(collection._id, {
+                                            onSettled: () => setDeletingCollectionId(null),
+                                        });
+                                    }}
+                                    className="text-red-500 hover:text-red-400"
+                                    disabled={deletingCollectionId === collection._id}
+                                    >
+                                    {deletingCollectionId === collection._id ? (
+                                        <Loader className="mr-2 h-5 w-5 animate-spin" />
+                                    ) : (
+                                        <Trash className="h-5 w-5" />
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setEditCollectionData(collection)}
+                                    className="text-green-400 hover:text-green-300 px-2"
                                 >
-                                {deletingCollectionId === collection._id ? (
-                                    <Loader className="mr-2 h-5 w-5 animate-spin" />
-                                ) : (
-                                    <Trash className="h-5 w-5" />
-                                )}
-                            </button>
-                            <button
-                                onClick={() => setEditCollectionData(collection)}
-                                className="text-green-400 hover:text-green-300 px-2"
-                            >
-                                <Edit className="h-5 w-5" />
-                            </button>
+                                    <Edit className="h-5 w-5" />
+                                </button>
+                            </td>
+                        </tr>
+                    ))
+                ):(
+                    <tr>
+                        <td colSpan="5" className="text-center py-4 text-gray-500">
+                            No collections found.
                         </td>
                     </tr>
-                ))}
+                )}
             </tbody>
         </table>
     </div>
