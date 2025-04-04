@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.MODE === "production" ? "http://localhost:5002/api": "/api",
+    baseURL: import.meta.env.MODE === "production" ? "https://www.api.jennyfairy.store/api": "/api",
     withCredentials: true,
 })
 
