@@ -1,4 +1,4 @@
-const API_BE_URL = "https://api.jennyfairy.store/api";
+const API_BE_URL = "http://localhost:5002/api";
 
 // Product API Endpoints
 export const PRODUCT_API_ENDPOINTS = {
