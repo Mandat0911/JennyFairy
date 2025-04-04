@@ -17,7 +17,7 @@ export const generateTokens = async (accountId, email, res) => {
         maxAge: 24 * 60 * 60 * 1000, // 1 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "Lax", // Prevent CSRF attacks
-        // domain: "jennyfairy.store", 
+        domain: "jennyfairy.store", 
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
 
@@ -25,7 +25,7 @@ export const generateTokens = async (accountId, email, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
         httpOnly: true, // Prevent access to cookies via JavaScript
         sameSite: "Lax", // Prevent CSRF attacks
-        // domain: "jennyfairy.store",
+        domain: "jennyfairy.store", 
         secure: process.env.NODE_ENV === "production", // Secure only in production
     })
 
