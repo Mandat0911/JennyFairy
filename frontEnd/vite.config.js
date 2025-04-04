@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://api.jennyfairy.store/api",
+        target: "https://api.jennyfairy.store",
         changeOrigin: true,
         secure: false,
       }
