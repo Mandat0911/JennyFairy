@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
                     <div className="flex items-center justify-center gap-2 mt-1">
                         {hasDiscount ? (
                             <>
-                                <span className="text-lg sm:text-xl font-semibold text-red-600">
+                                <span className="text-sm sm:text-md font-bold text-red-600">
                                     {formatPrice(product.discountPrice)}
                                 </span>
                                 <span className="text-sm sm:text-md text-gray-400 line-through">

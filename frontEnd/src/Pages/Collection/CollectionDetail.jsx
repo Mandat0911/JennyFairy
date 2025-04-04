@@ -31,7 +31,7 @@ const CollectionDetail = () => {
       className="relative w-full max-w-6xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.4 }}
     >
       {/* Image Carousel */}
       <div className="relative mt-12 lg:mt-18 lg:rounded-2xl md:mt-18 w-full h-[80vh] md:h-[90vh] overflow-hidden">
@@ -44,7 +44,7 @@ const CollectionDetail = () => {
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
           />
         </AnimatePresence>
 
@@ -67,18 +67,18 @@ const CollectionDetail = () => {
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 md:pb-20 text-center">
         <motion.h1 
           className="text-4xl md:text-6xl font-bold tracking-widest text-white uppercase"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          transition={{ delay: 0.3, duration: 0.6, ease:"easeOut" }}
         >
           {collectionDetail.name}
         </motion.h1>
 
         <motion.p 
           className="mt-4 text-lg md:text-xl max-w-2xl text-white bg-white/10 p-4 rounded-md backdrop-blur-sm"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.3, duration: 0.6, ease:"easeOut" }}
         >
           {collectionDetail.description}
         </motion.p>
