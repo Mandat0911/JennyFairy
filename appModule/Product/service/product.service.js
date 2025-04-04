@@ -1,5 +1,6 @@
 import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
 import { getCachedFeaturedProducts, getCachedRecommendedProducts, updateCachedFeaturedProducts, updateCachedRecommendedProducts, updateFeaturedProductCache } from "../../../backend/lib/redis/redis.config.js";
+import User from "../../User/models/user.models.js";
 import { productDTO } from "../dto/product.dto.js";
 import Product from "../model/product.models.js";
 
@@ -144,6 +145,16 @@ export const deleteProductService = async (productId) => {
             }
         }
         await product.deleteOne();
+
+        // Remove this product fom all users
+        await User.updateMany(
+            {
+                "cartItems.product": productId
+            },
+            {
+                $pull:{cartItems: {product: productId}}
+            }
+        )
 
         // Refresh featured products cache if this product was featured
         if (wasFeatured) {  // Use the stored flag
