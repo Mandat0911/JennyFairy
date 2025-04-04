@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Trash, Star, Edit, Loader, X } from "lucide-react";
 import { useDeleteProduct, useGetAllProduct, useToggleFeatureProduct } from '../../Store/API/Product.API.js';
 import CreateProductForm from './CreateProductForm.jsx';
+import useProductStore from '../../Store/Zustand/productStore.js';
 
 const ProductList = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -11,6 +12,7 @@ const ProductList = () => {
     const [deletingProductId, setDeletingProductId] = useState(null);
     const [editProductData, setEditProductData] = useState(null);
     const toggleFeaturedProduct = useToggleFeatureProduct();
+    const {resetProduct} = useProductStore();
     
     const [limit, setLimit] = useState(10);
     const { data } = useGetAllProduct(currentPage, limit);
@@ -20,6 +22,7 @@ const ProductList = () => {
         product._id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.name?.toString().toLowerCase().includes(searchTerm) ||
         product.price?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.discountPrice?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.size?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (Array.isArray(product.category)
     ? product.category.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -166,7 +169,11 @@ const ProductList = () => {
             {editProductData && (
                 <div
                     className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-black/30 z-50"
-                    onClick={() => setEditProductData(null)}
+                    onClick={() => {
+                        resetProduct();
+                        setEditProductData(null)
+                    }}
+                   
                 >
                     <div
                         className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[80vh] overflow-y-auto relative"

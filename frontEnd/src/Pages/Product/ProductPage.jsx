@@ -16,17 +16,16 @@ const ProductPage = () => {
         product.quantity > 0
     );
 
-    console.log(filteredProducts);
-
     return (
         <div className="min-h-screen bg-gray-50 mt-8">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
                 {/* Page Title */}
                 <motion.h1
-                    className="text-center text-3xl sm:text-4xl md:text-5xl font-light tracking-wide text-gray-900 uppercase mb-8"
-                    initial={{ opacity: 0, y: -20 }}
+                    className="text-center text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide text-gray-900 uppercase mb-8"
+                    initial={{ opacity: 0, y: -5 }} 
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }} 
+                    style={{ willChange: "transform, opacity" }} 
                 >
                     Our Collection
                 </motion.h1>
@@ -60,9 +59,10 @@ const ProductPage = () => {
                 {/* Product Grid */}
                 <motion.div
                     className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }} 
+                    style={{ willChange: "transform, opacity" }} 
                 >
                     {filteredProducts?.length === 0 ? (
                         <div className="col-span-full w-full flex justify-center items-center">

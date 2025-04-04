@@ -80,9 +80,10 @@ export default CartPage;
 const EmptyCartUI = () => (
     <motion.div
         className='flex flex-col items-center justify-center space-y-6 py-24 text-center'
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.4, ease: "easeOut" }} 
+        style={{ willChange: "transform, opacity" }} 
     >
         <ShoppingCart className='h-20 w-20 text-gray-300' />
         <h3 className='text-xl font-medium text-gray-800'>Your shopping bag is empty</h3>

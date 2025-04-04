@@ -3,6 +3,7 @@ export const productDTO = (product) => ({
     name: product?.name || null,
     description: product?.description || null,
     price: product?.price || null,
+    discountPrice: product?.discountPrice || null,
     img: product?.img || [],
     quantity: product?.quantity || null,
     category: product?.category || [],

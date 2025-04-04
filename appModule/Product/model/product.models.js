@@ -23,6 +23,17 @@ const productSchema = new mongoose.Schema({
     },
   },
 
+  discountPrice: {
+    type: Number,
+    default: 0,
+    validate: {
+      validator: function (v) {
+        return v >= 0; // Ensure discount price is non-negative
+      },
+      message: "Discount price must be a non-negative number",
+    },
+  },
+
   img: {
     type: [String],
     default: ["default-image.jpg"], // Use an array as default
@@ -47,8 +58,8 @@ const productSchema = new mongoose.Schema({
   },
 
   sizes: {
-    type: [String], // Array of sizes (e.g., ["S", "M", "L", "XL"])
-    default: [], // Default empty array if no sizes provided
+    type: [String], 
+    default: [], 
     required: true,
   },
 

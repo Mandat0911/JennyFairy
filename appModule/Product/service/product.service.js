@@ -61,7 +61,6 @@ export const createProductService = async (newProduct) => {
             return res.status(400).json({ error: "No images uploaded successfully!" });
         }
         const product = await Product.create({name, description, price, quantity, img: imageUrls, category, sizes});
-
         return productDTO(product);
     } catch (error) {
         console.error("Error in editProductService:", error.message);
@@ -74,7 +73,7 @@ export const editProductService = async (productId, newProduct) => {
         let product = await Product.findById(productId);
         let imageUrls = [];
         if(!product){throw { status: 404, message: "Product not found!"}};
-        const { name, description, price, img, category, sizes, quantity } = newProduct;
+        const { name, description, price, img, category, sizes, quantity, discountPrice } = newProduct;
 
         // Keep existing img if no new img prodvide
         let updatedImages = product.img;
@@ -115,6 +114,7 @@ export const editProductService = async (productId, newProduct) => {
         product.category = category || product.category;
         product.sizes = sizes || product.sizes;
         product.quantity = quantity || product.quantity;
+        product.discountPrice = discountPrice || product.discountPrice;
 
         await product.save();
 

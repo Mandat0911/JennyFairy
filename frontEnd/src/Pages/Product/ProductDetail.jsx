@@ -18,6 +18,17 @@ const ProductDetail = () => {
     const [sizeError, setSizeError] = useState(false);
     const {mutate: addToCart} = useAddItemToCart();
 
+    const hasDiscount = productDetail?.discountPrice > 0 && productDetail?.discountPrice < productDetail?.price;
+
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+        }).format(price);
+    };
+
+
     const handleAddToCart = () => {
         if(!selectedSize){
             setSizeError(true);
@@ -95,8 +106,10 @@ const ProductDetail = () => {
                     <ChevronRight className="w-7 h-7" />
                     </button>
                 </div>
+                
                 {productDetail.img?.length > 1 && (
                     <div className="mt-4 flex gap-2 overflow-x-auto md:justify-center">
+
                         {productDetail.img.map((image, index) => (
                             <button
                                 key={index}
@@ -112,19 +125,34 @@ const ProductDetail = () => {
             <div className="flex flex-col justify-between pb-12">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 tracking-tight">{productDetail.name}</h1>
-                    <p className="mt-2 text-2xl md:text-3xl font-bold text-gray-900">
-                        <span className="bg-gradient-to-r from-black-400 to-black-600 text-black px-3 py-1 rounded-md shadow-md">
-                            {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(productDetail.price)}
-                        </span>
-                    </p>
+                    {hasDiscount ? (
+                        <div className="mt-2 flex items-center space-x-3">
+                            
+                            <span className="text-3xl md:text-4xl font-extrabold text-red-600">
+                                {formatPrice(productDetail.discountPrice)}
+                            </span>
+
+                            <span className="text-lg md:text-xl text-gray-400 line-through">
+                                {formatPrice(productDetail.price)}
+                            </span>
+
+                            <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md">
+                                SALE
+                            </span>
+                        </div>
+                    ) : (
+                        <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">
+                            {formatPrice(productDetail.price)}
+                        </p>
+                    )}
+                    
                     <div className="mt-4 flex items-center gap-2">
-                       
-                                        {Array.isArray(productDetail.category) &&
-                                            productDetail.category.map((cat, index) => (
-                                                <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                                                    {cat}
-                                                </span>
-                                        ))}
+                       {Array.isArray(productDetail.category) &&
+                            productDetail.category.map((cat, index) => (
+                                <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
+                                    {cat}
+                                </span>
+                        ))}
                     
                     </div>
                     {productDetail.sizes && productDetail.sizes.length > 0 && (

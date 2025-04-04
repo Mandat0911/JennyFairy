@@ -9,6 +9,15 @@ const CartItem = ({ item }) => {
 	const {removeFromCart, updateQuantity } = useCartStore();
 	const {mutate: updateQuantityAPI} = useUpdateQuantityCartItem();
 
+	const hasDiscount = item?.discountPrice > 0 && item?.discountPrice < item?.price;
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+        }).format(price);
+    };
+
 	const handleQuantityChange = (newQuantity) => {
 		if (newQuantity < 1) return; // Prevent invalid quantity
 
@@ -65,13 +74,17 @@ const CartItem = ({ item }) => {
 			</div>
 	  
 			{/* Price */}
+			{hasDiscount ? (
 			<p className="text-md sm:text-lg font-semibold text-gray-900">
-			  {new Intl.NumberFormat("vi-VN", {
-				style: "currency",
-				currency: "VND",
-			  }).format(item.price)}
-			</p>
-	  
+			{formatPrice(item.discountPrice)}
+		  </p>
+		):(
+			<p className="text-md sm:text-lg font-semibold text-gray-900">
+			{formatPrice(item.price)}
+		  </p>
+	
+		)}
+
 			{/* Remove Button */}
 			<button
 			  className="p-2 rounded-full hover:bg-gray-200 transition sm:ml-2"

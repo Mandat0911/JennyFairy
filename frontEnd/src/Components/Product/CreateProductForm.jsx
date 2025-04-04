@@ -27,6 +27,7 @@ const CreateProductForm = ({ initialProduct }) => {
                 name: initialProduct.name || "",
                 description: initialProduct.description || "",
                 price: initialProduct.price || "",
+                discountPrice: initialProduct.discountPrice || "",
                 category: initialProduct.category || [],
                 sizes: initialProduct.sizes || [],
                 img: initialProduct.img || [],
@@ -205,10 +206,23 @@ const CreateProductForm = ({ initialProduct }) => {
                             type="number"
                             value={product.price}
                             onChange={(e) => setProduct({ ...product, price: e.target.value })}
-                            step="1000"
+                            step="1"
+                            min={0}
                             placeholder="Price"
                             className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                             required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Discount Price</label>
+                        <input
+                            type="number"
+                            value={product.discountPrice}
+                            onChange={(e) => setProduct({ ...product, discountPrice: e.target.value })}
+                            step="1"
+                            min={0}
+                            placeholder="Discount Price"
+                            className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
                         />
                     </div>
                     <div>

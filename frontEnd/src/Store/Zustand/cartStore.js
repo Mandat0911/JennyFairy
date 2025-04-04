@@ -13,7 +13,7 @@ const useCartStore = create(
 
             initializeCart: (cartItems) => {
                 set(() => {
-                    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+                    const subtotal = cartItems.reduce( (acc, item) => acc + ((item.discountPrice > 0 ? item.discountPrice : item.price) * item.quantity), 0);
 
                     const coupon = useCouponStore.getState().coupon;
                     const discountAmount = coupon?.discountPercentage
@@ -30,7 +30,7 @@ const useCartStore = create(
                     const existingItem = state.cart.find(
                         (cartItem) => cartItem.productId === item.productId && cartItem.size === item.size
                     );
-
+            
                     let updatedCart;
                     if (existingItem) {
                         updatedCart = state.cart.map((cartItem) =>
@@ -39,12 +39,18 @@ const useCartStore = create(
                                 : cartItem
                         );
                     } else {
-                        updatedCart = [...state.cart, item];
+                        updatedCart = [
+                            ...state.cart, 
+                            { 
+                                ...item, 
+                                price: item.discountPrice > 0 ? item.discountPrice : item.price 
+                            }
+                        ];
                     }
-
+            
                     return { cart: updatedCart };
                 });
-
+            
                 get().calculateTotals(); // Ensure total updates
             },
 
@@ -85,18 +91,22 @@ const useCartStore = create(
             
             calculateTotals: () => {
                 set((state) => {
-                    const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
+                    const subtotal = state.cart.reduce(
+                        (acc, item) => acc + ((item.discountPrice > 0 ? item.discountPrice : item.price) * item.quantity),
+                        0
+                    );
+            
                     const coupon = useCouponStore.getState().coupon;
                     const discountAmount = coupon?.discountPercentage
                         ? (subtotal * coupon.discountPercentage) / 100
                         : 0;
-
+            
                     const total = subtotal - discountAmount;
-
+            
                     return { subtotal, discount: discountAmount, total };
                 });
             },
+            
 
             setIsCouponApplied: (isApplied) => set({ isCouponApplied: isApplied }),
 

@@ -75,7 +75,7 @@ export const addToCartService = async (user, productId, quantity, size) => {
         // Store total Price
         const product = await Product.findById(productId);
         if (!product) {throw { status: 400, message: "Product not found!" }}
-        const productPrice = product.price;
+        const productPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
         const totalPrice = productPrice * quantity;
 
         const existingItem = user.cartItems.find(
