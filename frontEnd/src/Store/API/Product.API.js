@@ -122,7 +122,6 @@ export const useGetRecommendedProduct = () => {
             }
 
             const data = await response.json();
-
             // Ensure it's an array
             return Array.isArray(data) ? data : data.products || [];
         },

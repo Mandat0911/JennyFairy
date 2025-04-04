@@ -5,6 +5,7 @@ import { useGetRecommendedProduct } from '../../Store/API/Product.API.js';
 const PeopleAlsoBought = () => {
 	const { data: recommendations, isLoading, isError } = useGetRecommendedProduct();
 
+
 	if (isLoading) return <p>Loading recommendations...</p>;
 	if (isError) return <p>Failed to load recommendations</p>;
 

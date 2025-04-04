@@ -84,7 +84,7 @@ export const useAppliedCoupon = () => {
             if (!response.ok) throw new Error(data.error || 'Failed to applied Coupon');
             return data;
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries(['coupons']);
             setLoading(false)
         },

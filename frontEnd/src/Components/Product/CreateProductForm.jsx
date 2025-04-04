@@ -99,8 +99,6 @@ const CreateProductForm = ({ initialProduct }) => {
         }
     };
 
-    
-
     const handleCategoryChange = (e, cat) => {
         const { product, setProduct } = useProductStore.getState(); // Directly access state
         
@@ -163,9 +161,9 @@ const CreateProductForm = ({ initialProduct }) => {
     return (
         <motion.div
             className="bg-white shadow-xl rounded-lg p-6 mb-8 max-w-lg mx-auto border border-gray-200"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.3, ease: "easeOut"  }}    
         >
             <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center uppercase tracking-wide">
                 {isEditing ? "Edit Product" : "New Product"}

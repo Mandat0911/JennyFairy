@@ -1,5 +1,3 @@
-import cloudinary from "../../../backend/lib/cloudinary/cloudinary.js";
-import Collection from "../model/collections.models.js";
 import { createCollectionService, deleteCollectionService, editCollectionService, getAllCollectionService, getCollectionDetailService } from "../service/collection.service.js";
 
 export const getAllCollection = async(req, res) => {

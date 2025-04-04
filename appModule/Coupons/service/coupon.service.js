@@ -6,8 +6,6 @@ export const getCouponService = async (userRole) => {
         const currentDate = new Date();
 
         const coupons = userRole === "ADMIN" || userRole === "MANAGER" ? await Coupon.find() : await Coupon.find({ isActive: true, expirationDate: { $gte: currentDate }});
-
-        if (!coupons || coupons.length === 0) {throw { status: 404, message: "No coupons found" }}
         const formattedCoupons = coupons.map((coupon) => couponDTO(coupon))
         return formattedCoupons;
     } catch (error) {

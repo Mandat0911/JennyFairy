@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Mail, ShoppingBag, Trash, ChevronDown, ChevronUp } from "lucide-react";
+import { User, Mail, ShoppingBag, Trash, ChevronDown, ChevronUp, Loader, PlusCircle } from "lucide-react";
 import { useGetUserProfile } from "../../Store/API/Auth.API";
 import { formatDate } from "../../Utils/Date";
 import { useAuthStore } from "../../Store/Zustand/authStore";
@@ -8,7 +8,7 @@ import { useCancelOrder } from "../../Store/API/Order.API";
 
 const ProfilePage = () => {
   const { data: userData } = useGetUserProfile();
-  const {mutate: cancelOrder} = useCancelOrder();
+  const {mutate: cancelOrder, isLoading} = useCancelOrder();
   const [expandedOrder, setExpandedOrder] = useState(null);
   const { deleteAccount } = useAuthStore();
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
@@ -204,7 +204,8 @@ const ProfilePage = () => {
                 onClick={confirmCancelOrder}
                 className="w-full md:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition text-sm"
               >
-                Yes, Cancel
+                {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <PlusCircle className="mr-2 h-5 w-5" />}
+                {isLoading ? "Loading..." : "Yes, Cancel"}
               </button>
             </div>
           </motion.div>

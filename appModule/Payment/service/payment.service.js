@@ -167,6 +167,8 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
         
         const randomTransactionId = generateVerificationToken(12);
         const randomStripeSessionId = generateVerificationToken(12);
+        console.log("randomTransactionId", randomTransactionId);
+        console.log("randomStripeSessionId", randomStripeSessionId);
 
         const payment = new Payment({
             user: userId,
@@ -201,6 +203,7 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
                 country: shippingDetails.country || "",
                 deliveryStatus: "pending", 
             },
+            stripeSessionId: randomStripeSessionId,
         });
 
         await order.save();
@@ -269,6 +272,7 @@ export const createCheckoutPaypalCodeService = async (userId, products, totalAmo
                 country: shippingDetails.country || "",
                 deliveryStatus: "pending", 
             },
+            stripeSessionId: randomStripeSessionId,
         });
 
         await order.save();
@@ -337,6 +341,7 @@ export const createCheckoutCODService = async (userId, products, totalAmount, co
                 country: shippingDetails.country || "",
                 deliveryStatus: "pending", 
             },
+            stripeSessionId: randomStripeSessionId,
         });
 
         await order.save();

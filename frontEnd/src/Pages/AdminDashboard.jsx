@@ -58,8 +58,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut" }} 
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}                            
                         >
                             <CreateProductForm />
                         </motion.div>
@@ -71,8 +70,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut"  }}
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut"  }}                            
                         >
                             <ProductList />
                         </motion.div>
@@ -83,8 +81,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut"  }}
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut"  }}                           
                         >
                             <OrderList />
                         </motion.div>
@@ -95,8 +92,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut"   }}
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut"   }}                          
                         >
                             <CreateCollectionForm />
                         </motion.div>
@@ -107,8 +103,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut"   }}
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut"   }}                            
                         >
                             <CollectionList />
                         </motion.div>
@@ -120,7 +115,6 @@ const AdminDashboard = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.3, ease: "easeOut"   }}
-                            style={{ willChange: "transform, opacity" }}
                         >
                             <CreateCouponForm />
                         </motion.div>
@@ -131,8 +125,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeOut"   }}
-                            style={{ willChange: "transform, opacity" }}
+                            transition={{ duration: 0.3, ease: "easeOut"   }} 
                         >
                             <AnalyticsView />
                         </motion.div>
