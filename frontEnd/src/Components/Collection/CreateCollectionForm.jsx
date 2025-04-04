@@ -156,6 +156,7 @@ const CreateCollectionForm = ({initialCollection}) => {
                                 <div key={index} className="relative">
                                     <img src={preview} alt="Preview" className="w-20 h-20 rounded-md object-cover border border-gray-300" />
                                     <button
+                                        type="button"
                                         className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
                                         onClick={() => handleRemoveImage(index)}
                                     >
