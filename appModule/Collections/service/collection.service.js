@@ -58,9 +58,10 @@ export const createCollectionService = async (name, description, img) => {
                         folder: "collections",
                         quality: "auto",
                         fetch_format: "webp", 
-                        width: 800, 
-                        height: 800,
-                        crop: "limit",
+                        width: 1000, 
+                        height: 1000,
+                        crop: "fill",
+                        gravity: "auto",
                     });
                     return { status: "fulfilled", url: response.secure_url };
                 } catch (error) {

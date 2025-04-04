@@ -57,15 +57,9 @@ const Navbar = () => {
                             Profile
                         </Link>
                     )}
-
-                    {isAdmin && (
-                        <Link to="/admin-dashboard" className="bg-black text-white px-5 py-2 rounded-full transition duration-300 hover:bg-gray-800">
-                            Dashboard
-                        </Link>
-                    )}
-
+                    
                     {/* Social Icons */}
-                    <div className="flex items-center gap-4 ml-4">
+                    <div className="flex items-center gap-4">
                         <a href="https://www.instagram.com/jennyfairy_feminine/" target="_blank" rel="noopener noreferrer" title="Instagram" className="text-gray-700 hover:text-pink-600 transition">
                             <FaInstagram size={22} />
                         </a>
@@ -73,6 +67,13 @@ const Navbar = () => {
                             <FaTiktok size={22} />
                         </a>
                     </div>
+
+                    {isAdmin && (
+                        <Link to="/admin-dashboard" className="bg-black text-white px-5 py-2 rounded-full transition duration-300 hover:bg-gray-800">
+                            Dashboard
+                        </Link>
+                    )}
+
 
                     {user ? (
                         <motion.button
@@ -100,9 +101,10 @@ const Navbar = () => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="absolute top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center space-y-6 shadow-md z-40"
                     >
                         <button className="absolute top-6 right-6 text-gray-700" onClick={() => setIsOpen(false)}>

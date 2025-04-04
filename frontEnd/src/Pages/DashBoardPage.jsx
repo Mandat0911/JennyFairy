@@ -3,7 +3,7 @@ import { useGetAllCollection } from "../Store/API/Collection.API.js";
 import { motion } from "framer-motion";
 
 const containerVariants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 5 },
   visible: {
     opacity: 1,
     y: 0,
