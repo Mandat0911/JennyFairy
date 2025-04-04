@@ -20,9 +20,10 @@ const LoginPage = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3,  ease: "easeOut"  }}
+      style={{ willChange: "transform, opacity" }}
       className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-white border border-gray-200 shadow-xl rounded-xl mx-4 px-6 py-8 sm:px-10 sm:mx-auto"
     >
       {/* Title */}
