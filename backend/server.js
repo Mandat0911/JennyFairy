@@ -29,7 +29,7 @@ app.use(cors({
     exposedHeaders: ["Set-Cookie"]
 }));
 
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
 
