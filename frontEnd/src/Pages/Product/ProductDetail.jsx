@@ -20,7 +20,6 @@ const ProductDetail = () => {
 
     const hasDiscount = productDetail?.discountPrice > 0 && productDetail?.discountPrice < productDetail?.price;
 
-
     const formatPrice = (price) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -183,7 +182,7 @@ const ProductDetail = () => {
                         </p>
                     </div>
                 </div>
-                {/* ✅ Quantity Selector */}
+                {/* Quantity Selector */}
                 <div className="mt-6 flex items-center space-x-4">
                         <button
                             className="px-3 py-2 text-lg font-semibold bg-gray-200 rounded-md hover:bg-gray-300 transition"
