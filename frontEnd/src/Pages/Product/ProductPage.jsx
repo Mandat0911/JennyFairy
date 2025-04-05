@@ -3,9 +3,10 @@ import ProductCard from "../../Components/Product/ProductCard.jsx";
 import { useGetAllProductUser } from "../../Store/API/Product.API.js";
 import { motion } from "framer-motion";
 import { category } from "../../Utils/Category.js";
+import ProductCardSkeleton from "../../Components/Other/ProductCardSkeleton.jsx";
 
 const ProductPage = () => {
-    const { data: products } = useGetAllProductUser();
+    const { data: products, isLoading } = useGetAllProductUser();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -64,17 +65,21 @@ const ProductPage = () => {
                     transition={{ duration: 0.4, ease: "easeOut" }} 
                     style={{ willChange: "transform, opacity" }} 
                 >
-                    {filteredProducts?.length === 0 ? (
-                        <div className="col-span-full w-full flex justify-center items-center">
-                            <h2 className="text-xl sm:text-2xl font-light text-gray-500 text-center">
-                                No products found
-                            </h2>
-                        </div>
-                    ) : (
-                        filteredProducts?.map((product) => (
-                            <ProductCard key={product._id} product={product} />
+                    {isLoading ? (
+                        Array.from({ length: 8 }).map((_, i) => (
+                            <ProductCardSkeleton key={i} />
                         ))
-                    )}
+                        ):(filteredProducts?.length === 0 ? (
+                            <div className="col-span-full w-full flex justify-center items-center">
+                                <h2 className="text-xl sm:text-2xl font-light text-gray-500 text-center">
+                                    No products found
+                                </h2>
+                            </div>
+                        ) : (
+                            filteredProducts?.map((product) => (
+                                <ProductCard key={product._id} product={product} isLoading={isLoading} />
+                            ))
+                        ))}
                 </motion.div>
             </div>
         </div>
