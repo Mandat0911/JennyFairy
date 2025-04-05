@@ -4,7 +4,7 @@ const ProductCardSkeleton = () => {
     return (
         <div className="relative w-full bg-white rounded-lg overflow-hidden shadow-md animate-pulse">
             {/* Image Skeleton */}
-            <div className="relative w-full h-60 sm:h-72 md:h-96 bg-gray-200" />
+            <div className="relative w-full h-60 sm:h-72 md:h-96 overflow-hidden bg-gray-200" />
 
             {/* Text Skeletons */}
             <div className="p-3 sm:p-4 text-center">
