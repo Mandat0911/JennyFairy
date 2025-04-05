@@ -67,7 +67,6 @@ export const useEditProduct = () => {
     });
 };
 
-
 export const useGetAllProduct = (page = 1, limit = 5) => {
     return useQuery({
         queryKey: ['products', page, limit],
@@ -164,6 +163,7 @@ export const useDeleteProduct = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['products']); // Refresh the list after deletion
+            queryClient.invalidateQueries(['cart']);
             toast.success('Product deleted successfully!');
         },
     })
