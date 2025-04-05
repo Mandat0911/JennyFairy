@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import useCartStore from "../Zustand/cartStore.js";
 
-
 export const useGetCartItems = () => {
     const { initializeCart } = useCartStore();
     return useQuery({
@@ -60,7 +59,6 @@ export const useGetCartItems = () => {
         },
     });
 };
-
 
 export const useAddItemToCart = () => {
     const { addToCart } = useCartStore();
@@ -120,7 +118,6 @@ export const useAddItemToCart = () => {
     });
 };
 
-
 export const useDeleteCartItem = () => {
     const queryClient = useQueryClient();
     const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -143,7 +140,7 @@ export const useDeleteCartItem = () => {
             removeFromCart(productId, size); // Remove from Zustand store
             calculateTotals(); // Ensure total and subtotal update
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
-            toast.success("Cart item deleted successfully!");
+            toast.success("Cart item deleted successfully!", { id: "deleted" });
         },
     });
 };
@@ -173,7 +170,6 @@ export const useDeleteAllCartItem = () => {
 };
 
 
-
 export const useUpdateQuantityCartItem = () => {
     const queryClient = useQueryClient();
     const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -201,7 +197,7 @@ export const useUpdateQuantityCartItem = () => {
             updateQuantity(data.product, data.size, data.quantity)
             calculateTotals()
             queryClient.invalidateQueries(["cart"]); // Refetch cart from API
-            toast.success("Cart item updated successfully!");
+            toast.success("Cart item updated successfully!", { id: "updated" });
         },
         onError: () => {
             toast.error("Failed to update cart item. Please try again.");

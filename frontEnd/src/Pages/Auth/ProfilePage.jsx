@@ -147,7 +147,7 @@ const ProfilePage = () => {
       {isModalOpenDelete && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-lg bg-white/10 z-50 px-4">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
@@ -180,9 +180,11 @@ const ProfilePage = () => {
       )}
 
       {isModalOpenCancel && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-lg bg-white/10 z-50 px-4">
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-lg bg-white/10 z-50 px-4"
+        onClick={() => setIsModalOpenCancel(false)}
+        >
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
@@ -204,8 +206,7 @@ const ProfilePage = () => {
                 onClick={confirmCancelOrder}
                 className="w-full md:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition text-sm"
               >
-                {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <PlusCircle className="mr-2 h-5 w-5" />}
-                {isLoading ? "Loading..." : "Yes, Cancel"}
+                {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : "Yes, Cancel"}
               </button>
             </div>
           </motion.div>

@@ -79,9 +79,9 @@ export const sendResetPasswordSuccessEmail = async (userEmail, userName) => {
 };
 
 export const sendOrderDetailSuccessEmail = async (userEmail, username, order) => {
+
   const populatedOrder = await Order.findById(order._id).populate("products.product");
   const formattedTotalAmount = populatedOrder.totalAmount.toLocaleString('en-US');
-
   const orderItems = populatedOrder.products
   .map((p) => `
     <tr>
@@ -93,7 +93,7 @@ export const sendOrderDetailSuccessEmail = async (userEmail, username, order) =>
       </td>
       <td style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">${p.size || "-"}</td>
       <td style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">${p.quantity}</td>
-      <td style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">${p.price.toLocaleString('en-US')} VND</td>
+      <td style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">${p.discountPrice > 0 ? p.discountPrice.toLocaleString('en-US') : p.price.toLocaleString('en-US')} VND</td>
     </tr>
   `)
   .join("");

@@ -148,7 +148,7 @@ dotenv.config();
 //     }
 // };
 
-export const createCheckoutQrcodeService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails) => {
+export const createCheckoutQrcodeService = async (userId, products, totalAmount, couponCode, couponDiscountPercentage, Code, shippingDetails) => {    
     try {
         if (!products || products.length === 0 || !totalAmount || !shippingDetails) {throw { status: 400, message: "Products, totalAmount, and shipping details are required."  }}
 
@@ -163,12 +163,11 @@ export const createCheckoutQrcodeService = async (userId, products, totalAmount,
             quantity: products[index].quantity,
             size: products[index].size,
             price: product.price, 
+            discountPrice: product.discountPrice,
         }));
         
         const randomTransactionId = generateVerificationToken(12);
         const randomStripeSessionId = generateVerificationToken(12);
-        console.log("randomTransactionId", randomTransactionId);
-        console.log("randomStripeSessionId", randomStripeSessionId);
 
         const payment = new Payment({
             user: userId,
@@ -233,6 +232,7 @@ export const createCheckoutPaypalCodeService = async (userId, products, totalAmo
             quantity: products[index].quantity,
             size: products[index].size,
             price: product.price, 
+            discountPrice: product.discountPrice,
         }));
         
         const randomTransactionId = generateVerificationToken(12);
@@ -302,6 +302,7 @@ export const createCheckoutCODService = async (userId, products, totalAmount, co
             quantity: products[index].quantity,
             size: products[index].size,
             price: product.price, 
+            discountPrice: product.discountPrice,
         }));
         
         const randomTransactionId = generateVerificationToken(12);

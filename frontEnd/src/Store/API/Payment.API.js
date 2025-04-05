@@ -34,8 +34,8 @@ export const useCreateSessionCheckoutStripe = () => {
         }
     });
 };
-// checkoutSuccess
 
+// checkoutSuccess
 export const useCheckSuccessStripe = () => {
     const { mutate: clearAllItems } = useDeleteAllCartItem();
     

@@ -37,7 +37,11 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
                 min: 1000,
-            }
+            },
+            discountPrice: {
+                type: Number,
+                default: 0,
+            },
         }
     ],
     totalAmount: {
