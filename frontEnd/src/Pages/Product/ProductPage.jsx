@@ -69,17 +69,19 @@ const ProductPage = () => {
                         Array.from({ length: 8 }).map((_, i) => (
                             <ProductCardSkeleton key={i} />
                         ))
-                        ):(filteredProducts?.length === 0 ? (
+                    ) : (
+                        filteredProducts?.length === 0 ? (
                             <div className="col-span-full w-full flex justify-center items-center">
                                 <h2 className="text-xl sm:text-2xl font-light text-gray-500 text-center">
                                     No products found
                                 </h2>
                             </div>
                         ) : (
-                            filteredProducts?.map((product) => (
-                                <ProductCard key={product._id} product={product} isLoading={isLoading} />
+                            filteredProducts.map((product) => (
+                                <ProductCard key={product._id} product={product} />
                             ))
-                        ))}
+                        )
+                    )}
                 </motion.div>
             </div>
         </div>
